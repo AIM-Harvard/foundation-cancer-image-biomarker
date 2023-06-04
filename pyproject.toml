@@ -4,18 +4,20 @@ requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "foundation-image-biomarker"
+name = "foundation-cancer-image-biomarker"
 version = "0.0.1"
-description = "Awesome `foundation-image-biomarker` is a Python cli/package created with https://github.com/TezRomacH/python-package-template"
+description = "`foundation-cancer-image-biomarker` is the official python package for [INSERT DOI]"
 readme = "README.md"
-authors = ["AIM-Harvard <bspai@bwh.harvard.edu>"]
+authors = ["Suraj Pai <bspai@bwh.harvard.edu>"]
 license = "MIT"
-repository = "https://github.com/foundation_image_biomarker/foundation-image-biomarker"
-homepage = "https://github.com/foundation_image_biomarker/foundation-image-biomarker"
+repository = "https://github.com/AIM-Harvard/foundation-cancer-image-biomarker"
+homepage = "aim.hms.harvard.edu/foundation-cancer-image-biomarker"
 
 # Keywords description https://python-poetry.org/docs/pyproject/#keywords
 keywords = []  #! Update me
-
+packages = [
+    { include = "fmcib" },
+]
 # Pypi classifiers: https://pypi.org/classifiers/
 classifiers = [  #! Update me
   "Development Status :: 3 - Alpha",
@@ -32,6 +34,7 @@ classifiers = [  #! Update me
 
 [tool.poetry.dependencies]
 python = "^3.8"
+project-lighter = {version = "^0.0.2a2", allow-prereleases = true}
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.1"
@@ -136,7 +139,7 @@ markers = [
 source = ["tests"]
 
 [coverage.paths]
-source = "foundation-image-biomarker"
+source = "foundation-cancer-image-biomarker"
 
 [coverage.run]
 branch = true
@@ -157,4 +160,4 @@ generated-members = "torch.*"
 [tool.pylint.master]
 fail-under=8
 
-[tool.poetry_bumpversion.file."foundation-image-biomarker/version.py"]
+[tool.poetry_bumpversion.file."foundation-cancer-image-biomarker/version.py"]
