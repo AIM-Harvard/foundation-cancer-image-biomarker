@@ -43,7 +43,7 @@ thedicomsort = "^1.0.1"
 dcmrtstruct2nii = "^5"
 nibabel = "^5.1.0"
 matplotlib = "^3.7.1"
-platipy = "0.4.1"
+platipy = "0.6.0"
 pynrrd = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
