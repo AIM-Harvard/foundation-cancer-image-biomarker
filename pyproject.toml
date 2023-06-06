@@ -5,19 +5,21 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "foundation-cancer-image-biomarker"
-version = "0.0.1"
-description = "Official repo for "Foundation Models for Quantitative Biomarker Discovery in Cancer Imaging [INSERT DOI]"
+version = "0.0.1a0"
+description = "Official repo for Foundation Models for Quantitative Biomarker Discovery in Cancer Imaging [INSERT DOI]"
 readme = "README.md"
 authors = ["Suraj Pai <bspai@bwh.harvard.edu>"]
 license = "MIT"
 repository = "https://github.com/AIM-Harvard/foundation-cancer-image-biomarker"
-homepage = "aim.hms.harvard.edu/foundation-cancer-image-biomarker"
+homepage = "https://aim.hms.harvard.edu/foundation-cancer-image-biomarker"
 
 # Keywords description https://python-poetry.org/docs/pyproject/#keywords
 keywords = []  #! Update me
 packages = [
     { include = "fmcib" },
 ]
+include = ["fmcib/files/gcs_lung1_paths.txt"]
+
 # Pypi classifiers: https://pypi.org/classifiers/
 classifiers = [  #! Update me
   "Development Status :: 3 - Alpha",
@@ -35,6 +37,14 @@ classifiers = [  #! Update me
 [tool.poetry.dependencies]
 python = "^3.8"
 project-lighter = {version = "^0.0.2a2", allow-prereleases = true}
+wget = "^3.2"
+google-cloud-storage = "^2.9.0"
+thedicomsort = "^1.0.1"
+dcmrtstruct2nii = "^5"
+nibabel = "^5.1.0"
+matplotlib = "^3.7.1"
+platipy = "0.4.1"
+pynrrd = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.1"

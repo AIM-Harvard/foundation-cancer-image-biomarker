@@ -1,6 +1,6 @@
 # Foundation Models for Quantitative Imaging Biomarker Discovery in Cancer Imaging
 
-<div align="center">
+<!-- <div align="center">
 
 [![Build status](https://github.com/foundation_image_biomarker/foundation-image-biomarker/workflows/build/badge.svg?branch=master&event=push)](https://github.com/foundation_image_biomarker/foundation-image-biomarker/actions?query=workflow%3Abuild)
 [![Python Version](https://img.shields.io/pypi/pyversions/foundation-image-biomarker.svg)](https://pypi.org/project/foundation-image-biomarker/)
@@ -13,7 +13,7 @@
 [![License](https://img.shields.io/github/license/foundation_image_biomarker/foundation-image-biomarker)](https://github.com/foundation_image_biomarker/foundation-image-biomarker/blob/master/LICENSE)
 ![Coverage Report](assets/images/coverage.svg)
 
-</div>
+</div> -->
 
 ## Overview
 This is the the official repository for the paper <i> Foundation Models for Quantitative Imaging Biomarker Discovery for Cancer Imaging </i> <br/>
@@ -53,9 +53,9 @@ You can find detailed instructions for this [here](experiments/README.md)
 
 ## 🛡 License
 
-[![License](https://img.shields.io/github/license/foundation_image_biomarker/foundation-image-biomarker)](https://github.com/foundation_image_biomarker/foundation-image-biomarker/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/foundation_image_biomarker/foundation-image-biomarker)](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/blob/master/LICENSE)
 
-This project is licensed under the terms of the `MIT` license. See [LICENSE](https://github.com/foundation_image_biomarker/foundation-image-biomarker/blob/master/LICENSE) for more details.
+This project is licensed under the terms of the `MIT` license. See [LICENSE](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/blob/master/LICENSE) for more details.
 
 ## 📃 Citation
 
