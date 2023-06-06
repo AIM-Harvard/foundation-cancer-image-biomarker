@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "foundation-cancer-image-biomarker"
-version = "0.0.1a0"
+version = "0.0.1a1"
 description = "Official repo for Foundation Models for Quantitative Biomarker Discovery in Cancer Imaging [INSERT DOI]"
 readme = "README.md"
 authors = ["Suraj Pai <bspai@bwh.harvard.edu>"]
@@ -18,7 +18,6 @@ keywords = []  #! Update me
 packages = [
     { include = "fmcib" },
 ]
-include = ["fmcib/files/gcs_lung1_paths.txt"]
 
 # Pypi classifiers: https://pypi.org/classifiers/
 classifiers = [  #! Update me
@@ -170,4 +169,4 @@ generated-members = "torch.*"
 [tool.pylint.master]
 fail-under=8
 
-[tool.poetry_bumpversion.file."foundation-cancer-image-biomarker/version.py"]
+[tool.poetry_bumpversion.file."version.py"]
