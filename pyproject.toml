@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "foundation-cancer-image-biomarker"
-version = "0.0.1a1"
+version = "0.0.1a3"
 description = "Official repo for Foundation Models for Quantitative Biomarker Discovery in Cancer Imaging [INSERT DOI]"
 readme = "README.md"
 authors = ["Suraj Pai <bspai@bwh.harvard.edu>"]
@@ -170,3 +170,5 @@ generated-members = "torch.*"
 fail-under=8
 
 [tool.poetry_bumpversion.file."version.py"]
+[tool.poetry_bumpversion.file."fmcib/__init__.py"]
+

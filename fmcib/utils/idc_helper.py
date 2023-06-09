@@ -14,55 +14,52 @@ from tqdm import tqdm
 
 from .download_utils import bar_progress
 
+def download_from_manifest(df, save_dir, samples):
+    # Instantiates a client
+    storage_client = storage.Client()
+    bucket = storage_client.bucket("idc-open-cr")
+    logger.info("Downloading DICOM data from IDC (Imaging Data Commons) ...")
+    (save_dir / "dicom").mkdir(exist_ok=True, parents=True)
 
-def download_LUNG1(path):
+    if samples is not None:
+        assert "PatientID" in df.columns
+        unique_elements = df['PatientID'].unique()
+
+
+        selected_elements = np.random.choice(unique_elements, min(len(unique_elements), samples), replace=False)
+        df = df[df['PatientID'].isin(selected_elements)]
+
+    def download_file(row):
+        fn = f'{row["gcs_url"].split("/")[-2]}/{row["gcs_url"].split("/")[-1]}'
+        blob = bucket.blob(fn)
+
+        current_save_dir = save_dir / "dicom" / row["PatientID"] / row["StudyInstanceUID"]
+        current_save_dir.mkdir(exist_ok=True, parents=True)
+        blob.download_to_filename(str(current_save_dir / f'{row["Modality"]}_{row["SeriesInstanceUID"]}_{row["InstanceNumber"]}.dcm'))
+
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for idx, row in df.iterrows():
+            futures.append(executor.submit(download_file, row))
+        for future in tqdm(concurrent.futures.as_completed(futures), total=len(futures)):
+            pass
+
+
+def download_LUNG1(path, samples=None):
     save_dir = Path(path).resolve()
     save_dir.mkdir(exist_ok=True, parents=True)
 
     logger.info("Downloading LUNG1 manifest from Dropbox ...")
     # Download LUNG1 data manifest, this is precomputed but any set of GCS dicom files can be used here
     wget.download(
-        "https://www.dropbox.com/s/tbywsmxln5yatxw/gcs_lung1_paths.txt?dl=1",
-        bar=bar_progress,
-        out=f"{save_dir}/gcs_lung1_paths.txt",
+        "https://www.dropbox.com/s/lkvv33nmepecyu5/nsclc_radiomics.csv?dl=1",
+        out=f"{save_dir}/nsclc_radiomics.csv",
     )
 
-    # Instantiates a client
-    storage_client = storage.Client()
-    bucket = storage_client.bucket("idc-open-cr")
+    df = pd.read_csv(f"{save_dir}/nsclc_radiomics.csv")
 
-    logger.info("Downloading LUNG1 DICOM data from IDC (Imaging Data Commons) ...")
-
-    (save_dir / "dicom").mkdir(exist_ok=True, parents=True)
-
-    # The name of the file to download
-    with open(f"{save_dir}/gcs_lung1_paths.txt", "r") as f:
-        # Define a function to download a single file
-        def download_file(fn):
-            # Get the generation number of the blob
-            blob = bucket.blob(fn.strip("\n"))
-
-            # Generate the download URL with the generation number
-            blob.download_to_filename(f"{str(save_dir)}/dicom/{fn.split('/')[-1]}")
-
-        # Use a ThreadPoolExecutor to download multiple files in parallel
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = []
-            for fn in f.readlines():
-                futures.append(executor.submit(download_file, fn))
-            for future in tqdm(concurrent.futures.as_completed(futures), total=len(futures)):
-                pass
-
-    logger.info("Sorting files using dicomsort ...")
-
-    # Sort the downloaded DICOM data
-    # DICOM sort
-    command = ["dicomsort"]
-    command += [f"{save_dir}/dicom"]
-    command += [f"{save_dir}/sorted/%PatientID/%StudyInstanceUID/%Modality_%SeriesInstanceUID_%InstanceNumber.dcm"]
-    command += ["--keepGoing"]
-
-    subprocess.run(command)
+    download_from_manifest(df, save_dir, samples)
 
 
 def build_image_seed_dict(path, samples=10):

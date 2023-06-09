@@ -17,7 +17,7 @@ def resnet50(pretrained=True):
     if pretrained:
         current_path = Path(os.getcwd())
         if not (current_path / "fmcib.torch").exists():
-            wget.download("https://www.dropbox.com/s/oqzej4tjij2k4cn/fmcib.torch?dl=1", bar=bar_progress)
+            wget.download("https://www.dropbox.com/s/bd7azdsvx1jhalp/fmcib.torch?dl=1", bar=bar_progress)
 
         model.load_state_dict(torch.load(current_path / "fmcib.torch")["trunk_state_dict"])
 
