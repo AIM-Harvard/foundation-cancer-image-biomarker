@@ -22,10 +22,12 @@ class LoadPretrainedResnet3D(nn.Module):
 
         head_layers = []
         for idx in range(len(heads) - 1):
-            head_layers.append(nn.Linear(heads[idx], heads[idx+1], bias=True))
+            current_layers = []
+            current_layers.append(nn.Linear(heads[idx], heads[idx+1], bias=True))
 
             if idx != len(heads) - 1:
-                head_layers.append(nn.ReLU(inplace=True))
+                current_layers.append(nn.ReLU(inplace=True))
+            head_layers.append(nn.Sequential(*current_layers))
 
         if len(head_layers):
             self.heads = nn.Sequential(*head_layers)
@@ -51,10 +53,11 @@ class LoadPretrainedResnet3D(nn.Module):
         # Load trained heads
         if "head_state_dict" in pretrained_model:
             trained_heads = pretrained_model['head_state_dict']
+
             try:
                 msg = self.heads.load_state_dict(trained_heads, strict=False)
-            except:
-                logger.error("Failed to load trained heads. This is expected if the models do not match!")
+            except Exception as e:
+                logger.error(f"Failed to load trained heads with error {e}. This is expected if the models do not match!")
             logger.warning(f'Missing keys: {msg[0]} and unexpected keys: {msg[1]}')
 
         logger.info(f'Loaded pretrained model weights \n')

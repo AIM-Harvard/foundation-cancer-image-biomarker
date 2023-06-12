@@ -41,6 +41,7 @@ system:
         heads: [4096, 2048, 512, 256, 8] # Note: Change to [4096, 2048, 512, 256, 1] for Task 2 and Task 3
 
     post_criterion_activation: "$torch.nn.functional.softmax" # Note: Change to $torch.sigmoid for Task 2 and Task 3
+    # cast_target_dtype_to: "$torch.float32" # Note: Uncomment for Task 2 and Task 3
     criterion:
         _target_: torch.nn.CrossEntropyLoss # Note: Change to torch.nn.BCEWithLogitsLoss for Task 2 and Task 3
 
@@ -73,10 +74,10 @@ system:
 
     train_dataset:
         _target_: fmcib.datasets.SSLRadiomicsDataset
-        path: "./data/preprocessing/deeplesion/annotations/task1_train.csv"
-        label: "Coarse_lesion_type"
+        path: "./data/preprocessing/deeplesion/annotations/task1_train.csv" # Note: Change path
+        label: "Coarse_lesion_type" # Note: Change to appropriate label column, e.g. "malignancy" for Task 2 and "survival" for Task 3
         radius: 25
-        orient: True # Set orient to False for task 2 and task 3
+        orient: True # Note: Set orient to False for task 2 and task 3
         resample_spacing: [1, 1, 1]
         enable_negatives: False
         transform:
@@ -101,7 +102,7 @@ system:
 
     val_dataset:
         _target_: fmcib.datasets.SSLRadiomicsDataset
-        path: "./data/preprocessing/deeplesion/annotations/task1_val.csv"
+        path: "./data/preprocessing/deeplesion/annotations/task1_val.csv"  # Note: Change path
         label: "@system#train_dataset#label"
         radius: "@system#train_dataset#radius"
         orient: "@system#train_dataset#orient"
@@ -120,7 +121,7 @@ system:
                   
     test_dataset:
         _target_: fmcib.datasets.SSLRadiomicsDataset
-        path: "./data/preprocessing/deeplesion/annotations/task1_test.csv"
+        path: "./data/preprocessing/deeplesion/annotations/task1_test.csv"  # Note: Change path
         label: "@system#train_dataset#label"
         radius: "@system#train_dataset#radius"
         orient: "@system#train_dataset#orient"
@@ -139,7 +140,7 @@ system:
     
     predict_dataset:
         _target_: fmcib.datasets.SSLRadiomicsDataset
-        path: "./data/preprocessing/deeplesion/annotations/task1_test.csv"
+        path: "./data/preprocessing/deeplesion/annotations/task1_test.csv"  # Note: Change path
         label: "@system#train_dataset#label"
         radius: "@system#train_dataset#radius"
         orient: "@system#train_dataset#orient"
@@ -154,4 +155,4 @@ system:
                   spatial_size: [50, 50, 50]
                 - _target_: monai.transforms.NormalizeIntensity
                   subtrahend: -1024
-                  divisor: 3072      
+                  divisor: 3072
