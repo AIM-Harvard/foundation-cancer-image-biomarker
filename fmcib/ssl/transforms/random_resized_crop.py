@@ -1,15 +1,16 @@
-import torch
 from typing import Any, Dict, List
 
+import torch
 from monai.transforms import RandScaleCrop, Resize, Transform
+
 
 class RandomResizedCrop3D(Transform):
     """
     Combines monai's random spatial crop followed by resize to the desired size.
 
-    Modification: 
-    1. The spatial crop is done with same dimensions for all the axes 
-    2. Handles cases where the image_size is less than the crop_size by choosing 
+    Modification:
+    1. The spatial crop is done with same dimensions for all the axes
+    2. Handles cases where the image_size is less than the crop_size by choosing
         the smallest dimension as the random scale.
 
     """
@@ -25,7 +26,6 @@ class RandomResizedCrop3D(Transform):
         self.scale = scale
         self.size = [size] * 3
 
-
     def __call__(self, image):
         if torch.rand(1) < self.prob:
             random_scale = torch.empty(1).uniform_(*self.scale).item()
@@ -36,4 +36,3 @@ class RandomResizedCrop3D(Transform):
                 image = transform(image)
 
         return image
-        

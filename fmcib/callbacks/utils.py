@@ -1,5 +1,7 @@
-import torch
 from typing import List
+
+import torch
+
 
 def decollate(data: List[torch.Tensor]):
     assert isinstance(data, list), "Decollate only implemented for list of `batch` tensors"

@@ -1,7 +1,9 @@
-from typing import Union, Dict
+from typing import Dict, Union
+
 import torch
 import torch.nn as nn
 from lightly.models import SimCLR
+
 
 class ExNegSimCLR(SimCLR):
     def __init__(self, backbone: nn.Module, num_ftrs: int = 32, out_dim: int = 128) -> None:
@@ -16,4 +18,3 @@ class ExNegSimCLR(SimCLR):
                 out[key] = super().forward(*value, return_features)
 
         return out
-                

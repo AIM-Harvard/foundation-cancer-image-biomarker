@@ -1,16 +1,14 @@
+from typing import Any, Callable, List, Optional, Tuple
+
 from copy import deepcopy
-from typing import Any, Callable, Optional, Tuple, List
 
 import torch
 
 
 class Duplicate:
-    """Duplicate an input and apply two different transforms. Used for SimCLR primarily.
-    """
+    """Duplicate an input and apply two different transforms. Used for SimCLR primarily."""
 
-    def __init__(self,
-                 transforms1: Optional[Callable] = None,
-                 transforms2: Optional[Callable] = None):
+    def __init__(self, transforms1: Optional[Callable] = None, transforms2: Optional[Callable] = None):
         """Duplicates an input and applies the given transformations to each copy separately.
 
         Args:

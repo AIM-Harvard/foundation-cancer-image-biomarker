@@ -5,11 +5,12 @@
 
 # Modified to function for explicitly selected negatives
 
+from typing import Dict
+
 import torch
+from lightly.utils import dist
 from torch import nn
 
-from lightly.utils import dist
-from typing import Dict
 
 class NTXentNegativeMinedLoss(torch.nn.Module):
     """
@@ -17,9 +18,7 @@ class NTXentNegativeMinedLoss(torch.nn.Module):
     NTXentLoss with explicitly mined negatives
     """
 
-    def __init__(self,
-                 temperature: float = 0.1,
-                 gather_distributed: bool = False):
+    def __init__(self, temperature: float = 0.1, gather_distributed: bool = False):
         super(NTXentNegativeMinedLoss, self).__init__()
         self.temperature = temperature
         self.gather_distributed = gather_distributed
@@ -27,8 +26,7 @@ class NTXentNegativeMinedLoss(torch.nn.Module):
         self.eps = 1e-8
 
         if abs(self.temperature) < self.eps:
-            raise ValueError('Illegal temperature: abs({}) < 1e-8'
-                             .format(self.temperature))
+            raise ValueError("Illegal temperature: abs({}) < 1e-8".format(self.temperature))
 
     def forward(self, out: Dict):
         """Forward pass through Negative mining contrastive Cross-Entropy Loss.
@@ -57,29 +55,27 @@ class NTXentNegativeMinedLoss(torch.nn.Module):
         neg0 = nn.functional.normalize(neg0, dim=1)
         neg1 = nn.functional.normalize(neg1, dim=1)
 
-
         if self.gather_distributed and dist.world_size() > 1:
             # gather hidden representations from other processes
             pos0_large = torch.cat(dist.gather(pos0), 0)
             pos1_large = torch.cat(dist.gather(pos1), 0)
             neg0_large = torch.cat(dist.gather(neg0), 0)
-            neg1_large = torch.cat(dist.gather(neg1), 0)            
+            neg1_large = torch.cat(dist.gather(neg1), 0)
             diag_mask = dist.eye_rank(batch_size, device=pos0.device)
 
         else:
-             # gather hidden representations from other processes
+            # gather hidden representations from other processes
             pos0_large = pos0
             pos1_large = pos1
             neg0_large = neg0
             neg1_large = neg1
             diag_mask = torch.eye(batch_size, device=pos0.device, dtype=torch.bool)
-    
 
-        logits_00 = torch.einsum('nc,mc->nm', pos0, neg0_large) / self.temperature
-        logits_01 = torch.einsum('nc,mc->nm', pos0, pos1_large) / self.temperature
-        logits_10 = torch.einsum('nc,mc->nm', pos1, pos0_large) / self.temperature
-        logits_11 = torch.einsum('nc,mc->nm', pos1, neg1_large) / self.temperature
-        
+        logits_00 = torch.einsum("nc,mc->nm", pos0, neg0_large) / self.temperature
+        logits_01 = torch.einsum("nc,mc->nm", pos0, pos1_large) / self.temperature
+        logits_10 = torch.einsum("nc,mc->nm", pos1, pos0_large) / self.temperature
+        logits_11 = torch.einsum("nc,mc->nm", pos1, neg1_large) / self.temperature
+
         logits_01 = logits_01[diag_mask].view(batch_size, -1)
         logits_10 = logits_10[diag_mask].view(batch_size, -1)
 

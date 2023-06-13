@@ -24,13 +24,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 A simple demo to load 2D 16-bit slices from DeepLesion and save to 3D nifti volumes.
 The nifti volumes can be viewed in software such as 3D slicer and ITK-SNAP.
 """
-import numpy as np
-import nibabel as nib
-from functools import partial
-import os
-import cv2
 import csv
+import os
+from functools import partial
 from multiprocessing import Pool
+
+import cv2
+import nibabel as nib
+import numpy as np
 import pandas as pd
 
 FMT = "%s_%03d-%03d.nii.gz"  # format of the nifti file name to output
@@ -77,15 +78,8 @@ def load_slices(load_dir, slice_idxs):
 def read_DL_info(info_fn):
     """read spacings and image indices in DeepLesion"""
     df = pd.read_csv(info_fn)
-    patient_info = [
-        (i, j, k)
-        for i, j, k in zip(
-            df["Patient_index"].values, df["Study_index"].values, df["Series_ID"].values
-        )
-    ]
-    spacings = (
-        df["Spacing_mm_px_"].apply(lambda x: [float(d) for d in x.split(",")]).values
-    )
+    patient_info = [(i, j, k) for i, j, k in zip(df["Patient_index"].values, df["Study_index"].values, df["Series_ID"].values)]
+    spacings = df["Spacing_mm_px_"].apply(lambda x: [float(d) for d in x.split(",")]).values
 
     return patient_info, spacings
 
@@ -146,21 +140,14 @@ def save_dir_to_nifti(dir1, idxs, spacings, dir_in, dir_out):
 
 
 if __name__ == "__main__":
-
     import argparse
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument(
-        "png_dir", help="Path to directory with png images from DeepLesion"
-    )
-    parser.add_argument(
-        "output_dir", help="Path to directory where processed images are stored"
-    )
+    parser.add_argument("png_dir", help="Path to directory with png images from DeepLesion")
+    parser.add_argument("output_dir", help="Path to directory where processed images are stored")
     parser.add_argument("info_fn", help="Path to info file")
-    parser.add_argument(
-        "--n_cores", help="Multiprocessing cores for parallel save", type=int, default=4
-    )
+    parser.add_argument("--n_cores", help="Multiprocessing cores for parallel save", type=int, default=4)
 
     args = parser.parse_args()
 

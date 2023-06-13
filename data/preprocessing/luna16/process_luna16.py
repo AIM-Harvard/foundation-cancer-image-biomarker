@@ -1,11 +1,14 @@
+from functools import partial
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from tqdm.contrib.concurrent import process_map
-from functools import partial
 import SimpleITK as sitk
+from tqdm.contrib.concurrent import process_map
 
 np.bool = bool
+
+
 def process_malignancy_label(df):
     df = df[df["malignancy"] != 3]
     df["malignancy"] = df["malignancy"].map({1: 0, 2: 0, 4: 1, 5: 1})
@@ -38,24 +41,19 @@ def main(args):
     annotations_df = pd.read_csv(args.annotations_csv)
 
     rows = list(annotations_df.iterrows())
-    results = process_map(
-        partial(process_row, data_dir=args.data_dir), rows, max_workers=4
-    )
+    results = process_map(partial(process_row, data_dir=args.data_dir), rows, max_workers=4)
 
     updated_annotations = pd.DataFrame(results)
     updated_annotations = process_malignancy_label(updated_annotations)
 
     # Limit columns of interest
-    updated_annotations = updated_annotations[
-        ["malignancy", "coordX", "coordY", "coordZ", "image_path"]
-    ]
+    updated_annotations = updated_annotations[["malignancy", "coordX", "coordY", "coordZ", "image_path"]]
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     updated_annotations.to_csv(args.output_dir / "luna16_training_annotations.csv")
 
 
 if __name__ == "__main__":
-
     import argparse
 
     parser = argparse.ArgumentParser()
@@ -64,9 +62,7 @@ if __name__ == "__main__":
         help="Path to csv file with deeplesion annotations",
         type=Path,
     )
-    parser.add_argument(
-        "data_dir", help="Path to directory where data is present", type=Path
-    )
+    parser.add_argument("data_dir", help="Path to directory where data is present", type=Path)
     parser.add_argument(
         "--output_dir",
         help="Path to directory where annotations will be stored",

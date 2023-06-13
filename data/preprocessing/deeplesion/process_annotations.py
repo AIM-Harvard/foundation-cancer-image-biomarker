@@ -1,8 +1,10 @@
 from pathlib import Path
 from unittest import result
+
 import numpy as np
 import pandas as pd
-from shapely.geometry import Point, LineString
+from shapely.geometry import LineString, Point
+
 
 # Compute the point where two line segments intersect
 def get_intersection_point(line_segment1, line_segment2):
@@ -28,10 +30,7 @@ def get_nodule_dimensions(row):
     recist_diameters = [float(x) for x in row["Measurement_coordinates"].split(",")]
     bbox = [int(float(x)) for x in row["Bounding_boxes"].split(",")]
 
-    lesion_diameters = [
-        diameter_px * spacing
-        for diameter_px, spacing in zip(lesion_diameters_px, spacings[:-1])
-    ]
+    lesion_diameters = [diameter_px * spacing for diameter_px, spacing in zip(lesion_diameters_px, spacings[:-1])]
 
     # MAJOR: Assume that the lesion's z diameter is the largest of x-y diameters
     lesion_diameters.append(np.max(lesion_diameters))
@@ -58,9 +57,7 @@ def main(args):
     annotations_df["Volume_fn"] = (
         annotations_df["File_name"].apply(lambda x: x.rsplit("_", 1)[0])
         + "_"
-        + annotations_df["Slice_range"].apply(
-            lambda x: "{:03d}-{:03d}".format(*[int(i) for i in x.split(",")])
-        )
+        + annotations_df["Slice_range"].apply(lambda x: "{:03d}-{:03d}".format(*[int(i) for i in x.split(",")]))
         + ".nii.gz"
     )
 
@@ -76,9 +73,7 @@ def main(args):
         ]
     ]
 
-    processed_df[
-        ["centroid", "lesion_diameters", "bbox", "spacing"]
-    ] = annotations_df.apply(
+    processed_df[["centroid", "lesion_diameters", "bbox", "spacing"]] = annotations_df.apply(
         lambda row: get_nodule_dimensions(row), axis=1, result_type="expand"
     )
 
@@ -88,9 +83,7 @@ def main(args):
     expand_rows = ["centroid", "lesion_diameters", "spacing"]
 
     for row in expand_rows:
-        processed_df[[f"{row}_{d}" for d in ["x", "y", "z"]]] = processed_df[row].apply(
-            pd.Series
-        )
+        processed_df[[f"{row}_{d}" for d in ["x", "y", "z"]]] = processed_df[row].apply(pd.Series)
 
     processed_df = processed_df.drop(expand_rows, axis=1)
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -98,7 +91,6 @@ def main(args):
 
 
 if __name__ == "__main__":
-
     import argparse
 
     parser = argparse.ArgumentParser()

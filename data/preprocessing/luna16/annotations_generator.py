@@ -1,14 +1,16 @@
-import numpy as np
-import pylidc as pl
-from pylidc.utils import consensus
-import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sns
+import os
+import sys
 from collections import defaultdict
-import ipywidgets as widgets
 from multiprocessing import Pool
+
+import ipywidgets as widgets
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import pylidc as pl
+import seaborn as sns
+from pylidc.utils import consensus
 from tqdm import tqdm
-import sys, os
 
 np.int = np.int32
 np.bool = bool
@@ -25,9 +27,7 @@ attribute_keys = [
     "subtlety",
     "texture",
 ]
-luna_annotations = pd.read_csv(
-    "https://zenodo.org/record/3723295/files/annotations.csv"
-)
+luna_annotations = pd.read_csv("https://zenodo.org/record/3723295/files/annotations.csv")
 
 random_choices = 0
 
@@ -72,9 +72,7 @@ for scan in tqdm(
                     row[key].append(getattr(annotation, key))
 
         # Get mode of attributes in the annotation set
-        row = {
-            k: get_consensus_attribute(v) for k, v in row.items() if k in attribute_keys
-        }
+        row = {k: get_consensus_attribute(v) for k, v in row.items() if k in attribute_keys}
 
         consensus_bbox = get_consensus_bbox(anns)
 

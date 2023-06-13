@@ -1,26 +1,25 @@
-from ensurepip import bootstrap
 import json
+from ensurepip import bootstrap
+from pathlib import Path
+
+import joblib
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import cross_val_score, train_test_split
-from sklearn import preprocessing
-import joblib
 import sklearn
-import json
 from common import optuna_hyperparameter_tuning
-from pathlib import Path
+from sklearn import preprocessing
+from sklearn.model_selection import cross_val_score, train_test_split
+
 SEED = 42
 
 
 def main(args):
-
     assert args.features_folder.exists(), "Folder provided does not exist"
 
     # Load features from folder
     train_csv = args.features_folder / "train_features.csv"
     val_csv = args.features_folder / "val_features.csv"
     test_csv = args.features_folder / "test_features.csv"
-
 
     if val_csv.exists():
         train = pd.read_csv(train_csv)
@@ -35,7 +34,6 @@ def main(args):
 
     train_X = train.filter(like="feature").dropna().values
     train_y = train[args.label].values
-
 
     # train_X = preprocessing.normalize(train_X, norm="l2")
 
@@ -55,7 +53,6 @@ def main(args):
     test_X = scaler.transform(test_X)
     test_y = test[args.label].values
 
-
     best_params = optuna_hyperparameter_tuning(train_X, train_y, val_X, val_y, args.scoring, args.trials)
     classifier = sklearn.linear_model.LogisticRegression(**best_params, random_state=SEED, max_iter=1000)
     # classifier = sklearn.neighbors.KNeighborsClassifier(**best_params)
@@ -64,7 +61,7 @@ def main(args):
 
     if args.scoring == "roc_auc":
         score = sklearn.metrics.roc_auc_score(test_y, classifier.predict_proba(test_X)[:, 1])
-    else:    
+    else:
         score = classifier.score(test_X, test_y)
 
     print(f"Score using {args.scoring} = {score}")
@@ -76,7 +73,7 @@ def main(args):
     results_df = test.copy()
     probs = classifier.predict_proba(test_X)
     _, n_classes = probs.shape
-    
+
     for i in range(n_classes):
         results_df[f"conf_scores_class_{i}"] = probs[:, i]
 
@@ -86,11 +83,10 @@ def main(args):
     results_df = results_df.drop(columns=[col for col in results_df.columns if col.startswith("feature")])
     results_df.to_csv(args.csv, index=False)
 
-
     results_df = val.copy()
     probs = classifier.predict_proba(val_X)
     _, n_classes = probs.shape
-    
+
     for i in range(n_classes):
         results_df[f"conf_scores_class_{i}"] = probs[:, i]
 
@@ -100,12 +96,13 @@ def main(args):
     results_df = results_df.drop(columns=[col for col in results_df.columns if col.startswith("feature")])
     results_df.to_csv(Path(args.csv).parent / "val_results.csv", index=False)
 
-
     # Save model
     joblib.dump(classifier, Path(args.csv).parent / "model.pkl")
 
+
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("features_folder", help="Path to folder where extracted features are present", type=Path)
     parser.add_argument("label", help="Label column from the csv file")

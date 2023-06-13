@@ -6,6 +6,7 @@ References:
 import torch
 from torch.optim.optimizer import Optimizer, required
 
+
 class LARS(Optimizer):
     """Extends SGD in PyTorch with LARS scaling from the paper
     `Large batch training of Convolutional Networks <https://arxiv.org/pdf/1708.03888.pdf>`_.

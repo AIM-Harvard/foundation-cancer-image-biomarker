@@ -1,18 +1,20 @@
+import faulthandler
+import signal
 from pathlib import Path
 
+import monai
 import numpy as np
 import pandas as pd
 import SimpleITK as sitk
-import monai
 from loguru import logger
 from torch.utils.data import Dataset
-from .utils import resample_image_to_spacing, slice_image, is_overlapping
 
-import faulthandler
-import signal
+from .utils import is_overlapping, resample_image_to_spacing, slice_image
+
 faulthandler.register(signal.SIGUSR1.value)
 monai.data.set_track_meta(False)
 sitk.ProcessObject.SetGlobalDefaultNumberOfThreads(1)
+
 
 class SSLRadiomicsDataset(Dataset):
     """
@@ -22,7 +24,9 @@ class SSLRadiomicsDataset(Dataset):
         add docstrings for the parameters
     """
 
-    def __init__(self, path, label=None, radius=25, orient=False, resample_spacing=None, enable_negatives=True, transform=None):
+    def __init__(
+        self, path, label=None, radius=25, orient=False, resample_spacing=None, enable_negatives=True, transform=None
+    ):
         super(SSLRadiomicsDataset, self).__init__()
         self._path = Path(path)
 
@@ -63,17 +67,12 @@ class SSLRadiomicsDataset(Dataset):
         positive_patch_idx: Index of the positive patch in [(xmin, xmax), (ymin, ymax), (zmin, zmax)]
 
         """
-        positive_patch_size = [self.radius*2] * 3
-        valid_patch_size = monai.data.utils.get_valid_patch_size(
-            image.GetSize(), positive_patch_size
-        )
-        
+        positive_patch_size = [self.radius * 2] * 3
+        valid_patch_size = monai.data.utils.get_valid_patch_size(image.GetSize(), positive_patch_size)
+
         def get_random_patch():
             random_patch_idx = [
-                [x.start, x.stop]
-                for x in monai.data.utils.get_random_patch(
-                    image.GetSize(), valid_patch_size
-                )
+                [x.start, x.stop] for x in monai.data.utils.get_random_patch(image.GetSize(), valid_patch_size)
             ]
             return random_patch_idx
 
@@ -87,10 +86,8 @@ class SSLRadiomicsDataset(Dataset):
 
         #     random_patch_idx = get_random_patch()
         #     escape_count += 1
-            
-        random_patch = slice_image(
-            image, random_patch_idx
-        )
+
+        random_patch = slice_image(image, random_patch_idx)
 
         random_patch = sitk.DICOMOrient(random_patch, "LPS")
         negative_array = sitk.GetArrayFromImage(random_patch)
@@ -108,8 +105,7 @@ class SSLRadiomicsDataset(Dataset):
         row = self.annotations.iloc[idx]
         image_path = row["image_path"]
         image = sitk.ReadImage(str(image_path))
-        image = resample_image_to_spacing(image, self.resample_spacing, -1024) \
-                if self.resample_spacing is not None else image
+        image = resample_image_to_spacing(image, self.resample_spacing, -1024) if self.resample_spacing is not None else image
 
         centroid = (row["coordX"], row["coordY"], row["coordZ"])
         centroid = image.TransformPhysicalPointToContinuousIndex(centroid)
@@ -128,27 +124,24 @@ class SSLRadiomicsDataset(Dataset):
         target = int(row[self.label]) if self.label is not None else False
 
         if self.enable_negatives:
-            return  {
-                "positive": tensor, 
-                "negative": self.get_negative_sample(image)
-                }, target
+            return {"positive": tensor, "negative": self.get_negative_sample(image)}, target
 
         return tensor, target
 
 
 if __name__ == "__main__":
     from pathlib import Path
+
     # Test pytorch dataset
     print("Test pytorch dataset")
     dataset = SSLRadiomicsDataset(
         "/home/suraj/Repositories/cancer-imaging-ssl/src/pretraining/data_csv/deeplesion/train.csv",
         orient=True,
-        resample_spacing=[1, 1, 1]
+        resample_spacing=[1, 1, 1],
     )
 
     # Visualize item from dataset
     item = dataset[0]
-
 
     positive = sitk.GetImageFromArray(item[0][0])
     negative = sitk.GetImageFromArray(item[0][1])

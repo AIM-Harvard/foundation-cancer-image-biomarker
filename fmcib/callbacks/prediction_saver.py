@@ -1,17 +1,22 @@
-from pytorch_lightning.callbacks import BasePredictionWriter
+from typing import Any, List
+
+from pathlib import Path
+
+import pandas as pd
 import torchvision
 from loguru import logger
+from pytorch_lightning.callbacks import BasePredictionWriter
+
 from .utils import decollate
-import pandas as pd
-from pathlib import Path
-from typing import List, Any
+
 
 def handle_image(image):
     image = image.squeeze()
     if image.dim() == 3:
-        return image[image.shape[0]//2]
+        return image[image.shape[0] // 2]
     else:
         return image
+
 
 class SavePredictions(BasePredictionWriter):
     def __init__(self, path: str, save_preview: bool = False):
@@ -20,7 +25,6 @@ class SavePredictions(BasePredictionWriter):
         self.save_preview = save_preview
         self.output_csv.parent.mkdir(parents=True, exist_ok=True)
         self.df = pd.DataFrame()
-
 
     def save_previews(self, dataset):
         logger.info("Saving image previews")
@@ -32,17 +36,14 @@ class SavePredictions(BasePredictionWriter):
             fp = self.output_dir / f"{idx}.png"
             torchvision.utils.save_image(image, fp)
 
-    def write_on_epoch_end(
-        self, trainer, pl_module: 'LightningModule', predictions: List[Any], batch_indices: List[Any]
-    ):
+    def write_on_epoch_end(self, trainer, pl_module: "LightningModule", predictions: List[Any], batch_indices: List[Any]):
         assert getattr(pl_module, "predict_dataset"), "`predict_dataset` not defined"
         dataset = pl_module.predict_dataset
 
         if self.save_preview:
             self.save_previews(dataset)
 
-        assert getattr(dataset, "get_rows"), \
-            "The dataset must have `get_image_paths` defined for predict functionality"
+        assert getattr(dataset, "get_rows"), "The dataset must have `get_image_paths` defined for predict functionality"
         rows = dataset.get_rows()
 
         out = decollate(predictions)
@@ -58,5 +59,5 @@ class SavePredictions(BasePredictionWriter):
                 row["pred"] = pred
 
             self.df = self.df.append(row, ignore_index=True)
-        
+
         self.df.to_csv(self.output_csv)
