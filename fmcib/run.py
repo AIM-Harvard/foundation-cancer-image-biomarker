@@ -13,8 +13,7 @@ def get_features(csv_path):
     df = pd.read_csv(csv_path)
     dataloader = get_dataloader(csv_path)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = resnet50().to(device)
-
+    model = resnet50(device=device)
     feature_list = []
     logger.info("Running inference over batches ...")
 
@@ -22,13 +21,10 @@ def get_features(csv_path):
         feature = model(batch.to(device)).detach().cpu().numpy()
         feature_list.append(feature)
 
-        if len(feature_list) == 1:
-            break
-
     features = np.concatenate(feature_list, axis=0)
     # Flatten features into a list
     features = features.reshape(-1, 4096)
 
     # Add the features to the dataframe
-    df = pd.concat([df, pd.DataFrame(features)], axis=1)
+    df = pd.concat([df, pd.DataFrame(features, columns=[f"pred_{idx}" for idx in range(4096)])], axis=1)
     return df

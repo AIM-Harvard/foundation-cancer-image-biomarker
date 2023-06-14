@@ -15,7 +15,7 @@ from dcmrtstruct2nii.adapters.output.niioutputadapter import NiiOutputAdapter
 from google.cloud import storage
 from loguru import logger
 from tqdm import tqdm
-
+import os
 
 def dcmseg2nii(dcmseg_path, output_dir, tag=""):
     dcm = pydicom.dcmread(dcmseg_path)
@@ -92,57 +92,70 @@ def download_RADIO(path, samples=None):
     download_from_manifest(df, save_dir, samples)
 
 
-def build_image_seed_dict(path, samples=10):
+def process_series_dir(series_dir):
+    # Check if RTSTRUCT file exists
+    rtstuct_files = list(series_dir.glob("*RTSTRUCT*"))
+    seg_files = list(series_dir.glob("*SEG*"))
+
+    if len(rtstuct_files) != 0:
+        dcmrtstruct2nii(str(rtstuct_files[0]), str(series_dir), str(series_dir))
+
+    elif len(seg_files) != 0:
+        dcmseg2nii(str(seg_files[0]), str(series_dir), tag="GTV-")
+
+        series_id = str(list(series_dir.glob("CT*.dcm"))[0]).split("_")[-2]
+        dicom_image = DcmInputAdapter().ingest(str(series_dir), series_id=series_id)
+        nii_output_adapter = NiiOutputAdapter()
+        nii_output_adapter.write(dicom_image, f"{series_dir}/image", gzip=True)
+    else:
+        logger.warning("Skipped file without any RTSTRUCT or SEG file")
+        return None
+
+    image = sitk.ReadImage(str(series_dir / "image.nii.gz"))
+    mask = sitk.ReadImage(str(list(series_dir.glob("*GTV-1*"))[0]))
+
+    # Get centroid from label shape filter
+    label_shape_filter = sitk.LabelShapeStatisticsImageFilter()
+    label_shape_filter.Execute(mask)
+
+    try:
+        centroid = label_shape_filter.GetCentroid(255)
+    except:
+        centroid = label_shape_filter.GetCentroid(1)
+
+    x, y, z = centroid
+
+    row = {
+        "image_path": str(series_dir / "image.nii.gz"),
+        "PatientID": series_dir.parent.name,
+        "coordX": x,
+        "coordY": y,
+        "coordZ": z,
+    }
+
+    return row
+
+
+def build_image_seed_dict(path, samples=None):
     sorted_dir = Path(path).resolve()
     series_dirs = [x.parent for x in sorted_dir.rglob("*.dcm")]
     series_dirs = sorted(list(set(series_dirs)))
 
     logger.info("Converting DICOM files to NIFTI ...")
 
+    if samples is None:
+        samples = len(series_dirs)
+
     rows = []
-    for idx, series_dir in tqdm(enumerate(series_dirs), total=samples):
-        if idx == samples:
-            break
 
-        # Check if RTSTRUCT file exists
-        rtstuct_files = list(series_dir.glob("*RTSTRUCT*"))
-        seg_files = list(series_dir.glob("*SEG*"))
-        if len(rtstuct_files) != 0:
-            dcmrtstruct2nii(str(rtstuct_files[0]), str(series_dir), str(series_dir))
+    num_workers = os.cpu_count()  # Adjust this value based on the number of available CPU cores
+    with concurrent.futures.ProcessPoolExecutor(num_workers) as executor:
+        processed_rows = list(
+            tqdm(
+                executor.map(process_series_dir, series_dirs[:samples]),
+                total=samples
+            )
+        )
 
-        elif len(seg_files) != 0:
-            dcmseg2nii(str(seg_files[0]), str(series_dir), tag="GTV-")
-
-            series_id = str(list(series_dir.glob("CT*.dcm"))[0]).split("_")[-2]
-            dicom_image = DcmInputAdapter().ingest(str(series_dir), series_id=series_id)
-            nii_output_adapter = NiiOutputAdapter()
-            nii_output_adapter.write(dicom_image, f"{series_dir}/image", gzip=True)
-        else:
-            logger.warning("Skipped file without any RTSTRUCT or SEG file")
-            continue
-
-        image = sitk.ReadImage(str(series_dir / "image.nii.gz"))
-        mask = sitk.ReadImage(str(list(series_dir.glob("*[gG][tT][vV]*"))[0]))
-
-        # Get centroid from label shape filter
-        label_shape_filter = sitk.LabelShapeStatisticsImageFilter()
-        label_shape_filter.Execute(mask)
-
-        try:
-            centroid = label_shape_filter.GetCentroid(255)
-        except:
-            centroid = label_shape_filter.GetCentroid(1)
-
-        x, y, z = centroid
-
-        row = {
-            "image_path": str(series_dir / "image.nii.gz"),
-            "PatientID": series_dir.parent.name,
-            "coordX": x,
-            "coordY": y,
-            "coordZ": z,
-        }
-
-        rows.append(row)
-
+    rows = [row for row in processed_rows if row]
     return pd.DataFrame(rows)
