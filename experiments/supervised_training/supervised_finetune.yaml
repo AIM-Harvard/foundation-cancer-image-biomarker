@@ -39,13 +39,13 @@ system:
     num_workers: 3
     model:
         _target_: fmcib.ssl.models.LoadPretrainedResnet3D
-        pretrained: "./models/supervised/task1_supervised.torch" # Note: Only for Task 2 and Task 3
+        pretrained: "./models/supervised/task1_supervised.torch" 
         heads: [4096, 2048, 1] 
 
-    post_criterion_activation: "$torch.sigmoid" # Note: Change to $torch.sigmoid for Task 2 and Task 3
+    post_criterion_activation: "$torch.sigmoid" 
     cast_target_dtype_to: "$torch.float32"
     criterion:
-        _target_: torch.nn.BCEWithLogitsLoss # Note: Change to torch.nn.BCEWithLogitsLoss for Task 2 and Task 3
+        _target_: torch.nn.BCEWithLogitsLoss 
 
     optimizers:
         _target_: torch.optim.SGD
@@ -64,11 +64,9 @@ system:
     train_metrics: 
         - _target_: torchmetrics.AveragePrecision
           task: binary
-          # num_classes: 8 # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
 
         - _target_: torchmetrics.AUROC
-          task: binary # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
-          # num_classes: 8 
+          task: binary 
 
 
     val_metrics: "@system#train_metrics"
@@ -77,9 +75,9 @@ system:
     train_dataset:
         _target_: fmcib.datasets.SSLRadiomicsDataset
         path: "./data/preprocessing/luna16/annotations/task2_train.csv"  # Note: Change path
-        label: "malignancy" # Note: Change to appropriate label column, e.g. "malignancy" for Task 2 and "survival" for Task 3
+        label: "malignancy" # Note: Change to appropriate label column, e.g.  "survival" for Task 3
         radius: 25
-        orient: False # Note: Set orient to False for task 2 and task 3
+        orient: False 
         resample_spacing: [1, 1, 1]
         enable_negatives: False
         transform:
