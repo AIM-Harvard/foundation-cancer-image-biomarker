@@ -33,13 +33,19 @@ Suraj Pai, Dennis Bontempi, Vasco Prudente, Ibrahim Hadzic, Mateo Sokač, Tafadz
   - [Downloading the datasets](#downloading-the-datasets)
   - [Preprocessing the datasets](#preprocessing-the-datasets)
 - [Model](#model)
-  - [Self-supervised pre-training model](#self-supervised-pre-training-model)
-  - [Supervised models](#supervised-models)
-  - [Linear (Logistic Regression) models](#linear-logistic-regression-models)
-  - [Data setup for the models](#data-setup-for-the-models)
-  - [Reproducing our foundation model](#reproducing-our-foundation-model)
-  - [Reproducing our supervised training](#reproducing-our-supervised-training)
-  - [Reproducing our linear evaluation](#reproducing-our-linear-evaluation-logistic-regression)
+  - [Accessing our models](#accessing-our-models)
+    - [Self-supervised pre-training model](#self-supervised-pre-training-model)
+    - [Supervised models](#supervised-models)
+    - [Linear (Logistic Regression) models](#linear-logistic-regression-models)
+
+
+  - [Reproduce our models](#reproduce-our-models)
+    - [Data setup for the models](#data-setup-for-the-models)
+    - [Reproducing our foundation model](#reproducing-our-foundation-model)
+    - [Reproducing our supervised training](#reproducing-our-supervised-training)
+    - [Running predictions from our models](#running-predictions-from-our-models)
+    - [Extracting features from our models](#extracting-features-from-our-models)
+    - [Reproducing our linear evaluation](#reproducing-our-linear-evaluation-logistic-regression)
 
 - [Outputs](#outputs)
   - [Feature extaction pipeline](#feature-extaction-pipeline)
@@ -172,6 +178,9 @@ Refer to [our Google Colab reproducible notebooks](https://colab.research.google
 <div style="page-break-after: always;"></div>
 
 ## Model
+
+
+### Accessing our models
 All our models are will be made available to the public through Zenodo upon publication. Currently, we release these using Dropbox for the reviewers to use and test. Scripts for downloading these models are present under `models`. 
 
 As part of our study we develop and share the following,
@@ -230,6 +239,7 @@ bash download_linear_models.sh
 
 These models can also be found at this [link](https://www.dropbox.com/scl/fo/brhqokhzn839zez15erzf/h?dl=0&rlkey=wzvgrobl8p3v49ettm16uxbyy). In addition to providing our models, we also provide comprehensive documentation and ongoing support to users through [project-lighter](https://zenodo.org/record/8007711) to reproduce our results and workflows.
 
+### Reproduce our models
 
 ### Data setup for the models
 Make sure you download all the datasets before starting to train. The datasets are provided as CSV files to the training pipelines with `image_path` column providing location of the image to be used, `coordX`, `coordY` and `coordZ` providing the global coordinates of the seed point around which a patch is cropped. We crop a [50, 50, 50] patch around the seed point. Please refer to our paper for more details on this. Along with these columns, label columns are needed for supervised training. Labels for each task are as follows,
@@ -309,23 +319,26 @@ You can start training by running this in the root code folder,
 lighter fit --config_file ./experiments/supervised_training/foundation_finetune.yaml
 ```
 
-### Running predictions and extracting features from our models.
+### Running predictions from our models.
 
-To run predictions and extract features from our models (both supervised and self-supervised), we provide YAML files that can be run with the lighter interface. These are found in `experiments`, namely `extract_features.yaml` for extracting features and `get_predictions.yaml` for getting the predictions.
+To run predictions from our models (both supervised and self-supervised), we provide YAML files that can be run with the lighter interface. These are found in `experiments`, namely `get_predictions.yaml` for getting the predictions. 
 
 These can be run using
-```bash
-lighter predict --config_file ./experiments/extract_features.yaml
-````
 
-and 
 ```bash
 lighter predict --config ./experiments/get_predictions.yaml
 ```
-As with the previous YAMLS, please follow the 'Note:' tags to place appropriate data paths and change relevant parameters
+As with the previous YAMLS, please follow the 'Note:' tags to place appropriate data paths and change relevant parameters. This YAML is to be used if you want to get target predictions from the models.
 
-<b> Feature extraction with foundation model </b>
-While the above pipelines will allow you to extract features, we provide an easier and simpler way to do this through Google Colab. To promote accessibility to our work, we have simplified the feature extraction process and provide the notebook [here](https://colab.research.google.com/drive/1JMtj_4W0uNPzrVnM9EpN1_xpaB-5KC1H?usp=sharing)
+### Extracting features from our models.
+
+In order to extract features from our models, you can use the following,
+```bash
+lighter predict --config_file ./experiments/extract_features.yaml
+```
+
+
+<b>IMPORTANT:</b> While the above pipeline will allow you to extract features, we provide an easier and simpler way to do this through Google Colab. To promote accessibility to our work, we have simplified the feature extraction process and provide the notebook [here](https://colab.research.google.com/drive/1JMtj_4W0uNPzrVnM9EpN1_xpaB-5KC1H?usp=sharing)
 
 
 ### Reproducing our linear evaluation (Logistic Regression)
