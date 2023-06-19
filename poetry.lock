@@ -2954,7 +2954,7 @@ name = "pycparser"
 version = "2.21"
 description = "C parser in Python"
 optional = false
-python-versions = "*"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 files = [
     {file = "pycparser-2.21-py2.py3-none-any.whl", hash = "sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9"},
     {file = "pycparser-2.21.tar.gz", hash = "sha256:e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206"},
@@ -3014,13 +3014,13 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pydicom"
-version = "2.4.0"
+version = "2.4.1"
 description = "A pure Python package for reading and writing DICOM data"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pydicom-2.4.0-py3-none-any.whl", hash = "sha256:bfb588716e5c86392c9d041addbca422a9d795bba984f9c75711490f4c8fc939"},
-    {file = "pydicom-2.4.0.tar.gz", hash = "sha256:374425901ea004a2864aac0bce549a7f8024bc9cdad50a3d3595268253b44ff7"},
+    {file = "pydicom-2.4.1-py3-none-any.whl", hash = "sha256:301cbf8bf2cca95643ccf678f5b0cfecfd15974cd27e199f0856c44694852c0e"},
+    {file = "pydicom-2.4.1.tar.gz", hash = "sha256:6cb210dbe5586841036e8eeb2d4feb4df22a48f39161ba7ee0bf3c89faaba946"},
 ]
 
 [package.extras]
@@ -3794,6 +3794,7 @@ files = [
     {file = "scikit_image-0.21.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8ef5d8d1099317b7b315b530348cbfa68ab8ce32459de3c074d204166951025c"},
     {file = "scikit_image-0.21.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:78b1e96c59cab640ca5c5b22c501524cfaf34cbe0cb51ba73bd9a9ede3fb6e1d"},
     {file = "scikit_image-0.21.0-cp39-cp39-win_amd64.whl", hash = "sha256:9cffcddd2a5594c0a06de2ae3e1e25d662745a26f94fda31520593669677c010"},
+    {file = "scikit_image-0.21.0.tar.gz", hash = "sha256:b33e823c54e6f11873ea390ee49ef832b82b9f70752c8759efd09d5a4e3d87f0"},
 ]
 
 [package.dependencies]
