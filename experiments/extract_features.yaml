@@ -33,9 +33,9 @@ system:
     predict_dataset:
         _target_: fmcib.datasets.SSLRadiomicsDataset
         path: "./data/preprocessing/deeplesion/annotations/task1_test.csv" # Note: Change path to the CSV file to extract features from.
-        label: "Coarse_lesion_type"
+        label: "Coarse_lesion_type" # Note: Change the label to "malignancy" for task 2 and "survival" for task 3
         radius: 25
-        orient: True # Set orient to False for task 2 and task 3
+        orient: True # Note: Set orient to False for task 2 and task 3
         resample_spacing: [1, 1, 1]
         enable_negatives: False
         transform:
