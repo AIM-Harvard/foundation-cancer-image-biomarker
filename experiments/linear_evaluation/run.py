@@ -32,7 +32,7 @@ def main(args):
 
     assert args.label in train, "Label column not found in csv"
 
-    train_X = train.filter(like="feature").dropna().values
+    train_X = train.filter(like="pred").dropna().values
     train_y = train[args.label].values
 
     # train_X = preprocessing.normalize(train_X, norm="l2")
@@ -42,14 +42,14 @@ def main(args):
     train_X = scaler.transform(train_X)
 
     if val is not None:
-        val_X = val.filter(like="feature").dropna().values
+        val_X = val.filter(like="pred").dropna().values
         val_X = scaler.transform(val_X)
         val_y = val[args.label].values
     else:
         val_X = None
         val_y = None
 
-    test_X = test.filter(like="feature").dropna().values
+    test_X = test.filter(like="pred").dropna().values
     test_X = scaler.transform(test_X)
     test_y = test[args.label].values
 
