@@ -326,7 +326,7 @@ To run predictions from our models (both supervised and self-supervised), we pro
 These can be run using
 
 ```bash
-lighter predict --config ./experiments/get_predictions.yaml
+lighter predict --config_file ./experiments/get_predictions.yaml
 ```
 As with the previous YAMLS, please follow the 'Note:' tags to place appropriate data paths and change relevant parameters. This YAML is to be used if you want to get target predictions from the models.
 
