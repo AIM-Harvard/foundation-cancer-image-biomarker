@@ -1,1 +1,1 @@
-from .prediction_saver import SavePredictionsß
+from .prediction_saver import SavePredictions
