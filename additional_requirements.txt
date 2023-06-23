@@ -7,3 +7,4 @@ lifelines
 matplotlib
 optuna==2.10.0
 joblib
+wandb

@@ -2804,13 +2804,13 @@ virtualenv = ">=20.10.0"
 
 [[package]]
 name = "project-lighter"
-version = "0.0.2a5"
+version = "0.0.2a6"
 description = "YAML-based automated rapid prototyping framework for deep learning experiments"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "project_lighter-0.0.2a5-py3-none-any.whl", hash = "sha256:eb6bb53ce4c516e7ad8d90561b9c7d45f79f0ca34272bb561e64c539dbfa94c7"},
-    {file = "project_lighter-0.0.2a5.tar.gz", hash = "sha256:6b5d96f150ed88484599109e9cb20634f2cbc3fa9442fd8a5520a5dcdb6fe6aa"},
+    {file = "project_lighter-0.0.2a6-py3-none-any.whl", hash = "sha256:858b4db0f69c23618b996bb1f3983ed3d6b11c7eebfe31fe23032c9b48237873"},
+    {file = "project_lighter-0.0.2a6.tar.gz", hash = "sha256:b7eaa31cba6337610af3e2ea2d2117aa1a4e9340ab055a52769280b9e1226377"},
 ]
 
 [package.dependencies]
@@ -2821,6 +2821,7 @@ monai-weekly = ">=1.2.dev2305,<2.0"
 pandas = ">=1.5.3,<2.0.0"
 py = ">=1.11.0,<2.0.0"
 pytorch-lightning = ">=2.0.0,<3.0.0"
+requests = ">=2.31.0,<3.0.0"
 tensorboard = ">=2.11.2,<3.0.0"
 torch = ">=2.0,<3.0"
 torchmetrics = ">=0.11.0,<0.12.0"
@@ -4638,4 +4639,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "1c70f0988dfa79b69cbd5d5c37491849eeb21178b036d5e1f0f903efed4abf70"
+content-hash = "d62b44d740d58a1ad5187e052363b9a3938aa48f41de8b726e36eeeb4326960c"
