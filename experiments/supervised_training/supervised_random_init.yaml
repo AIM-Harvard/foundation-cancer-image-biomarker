@@ -2,15 +2,13 @@ trainer:
   _target_: pytorch_lightning.Trainer
   benchmark: True
   max_epochs: 100
-  check_val_every_n_epoch: 5
+  check_val_every_n_epoch: 1
   accelerator: gpu
   devices: 1
   # sync_batchnorm: True
   # precision: 16
   log_every_n_steps: 1
-  logger: 
-    _target_: pytorch_lightning.loggers.CSVLogger
-    save_dir: ./logs
+  logger: False
 
   callbacks:
     - _target_: pytorch_lightning.callbacks.ModelCheckpoint
@@ -20,15 +18,14 @@ trainer:
       every_n_epochs: 1
       save_on_train_epoch_end: True
 
-    # - _target_: lighter.callbacks.LighterLogger
-    #   project: ssl_radiomics_pretrain
-    #   log_dir: ./logs
-    #   tensorboard: False
-    #   wandb: False
-    #   input_type: image
-    #   pred_type: histogram
-    #   max_samples: 10
-
+    - _target_: lighter.callbacks.LighterLogger
+      project: fmcib
+      log_dir: ./logs
+      tensorboard: False
+      wandb: True
+      input_type: image
+      pred_type: histogram
+      max_samples: 10
 
 system:
     _target_: lighter.LighterSystem
@@ -69,8 +66,8 @@ system:
           num_classes: 8 
 
 
-    val_metrics: "@system#train_metrics"
-    test_metrics: "@system#train_metrics"
+    val_metrics: "%system#train_metrics"
+    test_metrics: "%system#train_metrics"
 
     train_dataset:
         _target_: fmcib.datasets.SSLRadiomicsDataset
