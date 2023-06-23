@@ -17,17 +17,17 @@ class LoadPretrainedResnet3D(nn.Module):
             conv1_t_stride=2,
             conv1_t_size=7,
             widen_factor=2,
-            num_classes=400,
+            feed_forward=False,
         )
-        self.trunk.fc = nn.Identity()
 
         head_layers = []
         for idx in range(len(heads) - 1):
             current_layers = []
             current_layers.append(nn.Linear(heads[idx], heads[idx + 1], bias=True))
 
-            if idx != len(heads) - 1:
+            if idx != (len(heads) - 2):
                 current_layers.append(nn.ReLU(inplace=True))
+                
             head_layers.append(nn.Sequential(*current_layers))
 
         if len(head_layers):
