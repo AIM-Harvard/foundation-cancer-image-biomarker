@@ -44,6 +44,7 @@ platipy = "0.4.1"
 pynrrd = "^1.0.0"
 pydicom-seg = "^0.4.1"
 pydicom = "^2.4.0"
+torch = "2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
