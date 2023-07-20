@@ -35,7 +35,7 @@ classifiers = [  #! Update me
 
 [tool.poetry.dependencies]
 python = "^3.8"
-project-lighter = {version = "^0.0.2a6", allow-prereleases = true}
+project-lighter = {version = "0.0.2a6", allow-prereleases = true}
 wget = "^3.2"
 google-cloud-storage = "^2.9.0"
 thedicomsort = "^1.0.1"
@@ -63,6 +63,9 @@ coverage = "^6.1.2"
 coverage-badge = "^1.1.0"
 pytest-html = "^3.1.1"
 pytest-cov = "^3.0.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
 
 [tool.black]
 # https://github.com/psf/black
