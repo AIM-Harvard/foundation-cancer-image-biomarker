@@ -165,6 +165,9 @@ max-line-length = 127
 disable = """
     too-many-arguments,
     no-else-return,
+    missing-module-docstring,
+    missing-function-docstring,
+    invalid-name
 """
 generated-members = "torch.*"
 

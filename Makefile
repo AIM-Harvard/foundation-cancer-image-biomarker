@@ -4,7 +4,7 @@ PYTHON := python
 PYTHONPATH := `pwd`
 
 #* Docker variables
-IMAGE := foundation_image_biomarker
+IMAGE := fmcib
 VERSION := latest
 
 #* Poetry
@@ -49,14 +49,14 @@ formatting: codestyle
 #* Linting
 .PHONY: test
 test:
-	PYTHONPATH=$(PYTHONPATH) poetry run pytest -c pyproject.toml --cov-report=html --cov=foundation_image_biomarker tests/
+	PYTHONPATH=$(PYTHONPATH) poetry run pytest -c pyproject.toml --cov-report=html --cov=fmcib tests/
 	poetry run coverage-badge -o assets/images/coverage.svg -f
 
 .PHONY: check-codestyle
 check-codestyle:
 	poetry run isort --diff --check-only --settings-path pyproject.toml ./
 	poetry run black --diff --check --config pyproject.toml ./
-	poetry run pylint foundation_image_biomarker
+	poetry run pylint fmcib
 
 .PHONY: mypy
 mypy:
@@ -66,7 +66,7 @@ mypy:
 check-safety:
 	poetry check
 	poetry run safety check --full-report
-	poetry run bandit -ll --recursive foundation_image_biomarker tests
+	poetry run bandit -ll --recursive fmcib tests
 
 .PHONY: lint
 lint: test check-codestyle mypy check-safety
