@@ -1,4 +1,5 @@
 import concurrent.futures
+import os
 import subprocess
 from pathlib import Path
 
@@ -15,7 +16,7 @@ from dcmrtstruct2nii.adapters.output.niioutputadapter import NiiOutputAdapter
 from google.cloud import storage
 from loguru import logger
 from tqdm import tqdm
-import os
+
 
 def dcmseg2nii(dcmseg_path, output_dir, tag=""):
     dcm = pydicom.dcmread(dcmseg_path)
@@ -150,12 +151,7 @@ def build_image_seed_dict(path, samples=None):
 
     num_workers = os.cpu_count()  # Adjust this value based on the number of available CPU cores
     with concurrent.futures.ProcessPoolExecutor(num_workers) as executor:
-        processed_rows = list(
-            tqdm(
-                executor.map(process_series_dir, series_dirs[:samples]),
-                total=samples
-            )
-        )
+        processed_rows = list(tqdm(executor.map(process_series_dir, series_dirs[:samples]), total=samples))
 
     rows = [row for row in processed_rows if row]
     return pd.DataFrame(rows)

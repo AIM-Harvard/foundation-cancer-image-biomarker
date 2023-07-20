@@ -27,7 +27,7 @@ class LoadPretrainedResnet3D(nn.Module):
 
             if idx != (len(heads) - 2):
                 current_layers.append(nn.ReLU(inplace=True))
-                
+
             head_layers.append(nn.Sequential(*current_layers))
 
         if len(head_layers):

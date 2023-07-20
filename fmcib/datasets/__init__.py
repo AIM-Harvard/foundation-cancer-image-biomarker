@@ -1,14 +1,16 @@
+import os
+import random
+from pathlib import Path
+
+import monai
+import numpy as np
 import pandas as pd
+import SimpleITK as sitk
 import wget
+from loguru import logger
 
 from .ssl_radiomics_dataset import SSLRadiomicsDataset
-import SimpleITK as sitk
-import numpy as np
-import os
-from pathlib import Path
-import random
-from loguru import logger
-import monai
+
 
 def get_lung1_clinical_data():
     wget.download(
@@ -33,7 +35,7 @@ def get_lung1_foundation_features():
     )
     df = pd.read_csv("/tmp/lung1_foundation_features.csv")
     filtered_df = df.filter(like="pred")
-    filtered_df = filtered_df.reset_index() # reset the index
+    filtered_df = filtered_df.reset_index()  # reset the index
     filtered_df["PatientID"] = df["PatientID"]
     return filtered_df
 
@@ -46,7 +48,7 @@ def get_radio_foundation_features():
 
     df = pd.read_csv("/tmp/radio_foundation_features.csv")
     filtered_df = df.filter(like="pred")
-    filtered_df = filtered_df.reset_index() # reset the index
+    filtered_df = filtered_df.reset_index()  # reset the index
     filtered_df["PatientID"] = df["Case ID"]
     return filtered_df
 
@@ -63,12 +65,13 @@ def generate_dummy_data(dir_path, size=10):
     df = pd.DataFrame(row_list)
     df.to_csv(path / "dummy.csv", index=False)
 
-    logger.info(f"Generated dummy data at {path}/dummy.csv")    
+    logger.info(f"Generated dummy data at {path}/dummy.csv")
+
 
 def create_dummy_row(size, output_filename):
-    '''
+    """
     Function to create a dummy row with path to an image and seed point corresponding to the image
-    '''
+    """
 
     # Create a np array initialized with random values between -1024 and 2048
     np_image = np.random.randint(-1024, 2048, size, dtype=np.int16)
@@ -90,17 +93,16 @@ def create_dummy_row(size, output_filename):
         "coordX": x,
         "coordY": y,
         "coordZ": z,
-        "label": random.randint(0, 1)
+        "label": random.randint(0, 1),
     }
 
 
 def generate_random_seed_point(image_size):
-    '''
+    """
     Function to generate a random x, y, z coordinate within the image
-    '''
+    """
     x = random.randint(0, image_size[0] - 1)
     y = random.randint(0, image_size[1] - 1)
     z = random.randint(0, image_size[2] - 1)
 
     return (x, y, z)
-
