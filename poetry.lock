@@ -2997,13 +2997,13 @@ virtualenv = ">=20.10.0"
 
 [[package]]
 name = "project-lighter"
-version = "0.0.2a6"
+version = "0.0.2a8"
 description = "YAML-based automated rapid prototyping framework for deep learning experiments"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "project_lighter-0.0.2a6-py3-none-any.whl", hash = "sha256:858b4db0f69c23618b996bb1f3983ed3d6b11c7eebfe31fe23032c9b48237873"},
-    {file = "project_lighter-0.0.2a6.tar.gz", hash = "sha256:b7eaa31cba6337610af3e2ea2d2117aa1a4e9340ab055a52769280b9e1226377"},
+    {file = "project_lighter-0.0.2a8-py3-none-any.whl", hash = "sha256:a6448eebebd455d1b42097ee31d9c2c9fbef1a182d092fef5f4d925441c58efe"},
+    {file = "project_lighter-0.0.2a8.tar.gz", hash = "sha256:08f6e8c80e3aa3dbb6d41ecc2df6261b7c8ba8e866de04ee633f9f4a0072829d"},
 ]
 
 [package.dependencies]
@@ -3012,11 +3012,10 @@ lightly = ">=1.2.43,<2.0.0"
 loguru = ">=0.6.0,<0.7.0"
 monai-weekly = ">=1.2.dev2305,<2.0"
 pandas = ">=1.5.3,<2.0.0"
-py = ">=1.11.0,<2.0.0"
 pytorch-lightning = ">=2.0.0,<3.0.0"
 requests = ">=2.31.0,<3.0.0"
 tensorboard = ">=2.11.2,<3.0.0"
-torch = ">=2.0,<3.0"
+torch = "2.0"
 torchmetrics = ">=0.11.0,<0.12.0"
 torchvision = ">=0.15,<0.16"
 
@@ -3148,7 +3147,7 @@ name = "pycparser"
 version = "2.21"
 description = "C parser in Python"
 optional = false
-python-versions = "*"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 files = [
     {file = "pycparser-2.21-py2.py3-none-any.whl", hash = "sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9"},
     {file = "pycparser-2.21.tar.gz", hash = "sha256:e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206"},
@@ -4060,6 +4059,7 @@ files = [
     {file = "scikit_image-0.21.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8ef5d8d1099317b7b315b530348cbfa68ab8ce32459de3c074d204166951025c"},
     {file = "scikit_image-0.21.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:78b1e96c59cab640ca5c5b22c501524cfaf34cbe0cb51ba73bd9a9ede3fb6e1d"},
     {file = "scikit_image-0.21.0-cp39-cp39-win_amd64.whl", hash = "sha256:9cffcddd2a5594c0a06de2ae3e1e25d662745a26f94fda31520593669677c010"},
+    {file = "scikit_image-0.21.0.tar.gz", hash = "sha256:b33e823c54e6f11873ea390ee49ef832b82b9f70752c8759efd09d5a4e3d87f0"},
 ]
 
 [package.dependencies]
@@ -4958,4 +4958,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "b7e5effd53b50d9db452142505065624c99e8d6727cdbec76636f70e2507bfb5"
+content-hash = "e19415a7f3073850e8c7096a77b0a81c9f2ae813b5008f3f29fb3305b3feb367"
