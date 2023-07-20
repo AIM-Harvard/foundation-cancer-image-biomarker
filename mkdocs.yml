@@ -1,0 +1,33 @@
+site_name: Foundation Model for Cancer Imaging Biomarkers
+theme: 
+  name: 'material'
+  features:
+    - content.code.copy
+    - content.code.select
+    - header.autohide
+
+  palette:
+    primary: blue
+nav:
+  - Home: 'index.md'
+  - 'Getting Started': 
+    - 'Pre-requisites': 'getting-started/prereqs.md'
+    - 'Installation': 'getting-started/installation.md'
+    - 'Repository Structure': 'getting-started/repository-structure.md'
+
+  - 'User Guide':
+    - 'Data Download and Preprocessing': 'user-guide/data.md'
+    - 'Reproducing our models': 'user-guide/models.md'
+    - 'Using our models': 'user-guide/inference.md'
+    - 'Replicating our analysis': 'user-guide/analysis.md'
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+repo_url: https://github.com/AIM-Harvard/foundation-cancer-image-biomarker

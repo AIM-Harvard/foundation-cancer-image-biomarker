@@ -5,8 +5,6 @@ from monai import transforms as monai_transforms
 
 from .seed_based_crop import SeedBasedPatchCropd
 
-monai.data.set_track_meta(True)
-
 T = monai_transforms.Compose(
     [
         monai_transforms.LoadImaged(keys=["image_path"], image_only=True, reader="ITKReader"),

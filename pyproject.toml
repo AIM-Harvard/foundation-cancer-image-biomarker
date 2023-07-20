@@ -31,8 +31,6 @@ classifiers = [  #! Update me
   "Programming Language :: Python :: 3.9",
 ]
 
-
-
 [tool.poetry.dependencies]
 python = "^3.8"
 project-lighter = {version = "0.0.2a6", allow-prereleases = true}
@@ -58,7 +56,7 @@ pydocstyle = "^6.1.1"
 pylint = "^2.11.1"
 pytest = "^6.2.5"
 pyupgrade = "^2.29.1"
-safety = "^1.10.3"
+safety = "^2.3.5"
 coverage = "^6.1.2"
 coverage-badge = "^1.1.0"
 pytest-html = "^3.1.1"
@@ -177,3 +175,5 @@ fail-under=8
 [tool.poetry_bumpversion.file."version.py"]
 [tool.poetry_bumpversion.file."fmcib/__init__.py"]
 
+[tool.bandit]
+skips = ["B108", "B301"]

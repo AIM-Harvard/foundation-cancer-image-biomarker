@@ -9,8 +9,6 @@ import SimpleITK as sitk
 import wget
 from loguru import logger
 
-from .ssl_radiomics_dataset import SSLRadiomicsDataset
-
 
 def get_lung1_clinical_data():
     wget.download(

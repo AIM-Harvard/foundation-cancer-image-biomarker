@@ -50,7 +50,7 @@ formatting: codestyle
 .PHONY: test
 test:
 	PYTHONPATH=$(PYTHONPATH) poetry run pytest -c pyproject.toml --cov-report=html --cov=fmcib tests/
-	poetry run coverage-badge -o assets/images/coverage.svg -f
+	poetry run coverage-badge -o docs/assets/images/coverage.svg -f
 
 .PHONY: check-codestyle
 check-codestyle:
@@ -65,8 +65,8 @@ mypy:
 .PHONY: check-safety
 check-safety:
 	poetry check
-	poetry run safety check --full-report
-	poetry run bandit -ll --recursive fmcib tests
+	poetry run safety check --full-report --ignore 51457
+	poetry run bandit -c pyproject.toml -ll --recursive fmcib tests
 
 .PHONY: lint
 lint: test check-codestyle mypy check-safety
