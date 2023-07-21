@@ -33,7 +33,7 @@ classifiers = [  #! Update me
 
 [tool.poetry.dependencies]
 python = "^3.8"
-project-lighter = {version = "0.0.2a6", allow-prereleases = true}
+project-lighter = {version = "0.0.2a9", allow-prereleases = true}
 wget = "^3.2"
 google-cloud-storage = "^2.9.0"
 thedicomsort = "^1.0.1"
