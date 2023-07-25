@@ -68,6 +68,6 @@ analysis
 Detailed walk-throughs are provided in the notebooks. These notebooks reproduce Figures 2, 3, 4 and Extended Data Figure 3. Please ensure you download additional dependenices as described in the [quickstart](#quick-start) and that you have downloaded all the outputs from our pipelines.
 
 Shown below are samples from the analysis notebooks
-<div style="display: flex; justify-content: center"><img src="assets/analysis_1.png" width=300 /><img src="assets/analysis_2.png" width=200 /></div>
+<div style="display: flex; justify-content: center"><img src="../../assets/analysis_1.png" width=300 /><img src="../../assets/analysis_2.png" width=200 /></div>
 
-<div style="display: flex; justify-content: center"><img src="assets/analysis_3.png" width=300 /><img src="assets/analysis_4.png" width=300 /></div>
+<div style="display: flex; justify-content: center"><img src="../../assets/analysis_3.png" width=300 /><img src="../../assets/analysis_4.png

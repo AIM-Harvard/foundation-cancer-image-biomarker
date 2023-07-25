@@ -5,6 +5,9 @@ theme:
     - content.code.copy
     - content.code.select
     - header.autohide
+    - content.tooltips
+    - attr_list
+    - footnotes
 
   palette:
     primary: blue
@@ -29,5 +32,7 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
-
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
 repo_url: https://github.com/AIM-Harvard/foundation-cancer-image-biomarker

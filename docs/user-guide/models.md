@@ -28,19 +28,27 @@ The pre-trained model is implemented on downstreams task using supervised traini
 
 We developed three supervised training approaches,
 
- - Supervised model trained from random initialization
+<details><summary> Supervised model trained from random initialization </summary>
+
 <br>
 <div style="display: flex; justify-content: center"><img src="../../assets/images/implementation1.png" width=400 /></div>
 
+</details>
 
- - Fine-tuning a trained supervised model
+
+<details><summary> Fine-tuning a trained supervised model </summary>
+
 <br>
 <div style="display: flex; justify-content: center"><img src="../../assets/images/implementation2.png" width=400 /></div>
 
- - Fine-tuning a pre-trained foundation model
+</details>
+
+<details><summary> Fine-tuning a pre-trained foundation model </summary>
+
 <br>
 <div style="display: flex; justify-content: center"><img src="../../assets/images/implementation3.png" width=400 /></div>
 
+</details>
 
 
 To download these models run,
@@ -81,7 +89,6 @@ The crux of our study is the self-supervised training procedure. We implemented 
 2. 3D ResNet from Project-MONAI
 3. Custom implemented modified loss function and SimCLR architecture that can be found under `fmcib.ssl.losses.NTXentNegativeMinedLoss` and `fmcib.ssl.models.ExNegSimCLR`
 
-<b> Self-supervised pretraining </b>
 We use project-lighter developed internally within our lab to provide reproducible training for all the models used in this study. Project-lighter allows a YAML-based configuration system along with a python-based CLI to allow quick, easy and scalable experimentation.
 
 To pre-train on the DeepLesion pretraining set, you can find the YAML for the pre-training at `experiments/pretraining/simclr_pretrain.yaml`. It is assumed that you have a GPU available. If you do not (not recommended and not tested), then edit the following parameters
@@ -115,6 +122,7 @@ lighter fit --config_file ./experiments/pretraining/simclr_pretrain.yaml
 ### Reproducing our supervised training
 As mentioned in [section](#supervised-models), we have three different supervised training implementations. Similar to the foundation pre-training, we use YAML files to maintain the configurations of these implementations. 
 
+<br/>
 <b> Supervised model trained from random initialization </b>
 
 In order to reproduce this training, you can inspect the YAML configuration at `experiments/supervised_training/supervised_random_init.yaml`. By default, we configure this for Task 1. You can adapt this for Task 2 and Task 3 by searching for 'Note: ' comments in the YAML that outline what must be changed.
@@ -123,6 +131,8 @@ You can start training by running this in the root code folder,
 ```bash
 lighter fit --config_file ./experiments/supervised_training/supervised_random_init.yaml
 ```
+
+<br/>
 
 <b> Fine-tuning a trained supervised model </b>
 
@@ -133,6 +143,7 @@ You can start training by running this in the root code folder,
 ```bash
 lighter fit --config_file ./experiments/supervised_training/supervised_finetune.yaml
 ```
+<br/>
 
 <b> Fine-tuning a pre-trained foundation model </b>
 
@@ -143,6 +154,8 @@ You can start training by running this in the root code folder,
 lighter fit --config_file ./experiments/supervised_training/foundation_finetune.yaml
 ```
 
+<br/>
+<br/>
 
 ### Reproducing our linear evaluation (Logistic Regression)
 We extracted 4096 features from the foundation model for each data point and used them to train a logistic regression model using the scikit-learn framework. A comprehensive parameter search for the logistic regression model was performed using the optuna hyper-parameter optimization framework. The code and utilities for performing the logistic regression modelling is provided in `experiments/linear_evaluation`
