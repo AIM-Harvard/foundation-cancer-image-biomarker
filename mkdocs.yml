@@ -1,6 +1,8 @@
 site_name: Foundation Model for Cancer Imaging Biomarkers
 theme: 
   name: 'material'
+  favicon: 'assets/favicon.svg'
+  logo: 'assets/favicon.svg'
   features:
     - content.code.copy
     - content.code.select
@@ -8,9 +10,8 @@ theme:
     - content.tooltips
     - attr_list
     - footnotes
-
   palette:
-    primary: blue
+    primary: black
 nav:
   - Home: 'index.md'
   - 'Getting Started': 

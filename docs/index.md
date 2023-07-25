@@ -1,4 +1,6 @@
-# Foundation Model for Cancer Imaging Biomarkers
+#
+<div style="display: flex;"><img src="assets/Header.png"/></div>
+
 
 This is the the official repository for the paper:<br>
  "<i>Foundation Models for Quantitative Biomarker Discovery in Cancer Imaging </i>" <br>
