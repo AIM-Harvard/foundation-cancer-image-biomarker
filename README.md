@@ -1,5 +1,7 @@
-# Foundation Models for Quantitative Imaging Biomarker Discovery in Cancer Imaging
 
+<div style="display: flex; justify-content: center"><img src="docs/assets/Header.png"/>
+</div>
+<br/><br/>
 <div align="center">
 
 [![Build Status](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/actions/workflows/build.yml/badge.svg)](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/actions/workflows/build.yml)
@@ -13,9 +15,7 @@
 [![Coverage](docs/assets/images/coverage.svg)](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/blob/master/docs/assets/images/coverage.svg)
 
 </div>
-<div style="display: flex; justify-content: center"><img src="docs/assets/Header.png"/>
-</div>
-<br/><br/>
+
 
 This is the the official repository for the paper:<br>
  "<i>Foundation Models for Quantitative Biomarker Discovery in Cancer Imaging </i>" <br>

@@ -1,5 +1,7 @@
 site_name: Foundation Model for Cancer Imaging Biomarkers
 theme: 
+  font:
+    code: Roboto Mono
   name: 'material'
   favicon: 'assets/favicon.svg'
   logo: 'assets/favicon.svg'
@@ -10,11 +12,14 @@ theme:
     - content.tooltips
     - attr_list
     - footnotes
+    - navigation.tabs
+    - navigation.footer
+
   palette:
     - scheme: slate
-      primary: blue grey
-      accent: light blue
-
+      accent: blue
+extra_css:
+  - assets/extra.css
 nav:
   - Home: 'index.md'
   - 'Getting Started': 
@@ -40,3 +45,6 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.superfences
 repo_url: https://github.com/AIM-Harvard/foundation-cancer-image-biomarker
+copyright: <a href="https://aim.hms.harvard.edu">AIM &copy; 2023</a>
+extra:
+  generator: false
