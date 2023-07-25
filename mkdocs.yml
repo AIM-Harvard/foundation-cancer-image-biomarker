@@ -11,7 +11,10 @@ theme:
     - attr_list
     - footnotes
   palette:
-    primary: black
+    - scheme: slate
+      primary: blue grey
+      accent: light blue
+
 nav:
   - Home: 'index.md'
   - 'Getting Started': 
