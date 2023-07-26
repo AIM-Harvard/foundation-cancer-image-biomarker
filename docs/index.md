@@ -1,3 +1,7 @@
+---
+hide:
+  - title
+---
 #
 <div style="display: flex;"><img src="assets/Header.png"/></div>
 
