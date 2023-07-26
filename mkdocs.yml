@@ -21,7 +21,7 @@ theme:
 extra_css:
   - assets/extra.css
 nav:
-  - Home: 'index.md'
+  - 'index.md'
   - 'Getting Started': 
     - 'Pre-requisites': 'getting-started/prereqs.md'
     - 'Installation': 'getting-started/installation.md'
@@ -29,9 +29,10 @@ nav:
 
   - 'User Guide':
     - 'Data Download and Preprocessing': 'user-guide/data.md'
-    - 'Reproducing our models': 'user-guide/models.md'
-    - 'Using our models': 'user-guide/inference.md'
-    - 'Replicating our analysis': 'user-guide/analysis.md'
+    - 'Download Trained Models': 'user-guide/download_models.md'
+    - 'Reproduce Models': 'user-guide/reproduce_models.md'
+    - 'Model Inference': 'user-guide/inference.md'
+    - 'Replicate Analysis': 'user-guide/analysis.md'
 
 markdown_extensions:
   - pymdownx.highlight:

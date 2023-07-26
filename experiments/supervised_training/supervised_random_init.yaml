@@ -35,7 +35,7 @@ system:
     num_workers: 3
     model:
         _target_: fmcib.ssl.models.LoadPretrainedResnet3D
-        heads: [4096, 2048, 512, 256, 8] # Note: Change to [4096, 2048, 512, 256, 1] for Task 2 and Task 3
+        heads: [4096, 2048, 8] # Note: Change to [4096, 2048, 1] for Task 2 and Task 3
 
     post_criterion_activation: "$torch.nn.functional.softmax" # Note: Change to $torch.sigmoid for Task 2 and Task 3
     # cast_target_dtype_to: "$torch.float32" # Note: Uncomment for Task 2 and Task 3

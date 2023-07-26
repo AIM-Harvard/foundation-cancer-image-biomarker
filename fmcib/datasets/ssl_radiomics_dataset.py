@@ -1,5 +1,3 @@
-import faulthandler
-import signal
 from pathlib import Path
 
 import monai
@@ -9,11 +7,7 @@ import SimpleITK as sitk
 from loguru import logger
 from torch.utils.data import Dataset
 
-from .utils import is_overlapping, resample_image_to_spacing, slice_image
-
-faulthandler.register(signal.SIGUSR1.value)
-monai.data.set_track_meta(False)
-sitk.ProcessObject.SetGlobalDefaultNumberOfThreads(1)
+from .utils import resample_image_to_spacing, slice_image
 
 
 class SSLRadiomicsDataset(Dataset):
@@ -27,6 +21,8 @@ class SSLRadiomicsDataset(Dataset):
     def __init__(
         self, path, label=None, radius=25, orient=False, resample_spacing=None, enable_negatives=True, transform=None
     ):
+        monai.data.set_track_meta(False)
+        sitk.ProcessObject.SetGlobalDefaultNumberOfThreads(1)
         super(SSLRadiomicsDataset, self).__init__()
         self._path = Path(path)
 
