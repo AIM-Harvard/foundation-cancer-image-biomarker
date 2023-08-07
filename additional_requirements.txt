@@ -5,6 +5,6 @@ plotly==5.7.0
 nbformat
 lifelines
 matplotlib
-optuna==2.10.0
+optuna==3.3.0
 joblib
 wandb
