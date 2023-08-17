@@ -1,7 +1,7 @@
 pylidc
 shapely
 scikit-learn
-plotly==5.7.0
+plotly==5.16.1
 nbformat
 lifelines
 matplotlib
