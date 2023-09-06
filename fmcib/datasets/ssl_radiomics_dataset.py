@@ -101,6 +101,8 @@ class SSLRadiomicsDataset(Dataset):
         row = self.annotations.iloc[idx]
         image_path = row["image_path"]
         image = sitk.ReadImage(str(image_path))
+
+        spacing = list(image.GetSpacing())[::-1]
         image = resample_image_to_spacing(image, self.resample_spacing, -1024) if self.resample_spacing is not None else image
 
         centroid = (row["coordX"], row["coordY"], row["coordZ"])
@@ -116,7 +118,7 @@ class SSLRadiomicsDataset(Dataset):
         patch_image = sitk.DICOMOrient(patch_image, "LPS")
 
         array = sitk.GetArrayFromImage(patch_image)
-        tensor = array if self.transform is None else self.transform(array)
+        tensor = array if self.transform is None else self.transform({"image": array, "spacing": spacing})
         target = int(row[self.label]) if self.label is not None else False
 
         if self.enable_negatives:

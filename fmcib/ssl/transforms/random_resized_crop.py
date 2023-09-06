@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 
 import torch
-from monai.transforms import RandScaleCrop, Resize, Transform
+from monai.transforms import RandScaleCrop, Resize, Transform, MapTransform
 
 
 class RandomResizedCrop3D(Transform):
@@ -26,9 +26,12 @@ class RandomResizedCrop3D(Transform):
         self.scale = scale
         self.size = [size] * 3
 
-    def __call__(self, image):
+    def __call__(self, image, spacing=None):
         if torch.rand(1) < self.prob:
             random_scale = torch.empty(1).uniform_(*self.scale).item()
+            if spacing is not None and spacing[0] > 3:
+                new_rand_scale = [1, random_scale, random_scale]
+
             rand_cropper = RandScaleCrop(random_scale, random_size=False)
             resizer = Resize(self.size, mode="trilinear")
 
@@ -36,3 +39,18 @@ class RandomResizedCrop3D(Transform):
                 image = transform(image)
 
         return image
+
+
+class RandomResizedCrop3Dd(MapTransform):
+    def __init__(
+        self, keys, prob: float = 1, size: int = 50, scale: List[float] = [0.5, 1.0], allow_missing_keys=False, track_meta=False
+    ) -> None:
+        super().__init__(keys=keys, allow_missing_keys=allow_missing_keys)
+        self.RandomResizedCrop3D = RandomResizedCrop3D(prob=prob, size=size, scale=scale)
+
+    def __call__(self, data):
+        d = dict(data)
+        assert "spacing" in d.keys()
+        for key in self.key_iterator(d):
+            d[key] = self.RandomResizedCrop3D(d[key], spacing=d["spacing"])
+        return d
