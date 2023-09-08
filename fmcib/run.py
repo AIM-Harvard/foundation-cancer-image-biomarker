@@ -8,15 +8,16 @@ from .models import resnet50
 from .preprocessing import get_dataloader
 
 
-def get_features(csv_path):
+def get_features(csv_path, weights_path=None, download_url="https://www.dropbox.com/s/bd7azdsvx1jhalp/fmcib.torch?dl=1", spatial_size=(50, 50, 50)):
     logger.info("Loading CSV file ...")
     df = pd.read_csv(csv_path)
-    dataloader = get_dataloader(csv_path)
+    dataloader = get_dataloader(csv_path, spatial_size=spatial_size)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = resnet50(device=device)
+    model = resnet50(device=device, weights_path=weights_path, download_url=download_url)
     feature_list = []
     logger.info("Running inference over batches ...")
 
+    model.eval()
     for batch in tqdm(dataloader, total=len(dataloader)):
         feature = model(batch.to(device)).detach().cpu().numpy()
         feature_list.append(feature)
