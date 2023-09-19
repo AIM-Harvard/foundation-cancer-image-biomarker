@@ -8,7 +8,13 @@ from .models import resnet50
 from .preprocessing import get_dataloader
 
 
-def get_features(csv_path, weights_path=None, download_url="https://www.dropbox.com/s/bd7azdsvx1jhalp/fmcib.torch?dl=1", spatial_size=(50, 50, 50), precropped=False):
+def get_features(
+    csv_path,
+    weights_path=None,
+    download_url="https://www.dropbox.com/s/bd7azdsvx1jhalp/fmcib.torch?dl=1",
+    spatial_size=(50, 50, 50),
+    precropped=False,
+):
     logger.info("Loading CSV file ...")
     df = pd.read_csv(csv_path)
     dataloader = get_dataloader(csv_path, spatial_size=spatial_size, precropped=precropped)

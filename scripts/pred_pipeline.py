@@ -13,8 +13,10 @@ The script requires the following command line arguments:
 """
 
 import argparse
-from fmcib.run import get_features
+
 from fmcib.models import get_linear_classifier
+from fmcib.run import get_features
+
 
 def main(args):
     """
@@ -31,18 +33,21 @@ def main(args):
     # Save the dataframe
     feature_df.to_csv(args.output_path, index=False)
 
+
 if __name__ == "__main__":
     """
     This block is executed when the script is run directly from the command line.
 
     It parses the command line arguments and calls the main function.
     """
-    parser = argparse.ArgumentParser(description='CLI for prediction pipeline')
-    parser.add_argument('--feature_extractor_weights', type=str, required=True, help='Path to model weights for feature extractor')
-    parser.add_argument('--classifier_weights', type=str, required=True, help='Weights for linear classifier')
-    parser.add_argument('--spatial_size', type=int, nargs='+', required=True, help='Spatial size of the volume')
-    parser.add_argument('--csv_path', type=str, required=True, help='Path to CSV file')
-    parser.add_argument('--output_path', type=str, required=True, help='Path to output CSV file')
+    parser = argparse.ArgumentParser(description="CLI for prediction pipeline")
+    parser.add_argument(
+        "--feature_extractor_weights", type=str, required=True, help="Path to model weights for feature extractor"
+    )
+    parser.add_argument("--classifier_weights", type=str, required=True, help="Weights for linear classifier")
+    parser.add_argument("--spatial_size", type=int, nargs="+", required=True, help="Spatial size of the volume")
+    parser.add_argument("--csv_path", type=str, required=True, help="Path to CSV file")
+    parser.add_argument("--output_path", type=str, required=True, help="Path to output CSV file")
 
     args = parser.parse_args()
     main(args)
