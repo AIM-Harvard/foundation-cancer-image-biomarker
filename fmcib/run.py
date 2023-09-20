@@ -14,9 +14,11 @@ def get_features(csv_path):
     dataloader = get_dataloader(csv_path)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = resnet50(device=device)
+
     feature_list = []
     logger.info("Running inference over batches ...")
 
+    model.eval()
     for batch in tqdm(dataloader, total=len(dataloader)):
         feature = model(batch.to(device)).detach().cpu().numpy()
         feature_list.append(feature)
