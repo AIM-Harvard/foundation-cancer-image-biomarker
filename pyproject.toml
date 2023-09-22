@@ -46,7 +46,7 @@ pydicom-seg = "^0.4.1"
 pydicom = "^2.4.0"
 torch = "2.0.0"
 itk = "^5.3.0"
-scipy = "1.10.0"
+scipy = "1.10.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
