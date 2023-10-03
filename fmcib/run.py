@@ -20,6 +20,7 @@ def get_features(
     dataloader = get_dataloader(csv_path, spatial_size=spatial_size, precropped=precropped)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = resnet50(device=device, weights_path=weights_path, download_url=download_url)
+
     feature_list = []
     logger.info("Running inference over batches ...")
 
