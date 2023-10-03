@@ -20,6 +20,7 @@ def resnet50(
 
     model = resnet50_monai(pretrained=False, n_input_channels=1, widen_factor=2, conv1_t_stride=2, feed_forward=False)
     model = model.to(device)
+    model.eval()
     if pretrained:
         if weights_path is None:
             current_path = Path(os.getcwd())
