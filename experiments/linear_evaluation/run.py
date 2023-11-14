@@ -1,6 +1,7 @@
 import json
 from ensurepip import bootstrap
 from pathlib import Path
+import time
 
 import joblib
 import numpy as np
@@ -32,7 +33,7 @@ def main(args):
 
     assert args.label in train, "Label column not found in csv"
 
-    train_X = train.filter(like="pred").dropna().values
+    train_X = train.filter(regex="pred|feature").dropna().values
     train_y = train[args.label].values
 
     # train_X = preprocessing.normalize(train_X, norm="l2")
@@ -42,22 +43,24 @@ def main(args):
     train_X = scaler.transform(train_X)
 
     if val is not None:
-        val_X = val.filter(like="pred").dropna().values
+        val_X = val.filter(regex="pred|feature").dropna().values
         val_X = scaler.transform(val_X)
         val_y = val[args.label].values
     else:
         val_X = None
         val_y = None
 
-    test_X = test.filter(like="pred").dropna().values
+    test_X = test.filter(regex="pred|feature").dropna().values
     test_X = scaler.transform(test_X)
     test_y = test[args.label].values
 
-    best_params = optuna_hyperparameter_tuning(train_X, train_y, val_X, val_y, args.scoring, args.trials)
+    start_time = time.time()
+    best_params = optuna_hyperparameter_tuning(train_X, train_y, val_X, val_y, args.scoring, args.trials, args.n_jobs)
     classifier = sklearn.linear_model.LogisticRegression(**best_params, random_state=SEED, max_iter=1000)
     # classifier = sklearn.neighbors.KNeighborsClassifier(**best_params)
-
     classifier.fit(train_X, train_y)
+    end_time = time.time()
+    print(f"Time taken: {end_time - start_time} seconds")
 
     if args.scoring == "roc_auc":
         score = sklearn.metrics.roc_auc_score(test_y, classifier.predict_proba(test_X)[:, 1])
@@ -109,6 +112,7 @@ if __name__ == "__main__":
     parser.add_argument("--scoring", help="Scoring metric to use", default=None)
     parser.add_argument("--trials", help="Number of trials for hyperparameter tuning", default=100, type=int)
     parser.add_argument("--csv", help="Output_csv", default="test_results.csv", type=str)
+    parser.add_argument("--n_jobs", help="Number of jobs", default=3, type=int)
 
     args = parser.parse_args()
 

@@ -35,11 +35,11 @@ def objective(trial, train_X, train_y, val_X=None, val_y=None, scoring="roc_auc"
     return score
 
 
-def optuna_hyperparameter_tuning(train_X, train_y, val_X, val_y, scoring, trials=100):
+def optuna_hyperparameter_tuning(train_X, train_y, val_X, val_y, scoring, trials=100, n_jobs=1):
     study = optuna.create_study(direction="maximize")
     optuna.logging.set_verbosity(optuna.logging.DEBUG)
     study.optimize(
-        partial(objective, train_X=train_X, train_y=train_y, val_X=val_X, val_y=val_y, scoring=scoring), n_trials=trials
+        partial(objective, train_X=train_X, train_y=train_y, val_X=val_X, val_y=val_y, scoring=scoring), n_trials=trials, n_jobs=n_jobs
     )
 
     return study.best_params

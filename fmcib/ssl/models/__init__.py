@@ -1,2 +1,4 @@
 from .exneg_simclr import ExNegSimCLR
-from .load_pretrained_resnet import LoadPretrainedResnet3D
+from .simclr import SimCLR
+from .swav import SwaV
+from .nnclr import NNCLR

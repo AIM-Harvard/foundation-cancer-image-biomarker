@@ -1,0 +1,138 @@
+trainer:
+  _target_: pytorch_lightning.Trainer
+  benchmark: True
+  max_epochs: 100
+  check_val_every_n_epoch: 5
+  accelerator: gpu
+  devices: 1
+  # sync_batchnorm: True
+  # precision: 16
+  log_every_n_steps: 1
+  logger: False
+
+  callbacks:
+    - _target_: pytorch_lightning.callbacks.ModelCheckpoint
+      dirpath:  ./checkpoints/modelsgen_task3_finetune # Note: Change as appropriate
+      verbose: True
+      save_last: True
+      every_n_epochs: 1
+      save_on_train_epoch_end: True
+
+    - _target_: lighter.callbacks.LighterLogger
+      project: fmcib
+      log_dir: ./logs
+      tensorboard: False
+      wandb: True
+      input_type: image
+      pred_type: histogram
+      max_samples: 10
+
+system:
+    _target_: lighter.LighterSystem
+    batch_size: 32
+    pin_memory: True
+    drop_last_batch: True 
+    num_workers: 3
+    model:
+        _target_: fmcib.models.LoadPretrainedModel
+        trunk:
+              _target_: lighter.utils.model.adjust_prefix_and_load_state_dict
+              ckpt_path: /home/suraj/Repositories/foundation-cancer-image-biomarker/models/sota/ModelsGenesis/Genesis_Chest_CT.pt
+              ckpt_to_model_prefix: {"module." : ""} 
+              model:
+                  _target_: fmcib.models.ModelsGenesisUNet3D
+                  decoder: False
+        heads: [4096, 2048, 512, 256, 1] # Note: Change to [4096, 2048, 1] for Task 2 and  [4096, 2048, 512, 256, 1] Task 3
+
+    post_criterion_activation: "$torch.sigmoid" # Note: Change to $torch.sigmoid for Task 2 and Task 3
+    cast_target_dtype_to: "$torch.float32" # Note: Uncomment for Task 2 and Task 3
+
+    criterion:
+        _target_: torch.nn.CrossEntropyLoss # Note: Change to torch.nn.BCEWithLogitsLoss for Task 2 and Task 3
+
+    optimizers:
+        _target_: torch.optim.Adam
+        params: "$@system#model.parameters()"
+        # lr: "$((@system#batch_size * @trainer#devices)/256) * 0.1" # Compute LR dynamically for different batch sizes
+        # weight_decay: 0.0
+        # momentum: 0.9
+
+    schedulers:
+      scheduler:
+        _target_: torch.optim.lr_scheduler.StepLR
+        optimizer: "@system#optimizers"
+        step_size: 30
+      strict: True
+
+    train_metrics: 
+        - _target_: torchmetrics.AveragePrecision
+          task: binary # Note: Change to `multiclass` for Task 2 and Task 3 and remove num_classes below
+          # num_classes: 8 
+
+        - _target_: torchmetrics.AUROC
+          task: binary # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
+          # num_classes: 8 
+
+
+    val_metrics: "%system#train_metrics"
+    test_metrics: "%system#train_metrics"
+
+    train_dataset:
+        _target_: fmcib.datasets.SSLRadiomicsDataset
+        path: null # Note: Change path
+        label: "survival" # Note: Change to "malignancy" for Task 2 and "survival" for Task 3
+        radius: 24
+        orient: False # Note: Set orient to False for task 2 and task 3
+        resample_spacing: [1, 1, 1]
+        enable_negatives: False
+        transform:
+            _target_: monai.transforms.Compose
+            transforms:
+                - _target_: monai.transforms.Transpose ## Only for Models Genesis
+                  indices: [2, 1, 0]
+                - _target_: monai.transforms.ToTensor
+                - _target_: monai.transforms.AddChannel
+                - _target_: monai.transforms.SpatialPad
+                  spatial_size: [48, 48, 48]
+                - _target_: monai.transforms.RandGaussianSmooth
+                  prob: 0.5
+                - _target_: monai.transforms.RandAffine
+                  prob: 0.5
+                  translate_range: [10, 10, 10]
+                - _target_: monai.transforms.RandAxisFlip
+                  prob: 0.5
+                - _target_: monai.transforms.RandRotate90
+                  prob: 0.5
+                - _target_: monai.transforms.ScaleIntensityRange
+                  a_min: -1000
+                  a_max: 1000
+                  b_min: 0.0
+                  b_max: 1.0
+                  clip: True
+
+    val_dataset:
+        _target_: fmcib.datasets.SSLRadiomicsDataset
+        path: null # Note: Change path
+        label: "@system#train_dataset#label"
+        radius: "@system#train_dataset#radius"
+        orient: "@system#train_dataset#orient"
+        resample_spacing: "@system#train_dataset#resample_spacing"
+        enable_negatives: "@system#train_dataset#enable_negatives"
+        transform:
+            _target_: monai.transforms.Compose
+            transforms:
+                - _target_: monai.transforms.Transpose ## Only for Models Genesis
+                  indices: [2, 1, 0]
+                - _target_: monai.transforms.ToTensor
+                - _target_: monai.transforms.AddChannel
+                - _target_: monai.transforms.SpatialPad
+                  spatial_size: [48, 48, 48]
+                - _target_: monai.transforms.ScaleIntensityRange
+                  a_min: -1000
+                  a_max: 1000
+                  b_min: 0.0
+                  b_max: 1.0
+                  clip: True
+                  
+    test_dataset: null
+    predict_dataset: null

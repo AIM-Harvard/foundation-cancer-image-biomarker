@@ -2,13 +2,17 @@ from typing import Dict, Union
 
 import torch
 import torch.nn as nn
-from lightly.models import SimCLR
+from lightly.models.modules import SimCLRProjectionHead
+from lightly.models import SimCLR as lightly_SimCLR
 
 
-class ExNegSimCLR(SimCLR):
+class ExNegSimCLR(lightly_SimCLR):
     def __init__(self, backbone: nn.Module, num_ftrs: int = 32, out_dim: int = 128) -> None:
-        print(backbone)
         super().__init__(backbone, num_ftrs, out_dim)
+        # replace the projection head with a new one
+        self.projection_head = SimCLRProjectionHead(
+            num_ftrs, num_ftrs//2, out_dim, batch_norm=False
+        )
 
     def forward(self, x: Union[Dict, torch.Tensor], return_features: bool = False):
         assert isinstance(x, dict), "Input to forward must be a `dict` for ExNegSimCLR"

@@ -3,22 +3,21 @@ trainer:
     benchmark: True
     max_epochs: 100
     check_val_every_n_epoch: 4
-    accelerator: gpu
-    devices: 1
+    accelerator: cpu
     log_every_n_steps: 50
     logger: False
-    callbacks:
-        - _target_: fmcib.callbacks.SavePredictions
-          path: "out.csv" # Note: Change path to the CSV file to save predictions to.
-          save_preview: False
+    # callbacks:
+    #     - _target_: fmcib.callbacks.SavePredictions
+    #       path: "out.csv" # Note: Change path to the CSV file to save predictions to.
+    #       save_preview_samples: 5
 system:
     _target_: lighter.LighterSystem
-    batch_size: 8
+    batch_size: 32
     pin_memory: True
-    num_workers: 0
+    num_workers: 6
     model:
-        _target_: fmcib.ssl.models.LoadPretrainedResnet3D
-        pretrained: "./models/ssl/fmcib.torch"
+        _target_: fmcib.models.resnet50
+        weights_path: "/home/suraj/Repositories/foundation-cancer-image-biomarker/fmcib.torch"
 
     criterion: null
     optimizers: null
@@ -37,11 +36,11 @@ system:
         enable_negatives: False
         transform:
             _target_: monai.transforms.Compose
-            transforms:
+            transforms:               
                 - _target_: monai.transforms.ToTensor
                 - _target_: monai.transforms.AddChannel
-                - _target_: monai.transforms.SpatialPad
-                  spatial_size: [50, 50, 50]
                 - _target_: monai.transforms.NormalizeIntensity
                   subtrahend: -1024
                   divisor: 3072
+                - _target_: monai.transforms.SpatialPad
+                  spatial_size: [50, 50, 50]                  

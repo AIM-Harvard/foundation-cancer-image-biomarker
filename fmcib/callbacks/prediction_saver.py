@@ -12,17 +12,29 @@ from .utils import decollate
 
 def handle_image(image):
     image = image.squeeze()
+
+    if image.max() > 1 or image.min() < 0:
+        logger.warning(f"Normalizing image between 0 and 1, current max value is {image.max()}, min value is {image.min()}")
+
+    # Normalize image between 0 and 1
+    image = image - image.min()
+    image = image / (image.max() + 1e-8)
+
     if image.dim() == 3:
-        return image[image.shape[0] // 2]
+        axial_view = image[image.shape[0] // 2].unsqueeze(0)
+        sagittal_view = image[:, image.shape[1] // 2, :]. unsqueeze(0)
+        coronal_view = image[:, :, image.shape[2] // 2].unsqueeze(0)
+        grid_image = torchvision.utils.make_grid([axial_view, sagittal_view, coronal_view])
+        return grid_image
     else:
         return image
 
 
 class SavePredictions(BasePredictionWriter):
-    def __init__(self, path: str, save_preview: bool = False):
+    def __init__(self, path: str, save_preview_samples: int = 0):
         super().__init__("epoch")
         self.output_csv = Path(path)
-        self.save_preview = save_preview
+        self.save_preview_samples = save_preview_samples
         self.output_csv.parent.mkdir(parents=True, exist_ok=True)
         self.df = pd.DataFrame()
 
@@ -31,6 +43,8 @@ class SavePredictions(BasePredictionWriter):
         self.output_dir = self.output_csv.parent / "previews"
         self.output_dir.mkdir(parents=True, exist_ok=True)
         for idx, data_item in enumerate(iter(dataset)):
+            if idx >= self.save_preview_samples:
+                break
             image, _ = data_item
             image = handle_image(image)
             fp = self.output_dir / f"{idx}.png"
@@ -40,7 +54,7 @@ class SavePredictions(BasePredictionWriter):
         assert getattr(pl_module, "predict_dataset"), "`predict_dataset` not defined"
         dataset = pl_module.predict_dataset
 
-        if self.save_preview:
+        if self.save_preview_samples > 0:
             self.save_previews(dataset)
 
         assert getattr(dataset, "get_rows"), "The dataset must have `get_image_paths` defined for predict functionality"

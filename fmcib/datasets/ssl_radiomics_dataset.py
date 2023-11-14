@@ -19,7 +19,9 @@ class SSLRadiomicsDataset(Dataset):
     """
 
     def __init__(
-        self, path, label=None, radius=25, orient=False, resample_spacing=None, enable_negatives=True, transform=None
+        self, path, label=None, radius=25, orient=False, resample_spacing=None, 
+                        enable_negatives=True, transform=None, orient_patch=True,
+                        input_is_target=False
     ):
         monai.data.set_track_meta(False)
         sitk.ProcessObject.SetGlobalDefaultNumberOfThreads(1)
@@ -32,8 +34,11 @@ class SSLRadiomicsDataset(Dataset):
         self.label = label
         self.enable_negatives = enable_negatives
         self.transform = transform
+        self.orient_patch = orient_patch
+        self.input_is_target = input_is_target
         self.annotations = pd.read_csv(self._path)
         self._num_samples = len(self.annotations)  # set the length of the dataset
+
 
     def get_rows(self):
         return self.annotations.to_dict(orient="records")
@@ -84,8 +89,7 @@ class SSLRadiomicsDataset(Dataset):
         #     escape_count += 1
 
         random_patch = slice_image(image, random_patch_idx)
-
-        random_patch = sitk.DICOMOrient(random_patch, "LPS")
+        random_patch = sitk.DICOMOrient(random_patch, "LPS") if self.orient_patch else random_patch
         negative_array = sitk.GetArrayFromImage(random_patch)
 
         negative_tensor = negative_array if self.transform is None else self.transform(negative_array)
@@ -113,15 +117,22 @@ class SSLRadiomicsDataset(Dataset):
         # Extract positive with a specified radius around centroid
         patch_idx = [(c - self.radius, c + self.radius) for c in centroid]
         patch_image = slice_image(image, patch_idx)
-        patch_image = sitk.DICOMOrient(patch_image, "LPS")
+
+        patch_image = sitk.DICOMOrient(patch_image, "LPS") if self.orient_patch else patch_image
 
         array = sitk.GetArrayFromImage(patch_image)
         tensor = array if self.transform is None else self.transform(array)
-        target = int(row[self.label]) if self.label is not None else False
+
+        if self.label is not None:
+            target = int(row[self.label])
+        elif self.input_is_target:
+            target = tensor.clone()
+        else:
+            target = None
 
         if self.enable_negatives:
             return {"positive": tensor, "negative": self.get_negative_sample(image)}, target
-
+        
         return tensor, target
 
 
