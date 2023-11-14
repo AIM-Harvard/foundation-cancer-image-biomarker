@@ -1,6 +1,7 @@
 import numpy as np
 from monai.transforms import Transform
 
+
 class IntensityNormalizeOneVolume(Transform):
     def __init__(self):
         super().__init__()
@@ -20,8 +21,8 @@ class IntensityNormalizeOneVolume(Transform):
 
         pixels = volume[volume > 0]
         mean = pixels.mean()
-        std  = pixels.std()
-        out = (volume - mean)/std
-        out_random = np.random.normal(0, 1, size = volume.shape)
+        std = pixels.std()
+        out = (volume - mean) / std
+        out_random = np.random.normal(0, 1, size=volume.shape)
         out[volume == 0] = out_random[volume == 0]
         return out

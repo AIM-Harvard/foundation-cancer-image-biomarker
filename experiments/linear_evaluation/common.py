@@ -39,7 +39,9 @@ def optuna_hyperparameter_tuning(train_X, train_y, val_X, val_y, scoring, trials
     study = optuna.create_study(direction="maximize")
     optuna.logging.set_verbosity(optuna.logging.DEBUG)
     study.optimize(
-        partial(objective, train_X=train_X, train_y=train_y, val_X=val_X, val_y=val_y, scoring=scoring), n_trials=trials, n_jobs=n_jobs
+        partial(objective, train_X=train_X, train_y=train_y, val_X=val_X, val_y=val_y, scoring=scoring),
+        n_trials=trials,
+        n_jobs=n_jobs,
     )
 
     return study.best_params

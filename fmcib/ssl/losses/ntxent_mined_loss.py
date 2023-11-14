@@ -11,6 +11,7 @@ import torch
 from lightly.utils import dist
 from torch import nn
 
+
 class NTXentNegativeMinedLoss(torch.nn.Module):
     """
     NTXentNegativeMinedLoss:

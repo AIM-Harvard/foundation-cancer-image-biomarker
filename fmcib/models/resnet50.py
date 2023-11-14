@@ -9,6 +9,7 @@ from monai.networks.nets import resnet50 as resnet50_monai
 
 from fmcib.utils.download_utils import bar_progress
 
+
 def resnet50(
     pretrained=True,
     device="cuda",
@@ -18,11 +19,18 @@ def resnet50(
     widen_factor=2,
     conv1_t_stride=2,
     bias_downsample=True,
-    feed_forward=False
+    feed_forward=False,
 ):
     logger.info(f"Loading pretrained foundation model (Resnet50) on {device}...")
 
-    model = resnet50_monai(pretrained=False, n_input_channels=n_input_channels, widen_factor=widen_factor, conv1_t_stride=conv1_t_stride, feed_forward=feed_forward, bias_downsample=bias_downsample)
+    model = resnet50_monai(
+        pretrained=False,
+        n_input_channels=n_input_channels,
+        widen_factor=widen_factor,
+        conv1_t_stride=conv1_t_stride,
+        feed_forward=feed_forward,
+        bias_downsample=bias_downsample,
+    )
     model = model.to(device)
     if pretrained:
         if weights_path is None:
@@ -40,7 +48,7 @@ def resnet50(
             model_state_dict = checkpoint["state_dict"]
             model_state_dict = {key.replace("model.backbone.", ""): value for key, value in model_state_dict.items()}
             model_state_dict = {key.replace("module.", ""): value for key, value in model_state_dict.items()}
-            
+
         msg = model.load_state_dict(model_state_dict, strict=False)
         logger.warning(f"Missing keys: {msg[0]} and unexpected keys: {msg[1]}")
 

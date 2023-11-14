@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-
-from monai.networks.nets import AutoEncoder
 from monai.networks.blocks import Convolution, ResidualUnit
+from monai.networks.nets import AutoEncoder
+
 
 class CustomAE(AutoEncoder):
     def __init__(self, padding, decoder=True, **kwargs):
@@ -10,7 +10,7 @@ class CustomAE(AutoEncoder):
         super().__init__(**kwargs)
         if not decoder:
             self.decode = nn.Sequential(nn.AvgPool3d(3), nn.Flatten())
-    
+
     def _get_encode_layer(self, in_channels: int, out_channels: int, strides: int, is_last: bool) -> nn.Module:
         """
         Returns a single layer of the encoder part of the network.

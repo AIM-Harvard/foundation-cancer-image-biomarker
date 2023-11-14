@@ -19,9 +19,16 @@ class SSLRadiomicsDataset(Dataset):
     """
 
     def __init__(
-        self, path, label=None, radius=25, orient=False, resample_spacing=None, 
-                        enable_negatives=True, transform=None, orient_patch=True,
-                        input_is_target=False
+        self,
+        path,
+        label=None,
+        radius=25,
+        orient=False,
+        resample_spacing=None,
+        enable_negatives=True,
+        transform=None,
+        orient_patch=True,
+        input_is_target=False,
     ):
         monai.data.set_track_meta(False)
         sitk.ProcessObject.SetGlobalDefaultNumberOfThreads(1)
@@ -38,7 +45,6 @@ class SSLRadiomicsDataset(Dataset):
         self.input_is_target = input_is_target
         self.annotations = pd.read_csv(self._path)
         self._num_samples = len(self.annotations)  # set the length of the dataset
-
 
     def get_rows(self):
         return self.annotations.to_dict(orient="records")
@@ -132,7 +138,7 @@ class SSLRadiomicsDataset(Dataset):
 
         if self.enable_negatives:
             return {"positive": tensor, "negative": self.get_negative_sample(image)}, target
-        
+
         return tensor, target
 
 

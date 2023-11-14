@@ -1,22 +1,22 @@
-from scipy.stats import bootstrap, permutation_test
-import pandas as pd
-from pathlib import Path
-import scipy
 from functools import partial
+from pathlib import Path
+
 import numpy as np
-from tqdm import tqdm
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
+import scipy
 from joblib import Parallel, delayed
-
+from scipy.stats import bootstrap, permutation_test
+from tqdm import tqdm
 
 pio.templates["custom"] = go.layout.Template(
     layout=go.Layout(
         colorway=px.colors.qualitative.D3,
     )
 )
-from utils import get_model_stats, get_model_comparison_stats
+from utils import get_model_comparison_stats, get_model_stats
 
 path = Path("../outputs/predictions/task1")
 implementation_dict = {
@@ -64,7 +64,7 @@ for implementation_name, implementation_list in implementation_dict.items():
             "mAP_high_CI": map_ci[1][1],
             "BA": ba_ci[0],
             "BA_low_CI": ba_ci[1][0],
-            "BA_high_CI": ba_ci[1][1]
+            "BA_high_CI": ba_ci[1][1],
         }
 
         # Compute statistics for comparison between this implementation and all other ones (difference CI and p-value)
@@ -110,8 +110,8 @@ for implementation_name, implementation_list in implementation_dict.items():
         pbar.update(1)
 
 results_df = pd.DataFrame(results)
-results_df['Implementation_Rank'] = results_df['Implementation'].map(implementation_rank)
+results_df["Implementation_Rank"] = results_df["Implementation"].map(implementation_rank)
 results_df.sort_values(by=["Data Percentage", "Implementation_Rank"], inplace=True, ascending=True)
-results_df.drop('Implementation_Rank', axis=1, inplace=True)
+results_df.drop("Implementation_Rank", axis=1, inplace=True)
 
 results_df.to_csv("result_csvs/pretraining_comparison.csv", index=False)

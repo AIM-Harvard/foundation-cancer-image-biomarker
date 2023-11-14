@@ -1,5 +1,6 @@
 from lightly.loss import NTXentLoss
 
+
 class NNCLRLoss(NTXentLoss):
     def __init__(self, temperature: float = 0.1, gather_distributed: bool = False):
         super().__init__(temperature, gather_distributed)

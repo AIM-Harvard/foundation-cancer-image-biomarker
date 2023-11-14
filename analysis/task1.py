@@ -1,11 +1,12 @@
-from scipy.stats import bootstrap, permutation_test
-import pandas as pd
-from pathlib import Path
 from functools import partial
-from tqdm import tqdm
+from pathlib import Path
+
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
+from scipy.stats import bootstrap, permutation_test
+from tqdm import tqdm
 
 pio.templates["custom"] = go.layout.Template(
     layout=go.Layout(
@@ -13,16 +14,17 @@ pio.templates["custom"] = go.layout.Template(
     )
 )
 
-from utils import get_model_stats, get_model_comparison_stats
+from utils import get_model_comparison_stats, get_model_stats
+
 path = Path("../outputs/predictions/task1")
 implementation_dict = {
     "Foundation (Features)": [csv_path for csv_path in path.glob("foundation_features*.csv")],
     "Foundation (Finetuned)": [csv_path for csv_path in path.glob("foundation_finetuned*.csv")],
     "Supervised": [csv_path for csv_path in path.glob("supervised*.csv")],
-    "Med3D (Features)": [csv_path for csv_path in path.glob("med3d_features*.csv")], 
-    "Models Genesis (Features)": [csv_path for csv_path in path.glob("modelsgen_features*.csv")], 
-    "Med3D (Finetuned)": [csv_path for csv_path in path.glob("med3d_finetuned*.csv")], 
-    "Models Genesis (Finetuned)": [csv_path for csv_path in path.glob("modelsgen_finetuned*.csv")], 
+    "Med3D (Features)": [csv_path for csv_path in path.glob("med3d_features*.csv")],
+    "Models Genesis (Features)": [csv_path for csv_path in path.glob("modelsgen_features*.csv")],
+    "Med3D (Finetuned)": [csv_path for csv_path in path.glob("med3d_finetuned*.csv")],
+    "Models Genesis (Finetuned)": [csv_path for csv_path in path.glob("modelsgen_finetuned*.csv")],
 }
 
 implementation_rank = {key: i for i, key in enumerate(implementation_dict.keys())}
@@ -67,7 +69,7 @@ for implementation_name, implementation_list in implementation_dict.items():
             "mAP_high_CI": map_ci[1][1],
             "BA": ba_ci[0],
             "BA_low_CI": ba_ci[1][0],
-            "BA_high_CI": ba_ci[1][1]
+            "BA_high_CI": ba_ci[1][1],
         }
 
         # Compute statistics for comparison between this implementation and all other ones (difference CI and p-value)
@@ -113,8 +115,8 @@ for implementation_name, implementation_list in implementation_dict.items():
         pbar.update(1)
 
 results_df = pd.DataFrame(results)
-results_df['Implementation_Rank'] = results_df['Implementation'].map(implementation_rank)
+results_df["Implementation_Rank"] = results_df["Implementation"].map(implementation_rank)
 results_df.sort_values(by=["Data Percentage", "Implementation_Rank"], inplace=True, ascending=True)
-results_df.drop('Implementation_Rank', axis=1, inplace=True)
+results_df.drop("Implementation_Rank", axis=1, inplace=True)
 
 results_df.to_csv("result_csvs/task1.csv")

@@ -1,14 +1,15 @@
-from typing import Dict, Union, List, Any, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import torch
 import torch.nn as nn
-from lightly.models.modules import (NNCLRPredictionHead, NNCLRProjectionHead,
-                                    NNMemoryBankModule)
+from lightly.models.modules import NNCLRPredictionHead, NNCLRProjectionHead, NNMemoryBankModule
+
 
 class NNCLR(nn.Module):
     """
     Taken largely from https://github.com/lightly-ai/lightly/blob/master/lightly/models/nnclr.py
     """
+
     def __init__(
         self,
         backbone: nn.Module,

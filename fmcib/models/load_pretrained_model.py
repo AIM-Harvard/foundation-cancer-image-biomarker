@@ -1,7 +1,9 @@
 from collections import OrderedDict
+
 import torch
 from loguru import logger
 from torch import nn
+
 
 class LoadPretrainedModel(nn.Module):
     def __init__(self, trunk=None, weights_path=None, heads=[]) -> None:
@@ -33,12 +35,12 @@ class LoadPretrainedModel(nn.Module):
     def load(self, weights):
         pretrained_model = torch.load(weights)
 
-        if "trunk_state_dict" in pretrained_model: # Loading ViSSL pretrained model
+        if "trunk_state_dict" in pretrained_model:  # Loading ViSSL pretrained model
             trained_trunk = pretrained_model["trunk_state_dict"]
             msg = self.trunk.load_state_dict(trained_trunk, strict=False)
             logger.warning(f"Missing keys: {msg[0]} and unexpected keys: {msg[1]}")
 
-        if "state_dict" in pretrained_model: # Loading Med3D pretrained model
+        if "state_dict" in pretrained_model:  # Loading Med3D pretrained model
             trained_model = pretrained_model["state_dict"]
 
             # match the keys (https://github.com/Project-MONAI/MONAI/issues/6811)

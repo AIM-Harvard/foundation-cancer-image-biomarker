@@ -1,5 +1,7 @@
-from lightly.loss import NTXentLoss as lightly_NTXentLoss
 from typing import List
+
+from lightly.loss import NTXentLoss as lightly_NTXentLoss
+
 
 class NTXentLoss(lightly_NTXentLoss):
     """

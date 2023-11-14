@@ -1,10 +1,10 @@
 import torch
-from torch import nn
-
 from lightly.loss.memory_bank import MemoryBankModule
 from lightly.models.modules import SwaVProjectionHead, SwaVPrototypes
+from torch import nn
 
 torch.set_float32_matmul_precision("medium")
+
 
 class SwaV(nn.Module):
     """Implements the SwAV (Swapping Assignments between multiple Views of the same image) model.
@@ -19,14 +19,23 @@ class SwaV(nn.Module):
         start_queue_at_epoch (int, optional): Number of the epoch at which SwaV starts using the queued features. Defaults to 0.
         n_steps_frozen_prototypes (int, optional): Number of steps during which we keep the prototypes fixed. Defaults to 0.
     """
-    def __init__(self, backbone: nn.Module, num_ftrs: int, out_dim: int,
-                 n_prototypes: int, n_queues: int, queue_length: int = 0,
-                 start_queue_at_epoch: int = 0, n_steps_frozen_prototypes: int = 0):
+
+    def __init__(
+        self,
+        backbone: nn.Module,
+        num_ftrs: int,
+        out_dim: int,
+        n_prototypes: int,
+        n_queues: int,
+        queue_length: int = 0,
+        start_queue_at_epoch: int = 0,
+        n_steps_frozen_prototypes: int = 0,
+    ):
         super().__init__()
         # Backbone for feature extraction
         self.backbone = backbone
         # Projection head to project features to a lower-dimensional space
-        self.projection_head = SwaVProjectionHead(num_ftrs, num_ftrs//2, out_dim)  
+        self.projection_head = SwaVProjectionHead(num_ftrs, num_ftrs // 2, out_dim)
         # SwAV Prototypes module for prototype computation
         self.prototypes = SwaVPrototypes(out_dim, n_prototypes, n_steps_frozen_prototypes)
 
@@ -111,7 +120,7 @@ class SwaV(nn.Module):
             _, features = self.queues[i](high_resolution_features[i], update=True)
             # Queue features are in (num_ftrs X queue_length) shape, while the high res
             # features are in (batch_size X num_ftrs). Swap the axes for interoperability.
-            features = torch.permute(features, (1,0))
+            features = torch.permute(features, (1, 0))
             queue_features.append(features)
 
         # Do not return queue prototypes if not enough features have been queued
@@ -123,8 +132,9 @@ class SwaV(nn.Module):
         # just queue the features and return None instead of queue prototypes.
         if self.start_queue_at_epoch > 0:
             if epoch is None:
-                raise ValueError("The epoch number must be passed to the `forward()` "
-                                 "method if `start_queue_at_epoch` is greater than 0.")
+                raise ValueError(
+                    "The epoch number must be passed to the `forward()` " "method if `start_queue_at_epoch` is greater than 0."
+                )
             if epoch < self.start_queue_at_epoch:
                 return None
 

@@ -4,11 +4,13 @@
 # LICENSE file in the root directory of this source tree.
 
 import pprint
+
 import numpy as np
 import torch
 from lightly.utils import dist
-from torch import nn
 from loguru import logger
+from torch import nn
+
 
 class NegativeMiningInfoNCECriterion(nn.Module):
     """
@@ -23,7 +25,9 @@ class NegativeMiningInfoNCECriterion(nn.Module):
             effective_batch_size (int): total batch size used (includes positives)
     """
 
-    def __init__(self, embedding_dim, batch_size, world_size, gather_distributed=False, temperature: float = 0.1, balanced: bool = True):
+    def __init__(
+        self, embedding_dim, batch_size, world_size, gather_distributed=False, temperature: float = 0.1, balanced: bool = True
+    ):
         super(NegativeMiningInfoNCECriterion, self).__init__()
         self.embedding_dim = embedding_dim
         self.use_gpu = torch.cuda.is_available()
@@ -47,14 +51,14 @@ class NegativeMiningInfoNCECriterion(nn.Module):
         """
         # computed once at the begining of training
 
-        # total_images is x2 SimCLR Info-NCE loss 
+        # total_images is x2 SimCLR Info-NCE loss
         # as we have negative samples for each positive sample
-        
+
         total_images = self.effective_batch_size * self.num_neg
         world_size = self.world_size
 
         # Batch size computation is different from SimCLR paper
-        batch_size = (self.effective_batch_size // world_size)
+        batch_size = self.effective_batch_size // world_size
         orig_images = batch_size // self.num_pos
         rank = dist.rank()
 
@@ -63,9 +67,9 @@ class NegativeMiningInfoNCECriterion(nn.Module):
 
         all_indices = np.arange(total_images)
 
-        # Index for pairs of images (original + copy)        
+        # Index for pairs of images (original + copy)
         pairs = orig_images * np.arange(self.num_pos)
-        
+
         # Remove all indices associated with positive samples & copies (for neg_mask)
         all_pos_members = []
         for _rank in range(world_size):
@@ -78,19 +82,17 @@ class NegativeMiningInfoNCECriterion(nn.Module):
 
         for anchor in np.arange(self.num_pos):
             for img_idx in range(orig_images):
-                # delete_inds are spaced by batch_size for each rank as 
+                # delete_inds are spaced by batch_size for each rank as
                 # all_indices_pos_removed (half of the indices) is deleted first
                 delete_inds = batch_size * rank + img_idx + pairs
-                neg_inds = torch.tensor(np.delete(all_indices_pos_removed, delete_inds)).long() 
+                neg_inds = torch.tensor(np.delete(all_indices_pos_removed, delete_inds)).long()
                 neg_mask[anchor * orig_images + img_idx, neg_inds] = 1
 
             for pos in np.delete(np.arange(self.num_pos), anchor):
                 # Pos_inds are spaced by batch_size * self.num_neg for each rank
                 pos_inds = (batch_size * self.num_neg) * rank + pos * orig_images + orig_members
                 pos_mask[
-                    torch.arange(
-                        anchor * orig_images, (anchor + 1) * orig_images
-                    ).long(),
+                    torch.arange(anchor * orig_images, (anchor + 1) * orig_images).long(),
                     pos_inds.long(),
                 ] = 1
 
@@ -131,10 +133,10 @@ class NegativeMiningInfoNCECriterion(nn.Module):
         neg = torch.sum(similarity * self.neg_mask, 1)
 
         # Ignore the negative samples as entries for loss calculation
-        pos = pos[:(batch_size // 2)]
-        neg = neg[:(batch_size // 2)]
+        pos = pos[: (batch_size // 2)]
+        neg = neg[: (batch_size // 2)]
 
-        loss = -(torch.mean(torch.log(pos / (pos + neg) )))
+        loss = -(torch.mean(torch.log(pos / (pos + neg))))
         return loss
 
     def __repr__(self):

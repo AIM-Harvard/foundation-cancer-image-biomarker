@@ -22,7 +22,7 @@ def handle_image(image):
 
     if image.dim() == 3:
         axial_view = image[image.shape[0] // 2].unsqueeze(0)
-        sagittal_view = image[:, image.shape[1] // 2, :]. unsqueeze(0)
+        sagittal_view = image[:, image.shape[1] // 2, :].unsqueeze(0)
         coronal_view = image[:, :, image.shape[2] // 2].unsqueeze(0)
         grid_image = torchvision.utils.make_grid([axial_view, sagittal_view, coronal_view])
         return grid_image

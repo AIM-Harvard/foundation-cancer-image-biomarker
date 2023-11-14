@@ -5,19 +5,22 @@ from lifelines.plotting import add_at_risk_counts
 from lifelines.statistics import multivariate_logrank_test
 from matplotlib import pyplot as plt
 from matplotlib import rcParams
-from sklearn.metrics import roc_auc_score, average_precision_score, balanced_accuracy_score, accuracy_score
+from sklearn.metrics import accuracy_score, average_precision_score, balanced_accuracy_score, roc_auc_score
 from sklearn.preprocessing import label_binarize
 
 rcParams["font.size"] = 16
 plt.rcParams["figure.dpi"] = 400
+
 
 def mean_average_precision(y_true, y_pred):
     y_true = label_binarize(y_true, classes=np.unique(y_true))
     avg_precisions = [average_precision_score(y_true[:, i], y_pred[:, i]) for i in range(y_true.shape[1])]
     return np.mean(avg_precisions)
 
+
 def balanced_accuracy(y_true, y_pred):
     return balanced_accuracy_score(y_true, np.argmax(y_pred, axis=1))
+
 
 def get_model_comparison_stats(y_true, pred_proba_1, pred_proba_2, nsamples=1000, fn="roc_auc_score"):
     auc_differences = []
@@ -48,6 +51,7 @@ def get_model_comparison_stats(y_true, pred_proba_1, pred_proba_2, nsamples=1000
     pvalue = np.mean(np.array(auc_differences) >= observed_difference)
     diff_ci = np.percentile(bootstrap_auc_differences, (2.5, 97.5))
     return diff_ci, pvalue
+
 
 def get_model_stats(y_true, y_pred, nsamples=1000, fn="roc_auc_score"):
     auc_values = []
@@ -97,10 +101,10 @@ def plot_km_curve(df, save_path=None, title=None):
         ax.text(2, 0.9, f"n={len(df)} \nlog-rank test, p<0.001", fontstyle="italic")
     else:
         ax.text(2, 0.9, f"n={len(df)} \nlog-rank test, p={np.round(results.p_value, 3)}", fontstyle="italic")
-    
+
     if title is not None:
         ax.set_title(title)
-    
+
     plt.show()
     if save_path is not None:
         fig.savefig(save_path, bbox_inches="tight", dpi=300)
@@ -108,16 +112,16 @@ def plot_km_curve(df, save_path=None, title=None):
 
 def get_univariate_result(df):
     from lifelines import CoxPHFitter
+
     cph = CoxPHFitter()
     cph.fit(df, duration_col="Survival.time", event_col="deadstatus.event", formula="group")
     cph.print_summary()
     summary_dict = {
-        'beta': cph.summary['coef'].to_dict()['group'],
-        'HR': cph.summary['exp(coef)'].to_dict()['group'],
-        'HR low CI': cph.summary['exp(coef) lower 95%'].to_dict()['group'],
-        'HR high CI': cph.summary['exp(coef) upper 95%'].to_dict()['group'],
-        'p.value': cph.summary['p'].to_dict()['group']
+        "beta": cph.summary["coef"].to_dict()["group"],
+        "HR": cph.summary["exp(coef)"].to_dict()["group"],
+        "HR low CI": cph.summary["exp(coef) lower 95%"].to_dict()["group"],
+        "HR high CI": cph.summary["exp(coef) upper 95%"].to_dict()["group"],
+        "p.value": cph.summary["p"].to_dict()["group"],
     }
 
     return summary_dict
-

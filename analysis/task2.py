@@ -1,12 +1,13 @@
-from scipy.stats import bootstrap, permutation_test
-import pandas as pd
-from pathlib import Path
 from functools import partial
-from tqdm import tqdm
+from pathlib import Path
+
 import numpy as np
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
+from scipy.stats import bootstrap, permutation_test
+from tqdm import tqdm
 
 pio.templates["custom"] = go.layout.Template(
     layout=go.Layout(
@@ -14,7 +15,7 @@ pio.templates["custom"] = go.layout.Template(
     )
 )
 
-from utils import get_model_stats, get_model_comparison_stats
+from utils import get_model_comparison_stats, get_model_stats
 
 path = Path("../outputs/predictions/task2")
 
@@ -23,10 +24,10 @@ implementation_dict = {
     "Foundation (Finetuned)": [csv_path for csv_path in path.glob("foundation_finetuned*.csv")],
     "Supervised": [csv_path for csv_path in path.glob("supervised_random*.csv")],
     "Supervised (Finetuned)": [csv_path for csv_path in path.glob("supervised_finetuned*.csv")],
-    "Med3D (Features)": [csv_path for csv_path in path.glob("med3d_features*.csv")], 
-    "Models Genesis (Features)": [csv_path for csv_path in path.glob("modelsgen_features*.csv")], 
-    "Med3D (Finetuned)": [csv_path for csv_path in path.glob("med3d_finetuned*.csv")], 
-    "Models Genesis (Finetuned)": [csv_path for csv_path in path.glob("modelsgen_finetuned*.csv")], 
+    "Med3D (Features)": [csv_path for csv_path in path.glob("med3d_features*.csv")],
+    "Models Genesis (Features)": [csv_path for csv_path in path.glob("modelsgen_features*.csv")],
+    "Med3D (Finetuned)": [csv_path for csv_path in path.glob("med3d_finetuned*.csv")],
+    "Models Genesis (Finetuned)": [csv_path for csv_path in path.glob("modelsgen_finetuned*.csv")],
 }
 
 implementation_rank = {key: i for i, key in enumerate(implementation_dict.keys())}
@@ -43,7 +44,10 @@ for implementation_name, implementation_list in implementation_dict.items():
             float(model_prediction_csv.stem.split("_")[-2]) / 100 if len(model_prediction_csv.stem.split("_")) > 2 else 1.0
         )
         df = pd.read_csv(model_prediction_csv)
-        pred_set = (df["malignancy"].values, df["conf_scores_class_1"].values if "conf_scores_class_1" in df.columns else df["conf_scores_class"].values)
+        pred_set = (
+            df["malignancy"].values,
+            df["conf_scores_class_1"].values if "conf_scores_class_1" in df.columns else df["conf_scores_class"].values,
+        )
 
         map_ci = get_model_stats(
             *pred_set,
@@ -78,7 +82,11 @@ for implementation_name, implementation_list in implementation_dict.items():
                 )
                 if data_percentage == _data_percentage:
                     _df = pd.read_csv(_model_prediction_csv)
-                    _pred = _df["conf_scores_class_1"].values if "conf_scores_class_1" in _df.columns else _df["conf_scores_class"].values
+                    _pred = (
+                        _df["conf_scores_class_1"].values
+                        if "conf_scores_class_1" in _df.columns
+                        else _df["conf_scores_class"].values
+                    )
                     _pred_set = (*pred_set, _pred)
 
                     perm_test = get_model_comparison_stats(
@@ -91,7 +99,6 @@ for implementation_name, implementation_list in implementation_dict.items():
                     row[f"AUC_diff_CI_high_{_implementation_name}"] = perm_test[0][1]
                     row[f"AUC_pval_{_implementation_name}"] = perm_test[1]
 
-
                     perm_test = get_model_comparison_stats(
                         *_pred_set,
                         fn="average_precision_score",
@@ -102,11 +109,10 @@ for implementation_name, implementation_list in implementation_dict.items():
                     row[f"mAP_diff_CI_high_{_implementation_name}"] = perm_test[0][1]
                     row[f"mAP_pval_{_implementation_name}"] = perm_test[1]
 
-
         results.append(row)
         pbar.update(1)
 results_df = pd.DataFrame(results)
-results_df['Implementation_Rank'] = results_df['Implementation'].map(implementation_rank)
+results_df["Implementation_Rank"] = results_df["Implementation"].map(implementation_rank)
 results_df.sort_values(by=["Data Percentage", "Implementation_Rank"], inplace=True, ascending=True)
-results_df.drop('Implementation_Rank', axis=1, inplace=True)
+results_df.drop("Implementation_Rank", axis=1, inplace=True)
 results_df.to_csv("result_csvs/task2.csv")
