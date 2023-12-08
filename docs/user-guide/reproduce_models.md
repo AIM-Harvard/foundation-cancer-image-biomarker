@@ -55,33 +55,33 @@ As mentioned in [section](#supervised-models), we have three different supervise
 <br/>
 <b> Supervised model trained from random initialization </b>
 
-In order to reproduce this training, you can inspect the YAML configuration at `experiments/supervised_training/supervised_random_init.yaml`. By default, we configure this for Task 1. You can adapt this for Task 2 and Task 3 by searching for 'Note: ' comments in the YAML that outline what must be changed.
+In order to reproduce this training, you can inspect the YAML configuration at `experiments/baselines/supervised_training/supervised_random_init.yaml`. By default, we configure this for Task 1. You can adapt this for Task 2 and Task 3 by searching for 'Note: ' comments in the YAML that outline what must be changed.
 
 You can start training by running this in the root code folder,
 ```bash
-lighter fit --config_file ./experiments/supervised_training/supervised_random_init.yaml
+lighter fit --config_file ./experiments/baselines/supervised_training/supervised_random_init.yaml
 ```
 
 <br/>
 
 <b> Fine-tuning a trained supervised model </b>
 
-The YAML configuration at `experiments/supervised_training/supervised_finetune.yaml` describes how you can fine-tune an already trained supervised model. Note that this is possible only for Task 2 and Task 3 as we used the supervised model trained in Task 1 to load weights from. Make sure you download the weights for Task 1 supervised models. You can follow instructions [here](#model) 
+The YAML configuration at `experiments/baselines/supervised_training/supervised_finetune.yaml` describes how you can fine-tune an already trained supervised model. Note that this is possible only for Task 2 and Task 3 as we used the supervised model trained in Task 1 to load weights from. Make sure you download the weights for Task 1 supervised models. You can follow instructions [here](#model) 
 
 
 You can start training by running this in the root code folder,
 ```bash
-lighter fit --config_file ./experiments/supervised_training/supervised_finetune.yaml
+lighter fit --config_file ./experiments/baselines/supervised_training/supervised_finetune.yaml
 ```
 <br/>
 
 <b> Fine-tuning a pre-trained foundation model </b>
 
-We provide the YAML configuration for this at `experiments/supervised_training/foundation_finetune.yaml`. Similar to the random initialization supervised training, it has been configured for Task 1 with 'Note:' tags for modifying to other tasks. Make sure you download the weights for the pre-trained foundation model before attempting to reproduce this training. You can follow instructions [here](#model) 
+We provide the YAML configuration for this at `experiments/baselines/supervised_training/foundation_finetune.yaml`. Similar to the random initialization supervised training, it has been configured for Task 1 with 'Note:' tags for modifying to other tasks. Make sure you download the weights for the pre-trained foundation model before attempting to reproduce this training. You can follow instructions [here](#model) 
 
 You can start training by running this in the root code folder,
 ```bash
-lighter fit --config_file ./experiments/supervised_training/foundation_finetune.yaml
+lighter fit --config_file ./experiments/baselines/supervised_training/foundation_finetune.yaml
 ```
 
 <br/>
