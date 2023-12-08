@@ -16,6 +16,14 @@ class NTXentNegativeMinedLoss(torch.nn.Module):
     """
     NTXentNegativeMinedLoss:
     NTXentLoss with explicitly mined negatives
+
+    Args:
+        temperature (float): The temperature parameter for the loss calculation. Default is 0.1.
+        gather_distributed (bool): Whether to gather hidden representations from other processes in a distributed setting. Default is False.
+
+    Raises:
+        ValueError: If the absolute value of temperature is less than 1e-8.
+
     """
 
     def __init__(self, temperature: float = 0.1, gather_distributed: bool = False):
@@ -32,11 +40,13 @@ class NTXentNegativeMinedLoss(torch.nn.Module):
         """Forward pass through Negative mining contrastive Cross-Entropy Loss.
 
         Args:
-            out: Dictionary with `positive` and `negative` key to represent
-            positive selected and negative selected samples
+            out (Dict): Dictionary with `positive` and `negative` keys to represent positive selected and negative selected samples.
 
         Returns:
-            Contrastive Cross Entropy Loss value.
+            torch.Tensor: Contrastive Cross Entropy Loss value.
+
+        Raises:
+            AssertionError: If `positive` or `negative` keys are not specified in the input dictionary.
 
         """
 

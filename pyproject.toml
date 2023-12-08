@@ -50,6 +50,8 @@ scipy = "1.10.0"
 fonttools = "^4.44.0"
 pydantic = "1.10.13"
 lightly = "1.4.19"
+werkzeug = "^3.0.1"
+urllib3 = "^2.1.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"

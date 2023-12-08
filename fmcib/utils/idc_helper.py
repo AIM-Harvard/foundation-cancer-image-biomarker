@@ -17,6 +17,14 @@ from tqdm import tqdm
 
 
 def dcmseg2nii(dcmseg_path, output_dir, tag=""):
+    """
+    Convert a DICOM Segmentation object to NIfTI format and save the resulting segment images.
+
+    Args:
+        dcmseg_path (str): The file path of the DICOM Segmentation object.
+        output_dir (str): The directory where the NIfTI files will be saved.
+        tag (str, optional): An optional tag to prepend to the output file names. Defaults to "".
+    """
     dcm = pydicom.dcmread(dcmseg_path)
     reader = pydicom_seg.SegmentReader()
     result = reader.read(dcm)
@@ -27,6 +35,17 @@ def dcmseg2nii(dcmseg_path, output_dir, tag=""):
 
 
 def download_from_manifest(df, save_dir, samples):
+    """
+    Downloads DICOM data from IDC (Imaging Data Commons) based on the provided manifest.
+
+    Args:
+        df (pandas.DataFrame): The manifest DataFrame containing information about the DICOM files.
+        save_dir (pathlib.Path): The directory where the downloaded DICOM files will be saved.
+        samples (int): The number of random samples to download. If None, all available samples will be downloaded.
+
+    Returns:
+        None
+    """
     # Instantiates a client
     storage_client = storage.Client()
     logger.info("Downloading DICOM data from IDC (Imaging Data Commons) ...")
@@ -60,6 +79,16 @@ def download_from_manifest(df, save_dir, samples):
 
 
 def download_LUNG1(path, samples=None):
+    """
+    Downloads the LUNG1 data manifest from Dropbox and saves it to the specified path.
+
+    Args:
+        path (str): The directory path where the LUNG1 data manifest will be saved.
+        samples (list, optional): A list of specific samples to download. If None, all samples will be downloaded.
+
+    Returns:
+        None
+    """
     save_dir = Path(path).resolve()
     save_dir.mkdir(exist_ok=True, parents=True)
 
@@ -76,6 +105,16 @@ def download_LUNG1(path, samples=None):
 
 
 def download_RADIO(path, samples=None):
+    """
+    Downloads the RADIO manifest from Dropbox and saves it to the specified path.
+
+    Args:
+        path (str): The path where the manifest file will be saved.
+        samples (list, optional): A list of sample names to download. If None, all samples will be downloaded.
+
+    Returns:
+        None
+    """
     save_dir = Path(path).resolve()
     save_dir.mkdir(exist_ok=True, parents=True)
 
@@ -92,6 +131,19 @@ def download_RADIO(path, samples=None):
 
 
 def process_series_dir(series_dir):
+    """
+    Process the series directory and extract relevant information.
+
+    Args:
+        series_dir (Path): The path to the series directory.
+
+    Returns:
+        dict: A dictionary containing the extracted information, including the image path, patient ID, and coordinates.
+
+    Raises:
+        None
+
+    """
     # Check if RTSTRUCT file exists
     rtstuct_files = list(series_dir.glob("*RTSTRUCT*"))
     seg_files = list(series_dir.glob("*SEG*"))
@@ -136,6 +188,17 @@ def process_series_dir(series_dir):
 
 
 def build_image_seed_dict(path, samples=None):
+    """
+    Build a dictionary of image seeds from DICOM files.
+
+    Args:
+        path (str): The path to the directory containing DICOM files.
+        samples (int, optional): The number of samples to process. If None, all samples will be processed.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the image seeds.
+
+    """
     sorted_dir = Path(path).resolve()
     series_dirs = [x.parent for x in sorted_dir.rglob("*.dcm")]
     series_dirs = sorted(list(set(series_dirs)))

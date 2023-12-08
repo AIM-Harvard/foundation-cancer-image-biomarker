@@ -6,6 +6,26 @@ from torch import nn
 
 
 class LoadPretrainedResnet3D(nn.Module):
+    """
+    LoadPretrainedResnet3D is a PyTorch module for loading a pretrained ResNet-3D model with optional heads.
+
+    Args:
+        pretrained (str): Path to the pretrained model file. Default is None.
+        vissl (bool): Whether the pretrained model is from VISSL. Default is False.
+        heads (list): List of integers specifying the number of input and output channels for each head. Default is an empty list.
+
+    Attributes:
+        trunk (nn.Module): The ResNet trunk network.
+        heads (nn.Module): The sequential module containing the heads.
+
+    Methods:
+        forward(x): Forward pass of the model.
+        load(pretrained): Load the pretrained model weights.
+
+    Example:
+        model = LoadPretrainedResnet3D(pretrained='path/to/pretrained_model.pth', vissl=True, heads=[512, 256, 128])
+    """
+
     def __init__(self, pretrained=None, vissl=False, heads=[]) -> None:
         super().__init__()
         self.trunk = monai.networks.nets.resnet.ResNet(

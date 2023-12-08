@@ -34,6 +34,8 @@ nav:
     - 'Model Inference': 'user-guide/inference.md'
     - 'Replicate Analysis': 'user-guide/analysis.md'
 
+  - 'API Reference': 'api_docs/fmcib'
+
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true

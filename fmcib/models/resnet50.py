@@ -16,6 +16,18 @@ def resnet50(
     weights_path=None,
     download_url="https://www.dropbox.com/s/bd7azdsvx1jhalp/fmcib.torch?dl=1",
 ):
+    """
+    Constructs a ResNet-50 model for image classification.
+
+    Args:
+        pretrained (bool, optional): If True, loads the pretrained weights. Default is True.
+        device (str, optional): The device to load the model on. Default is "cuda".
+        weights_path (str or Path, optional): The path to the pretrained weights file. If None, the weights will be downloaded. Default is None.
+        download_url (str, optional): The URL to download the pretrained weights. Default is "https://www.dropbox.com/s/bd7azdsvx1jhalp/fmcib.torch?dl=1".
+
+    Returns:
+        torch.nn.Module: The ResNet-50 model.
+    """
     logger.info(f"Loading pretrained foundation model (Resnet50) on {device}...")
 
     model = resnet50_monai(pretrained=False, n_input_channels=1, widen_factor=2, conv1_t_stride=2, feed_forward=False)
