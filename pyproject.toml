@@ -51,6 +51,7 @@ aiohttp = "^3.8.6"
 fonttools = "^4.44.1"
 pydantic = "^2.5.0"
 
+
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
 bandit = "^1.7.1"

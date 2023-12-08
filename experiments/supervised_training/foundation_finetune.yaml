@@ -43,6 +43,7 @@ system:
         weights_path: "./fmcib.torch" 
         heads:  [4096, 2048, 512, 256, 1] # Note: Change to [4096, 2048, 1] for Task 2 and [4096, Task 3
 
+
     post_criterion_activation: "$torch.sigmoid" # Note: Change to $torch.sigmoid for Task 2 and Task 3
     cast_target_dtype_to: "$torch.float32" # Note: Uncomment for Task 2 and Task 3
 

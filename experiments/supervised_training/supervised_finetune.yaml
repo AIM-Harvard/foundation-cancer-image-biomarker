@@ -36,7 +36,7 @@ system:
     model:
         _target_: fmcib.ssl.models.LoadPretrainedResnet3D
         pretrained: "./models/supervised/task1_supervised.torch" 
-        heads: [4096, 2048, 1] 
+        heads: [4096, 2048, 1]   # Note: Change to [4096, 2048, 512, 256, 1] for Task 3
 
     post_criterion_activation: "$torch.sigmoid" 
     cast_target_dtype_to: "$torch.float32"
