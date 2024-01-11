@@ -1,10 +1,12 @@
-import SimpleITK as sitk
-from platipy.imaging import ImageVisualiser
-
+import matplotlib.pyplot as plt
+import monai.transforms as monai_transforms
+import numpy as np
+import torch
+from monai.visualize import blend_images
 
 def visualize_seed_point(row):
     """
-    Visualizes a seed point on an image.
+    This function visualizes a seed point on an image.
 
     Args:
         row (pandas.Series): A row containing the information of the seed point, including the image path and the coordinates.
@@ -13,9 +15,70 @@ def visualize_seed_point(row):
     Returns:
         None
     """
-    image = sitk.ReadImage(row["image_path"])
-    image_centroid = image.TransformPhysicalPointToContinuousIndex([row["coordX"], row["coordY"], row["coordZ"]])
-    image_centroid = [int(x) for x in image_centroid]
-    visualiser = ImageVisualiser(image, cut=image_centroid[::-1], window=(-1000, 2048))
-    visualiser.add_bounding_box([*image_centroid, 1, 1, 1], linewidth=5)
-    visualiser.show()
+    # Define the transformation pipeline
+    T = monai_transforms.Compose(
+        [
+            monai_transforms.LoadImaged(keys=["image_path"], image_only=True, reader="ITKReader"),
+            monai_transforms.EnsureChannelFirstd(keys=["image_path"]),
+            monai_transforms.Spacingd(keys=["image_path"], pixdim=1, mode="bilinear", align_corners=True, diagonal=True),
+            monai_transforms.ScaleIntensityRanged(
+                keys=["image_path"], a_min=-1024, a_max=3072, b_min=0, b_max=1, clip=True
+            ),
+            monai_transforms.Orientationd(keys=["image_path"], axcodes="LPS"),
+            monai_transforms.SelectItemsd(keys=["image_path", "coordX", "coordY", "coordZ"]),
+        ]
+    )
+
+    # Apply the transformation pipeline
+    out = T(row)
+
+    # Calculate the center of the image
+    center = (-out["coordX"], -out["coordY"], out["coordZ"])
+    center = np.linalg.inv(np.array(out["image_path"].affine)) @ np.array(center + (1,))
+    center = [int(x) for x in center[:3]]
+
+    # Define the image and label
+    image = out["image_path"]
+    label = torch.zeros_like(image)
+
+    # Define the dimensions of the image and the patch
+    C, H, W, D = image.shape
+    Ph, Pw, Pd = 50, 50, 50
+
+    # Calculate and clamp the ranges for cropping
+    min_h, max_h = max(center[0] - Ph // 2, 0), min(center[0] + Ph // 2, H)
+    min_w, max_w = max(center[1] - Pw // 2, 0), min(center[1] + Pw // 2, W)
+    min_d, max_d = max(center[2] - Pd // 2, 0), min(center[2] + Pd // 2, D)
+
+    # Check if coordinates are valid
+    assert min_h < max_h, "Invalid coordinates: min_h >= max_h"
+    assert min_w < max_w, "Invalid coordinates: min_w >= max_w"
+    assert min_d < max_d, "Invalid coordinates: min_d >= max_d"
+
+    # Define the label for the cropped region
+    label[:, min_h:max_h, min_w:max_w, min_d:max_d] = 1
+
+    # Blend the image and the label
+    ret = blend_images(image=image, label=label, alpha=0.3, cmap="hsv", rescale_arrays=False)
+    ret = ret.permute(3, 2, 1, 0)
+
+    # Plot axial slice
+    plt.figure(figsize=(10, 10))
+    plt.subplot(1, 3, 1)
+    plt.imshow(ret[center[2], :, :])
+    plt.title('Axial')
+    plt.axis('off')
+
+    # Plot sagittal slice
+    plt.subplot(1, 3, 2)
+    plt.imshow(np.flipud(ret[:, center[1], :]))
+    plt.title('Coronal')
+    plt.axis('off')
+
+    # Plot coronal slice
+    plt.subplot(1, 3, 3)
+    plt.imshow(np.flipud(ret[:, :, center[0]]))
+    plt.title('Sagittal')
+
+    plt.axis('off')
+    plt.show()
