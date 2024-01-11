@@ -4,6 +4,7 @@ import numpy as np
 import torch
 from monai.visualize import blend_images
 
+
 def visualize_seed_point(row):
     """
     This function visualizes a seed point on an image.
@@ -21,9 +22,7 @@ def visualize_seed_point(row):
             monai_transforms.LoadImaged(keys=["image_path"], image_only=True, reader="ITKReader"),
             monai_transforms.EnsureChannelFirstd(keys=["image_path"]),
             monai_transforms.Spacingd(keys=["image_path"], pixdim=1, mode="bilinear", align_corners=True, diagonal=True),
-            monai_transforms.ScaleIntensityRanged(
-                keys=["image_path"], a_min=-1024, a_max=3072, b_min=0, b_max=1, clip=True
-            ),
+            monai_transforms.ScaleIntensityRanged(keys=["image_path"], a_min=-1024, a_max=3072, b_min=0, b_max=1, clip=True),
             monai_transforms.Orientationd(keys=["image_path"], axcodes="LPS"),
             monai_transforms.SelectItemsd(keys=["image_path", "coordX", "coordY", "coordZ"]),
         ]
@@ -66,19 +65,19 @@ def visualize_seed_point(row):
     plt.figure(figsize=(10, 10))
     plt.subplot(1, 3, 1)
     plt.imshow(ret[center[2], :, :])
-    plt.title('Axial')
-    plt.axis('off')
+    plt.title("Axial")
+    plt.axis("off")
 
     # Plot sagittal slice
     plt.subplot(1, 3, 2)
     plt.imshow(np.flipud(ret[:, center[1], :]))
-    plt.title('Coronal')
-    plt.axis('off')
+    plt.title("Coronal")
+    plt.axis("off")
 
     # Plot coronal slice
     plt.subplot(1, 3, 3)
     plt.imshow(np.flipud(ret[:, :, center[0]]))
-    plt.title('Sagittal')
+    plt.title("Sagittal")
 
-    plt.axis('off')
+    plt.axis("off")
     plt.show()
