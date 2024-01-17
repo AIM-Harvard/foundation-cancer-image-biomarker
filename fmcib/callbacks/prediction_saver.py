@@ -31,7 +31,15 @@ def handle_image(image):
 
 
 class SavePredictions(BasePredictionWriter):
-    def __init__(self, path: str, save_preview_samples: int = 0):
+    """
+    A class for saving predictions during training.
+
+    Args:
+        path (str): The path to save the predictions CSV file.
+        save_preview (bool, optional): Whether to save image previews. Defaults to False.
+    """
+
+    def __init__(self, path: str, save_preview: bool = False):
         super().__init__("epoch")
         self.output_csv = Path(path)
         self.save_preview_samples = save_preview_samples
@@ -39,6 +47,12 @@ class SavePredictions(BasePredictionWriter):
         self.df = pd.DataFrame()
 
     def save_previews(self, dataset):
+        """
+        Save image previews from the dataset.
+
+        Args:
+            dataset: The dataset containing the images.
+        """
         logger.info("Saving image previews")
         self.output_dir = self.output_csv.parent / "previews"
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -51,6 +65,15 @@ class SavePredictions(BasePredictionWriter):
             torchvision.utils.save_image(image, fp)
 
     def write_on_epoch_end(self, trainer, pl_module: "LightningModule", predictions: List[Any], batch_indices: List[Any]):
+        """
+        Write predictions to the CSV file at the end of each epoch.
+
+        Args:
+            trainer: The PyTorch Lightning trainer.
+            pl_module (LightningModule): The PyTorch Lightning module.
+            predictions (List[Any]): The list of predictions.
+            batch_indices (List[Any]): The list of batch indices.
+        """
         assert getattr(pl_module, "predict_dataset"), "`predict_dataset` not defined"
         dataset = pl_module.predict_dataset
 

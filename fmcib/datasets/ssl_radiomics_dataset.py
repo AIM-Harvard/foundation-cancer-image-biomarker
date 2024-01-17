@@ -12,10 +12,16 @@ from .utils import resample_image_to_spacing, slice_image
 
 class SSLRadiomicsDataset(Dataset):
     """
-    add documentation on how this dataset works
+    Dataset class for SSL Radiomics dataset.
 
     Args:
-        add docstrings for the parameters
+        path (str): The path to the dataset.
+        label (str, optional): The label column name in the dataset annotations. Defaults to None.
+        radius (int, optional): The radius around the centroid for positive patch extraction. Defaults to 25.
+        orient (bool, optional): Whether to orient the images to LPI orientation. Defaults to False.
+        resample_spacing (float or tuple, optional): The desired spacing for resampling the images. Defaults to None.
+        enable_negatives (bool, optional): Whether to include negative samples. Defaults to True.
+        transform (callable, optional): A function/transform to apply on the images. Defaults to None.
     """
 
     def __init__(
