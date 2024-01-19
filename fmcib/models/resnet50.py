@@ -14,7 +14,7 @@ def resnet50(
     pretrained=True,
     device="cuda",
     weights_path=None,
-    download_url="https://www.dropbox.com/s/bd7azdsvx1jhalp/fmcib.torch?dl=1",
+    download_url="https://zenodo.org/records/10528450/files/model_weights.torch?download=1",
     n_input_channels=1,
     widen_factor=2,
     conv1_t_stride=2,
@@ -47,9 +47,9 @@ def resnet50(
     if pretrained:
         if weights_path is None:
             current_path = Path(os.getcwd())
-            if not (current_path / "fmcib.torch").exists():
+            if not (current_path / "model_weights.torch").exists():
                 wget.download(download_url, bar=bar_progress)
-            weights_path = current_path / "fmcib.torch"
+            weights_path = current_path / "model_weights.torch"
 
         logger.info(f"Loading weights from {weights_path}...")
         checkpoint = torch.load(weights_path, map_location=device)
