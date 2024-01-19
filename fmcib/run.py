@@ -11,7 +11,7 @@ from .preprocessing import get_dataloader
 def get_features(
     csv_path,
     weights_path=None,
-    download_url="https://www.dropbox.com/s/bd7azdsvx1jhalp/fmcib.torch?dl=1",
+    download_url="https://zenodo.org/records/10528450/files/model_weights.torch?download=1",
     spatial_size=(50, 50, 50),
     precropped=False,
 ):
@@ -21,7 +21,7 @@ def get_features(
     Args:
         csv_path (str): Path to the CSV file containing image paths.
         weights_path (str, optional): Path to the pre-trained weights file. Defaults to None.
-        download_url (str, optional): URL to download the pre-trained weights file. Defaults to "https://www.dropbox.com/s/bd7azdsvx1jhalp/fmcib.torch?dl=1".
+        download_url (str, optional): URL to download the pre-trained weights file. Defaults to "https://zenodo.org/records/10528450/files/model_weights.torch?download=1".
         spatial_size (tuple, optional): Spatial size of the input images. Defaults to (50, 50, 50).
         precropped (bool, optional): Whether the images are already pre-cropped. Defaults to False.
 
