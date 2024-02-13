@@ -36,7 +36,7 @@ system:
     num_workers: 6
 
     model:
-      _target_: fmcib.ssl.models.SwaV
+      _target_: fmcib.ssl.modules.SwaV
       num_ftrs: 4096
       queue_length: 3840
       start_queue_at_epoch: 15

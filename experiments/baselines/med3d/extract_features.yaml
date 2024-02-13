@@ -17,11 +17,16 @@ system:
     pin_memory: True
     num_workers: 6
     model:
-        _target_: fmcib.models.resnet50
-        weights_path: "/home/suraj/Repositories/foundation-cancer-image-biomarker/models/sota/Med3D/pretrain/resnet_50.pth"
-        widen_factor: 1
-        bias_downsample: False
-        conv1_t_stride: 1
+        _target_: fmcib.models.LoadModel
+        trunk:
+          _target_: monai.networks.nets.resnet50
+          widen_factor: 1
+          bias_downsample: False
+          n_input_channels: 1
+          conv1_t_stride: 1
+          feed_forward: False
+          pretrained: False
+        weights_path: "./models/pretrained/med3d/resnet_50.pth"
 
     criterion: null
     optimizers: null

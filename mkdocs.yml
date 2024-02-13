@@ -25,14 +25,15 @@ nav:
   - 'Getting Started': 
     - 'Pre-requisites': 'getting-started/prereqs.md'
     - 'Installation': 'getting-started/installation.md'
-    - 'Repository Structure': 'getting-started/repository-structure.md'
+    - 'Package Structure': 'getting-started/package-structure.md'
 
   - 'User Guide':
     - 'Data Download and Preprocessing': 'user-guide/data.md'
-    - 'Download Trained Models': 'user-guide/download_models.md'
-    - 'Reproduce Models': 'user-guide/reproduce_models.md'
-    - 'Model Inference': 'user-guide/inference.md'
+    - 'Extracting Features & Predictions': 'user-guide/inference.md'
     - 'Replicate Analysis': 'user-guide/analysis.md'
+    - 'Reproduce FM training': 'user-guide/reproduce_fm.md'
+    - 'Reproduce Baselines': 'user-guide/reproduce_baselines.md'
+
 
   - 'API Reference': 'api_docs/fmcib'
 

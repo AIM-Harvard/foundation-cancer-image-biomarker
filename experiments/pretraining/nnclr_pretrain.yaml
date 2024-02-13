@@ -37,7 +37,7 @@ system:
     num_workers: 3
 
     model:
-      _target_: fmcib.ssl.models.NNCLR
+      _target_: fmcib.ssl.modules.NNCLR
       num_ftrs: 4096
       proj_hidden_dim: 2048
       pred_hidden_dim: 2048

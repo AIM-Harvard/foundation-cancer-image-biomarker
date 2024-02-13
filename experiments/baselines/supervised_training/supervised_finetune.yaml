@@ -34,8 +34,13 @@ system:
     drop_last_batch: True 
     num_workers: 3
     model:
-        _target_: fmcib.ssl.models.LoadPretrainedResnet3D
-        pretrained: "./models/supervised/task1_supervised.torch" 
+        _target_: fmcib.models.LoadModel
+        trunk:
+          _target_: monai.networks.nets.resnet50
+          widen_factor: 2
+          n_input_channels: 1
+          feed_forward: False
+        weights_path: "./models/supervised/task1_supervised.torch" 
         heads: [4096, 2048, 1]   # Note: Change to [4096, 2048, 512, 256, 1] for Task 3
 
     post_criterion_activation: "$torch.sigmoid" 

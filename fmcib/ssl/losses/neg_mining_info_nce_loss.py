@@ -140,7 +140,7 @@ class NegativeMiningInfoNCECriterion(nn.Module):
         return loss
 
     def __repr__(self):
-        num_negatives = self.buffer_params.effective_batch_size - 2
+        num_negatives = self.effective_batch_size - 2
         T = self.temperature
         num_pos = self.num_pos
         repr_dict = {

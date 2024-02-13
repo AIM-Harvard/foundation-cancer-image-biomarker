@@ -1,6 +1,9 @@
-## Outputs
-The `outputs` folder contains outputs from several pipelines used in our study. To download all the outputs, you can run
+# Reproducing the analysis
 
+We provide 
+
+## Outputs
+The `outputs` folder contains outputs from several pipelines used in our study. This can be downloaded from hugging face
 
 ```bash
 cd outputs

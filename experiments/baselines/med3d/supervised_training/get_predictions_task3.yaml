@@ -17,7 +17,7 @@ system:
     pin_memory: True
     num_workers: 2
     model:
-        _target_: fmcib.models.LoadPretrainedModel
+        _target_: fmcib.models.LoadModel
         trunk:
           _target_: monai.networks.nets.resnet50
           widen_factor: 1

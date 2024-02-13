@@ -6,7 +6,7 @@ from lightly.models import SimCLR as lightly_SimCLR
 from lightly.models.modules import SimCLRProjectionHead
 
 
-class ExNegSimCLR(SimCLR):
+class ExNegSimCLR(lightly_SimCLR):
     """
     Extended Negative Sampling SimCLR model.
 

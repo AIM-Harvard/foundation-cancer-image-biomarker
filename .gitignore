@@ -633,4 +633,5 @@ outputs/*
 logs/
 checkpoints/
 data/csvs/
-models/sota/
+models
+outputs

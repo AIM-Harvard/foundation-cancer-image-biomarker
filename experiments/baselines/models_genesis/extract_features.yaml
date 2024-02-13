@@ -18,13 +18,11 @@ system:
     pin_memory: True
     num_workers: 6
     model:
-      _target_: lighter.utils.model.adjust_prefix_and_load_state_dict
-      ckpt_path: /home/suraj/Repositories/foundation-cancer-image-biomarker/models/sota/ModelsGenesis/Genesis_Chest_CT.pt
-      ckpt_to_model_prefix: {"module." : ""} 
-      model:
+        _target_: fmcib.models.LoadModel
+        trunk:
           _target_: fmcib.models.ModelsGenesisUNet3D
           decoder: False
-
+        weights_path: ./models/pretrained/models_genesis/Genesis_Chest_CT.pt
     criterion: null
     optimizers: null
     schedulers: null

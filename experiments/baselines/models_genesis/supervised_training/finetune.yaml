@@ -34,15 +34,12 @@ system:
     drop_last_batch: True 
     num_workers: 3
     model:
-        _target_: fmcib.models.LoadPretrainedModel
+        _target_: fmcib.models.LoadModel
         trunk:
-              _target_: lighter.utils.model.adjust_prefix_and_load_state_dict
-              ckpt_path: /home/suraj/Repositories/foundation-cancer-image-biomarker/models/sota/ModelsGenesis/Genesis_Chest_CT.pt
-              ckpt_to_model_prefix: {"module." : ""} 
-              model:
-                  _target_: fmcib.models.ModelsGenesisUNet3D
-                  decoder: False
-        heads: [4096, 2048, 512, 256, 1] # Note: Change to [4096, 2048, 1] for Task 2 and  [4096, 2048, 512, 256, 1] Task 3
+          _target_: fmcib.models.ModelsGenesisUNet3D
+          decoder: False
+        weights_path: ./models/pretrained/models_genesis/Genesis_Chest_CT.pt
+        heads: [4096, 2048, 512, 256, 8] # Note: Change to [4096, 2048, 1] for Task 2 and  [4096, 2048, 512, 256, 1] Task 3
 
     post_criterion_activation: "$torch.sigmoid" # Note: Change to $torch.sigmoid for Task 2 and Task 3
     cast_target_dtype_to: "$torch.float32" # Note: Uncomment for Task 2 and Task 3

@@ -1,0 +1,63 @@
+trainer:
+    _target_: pytorch_lightning.Trainer
+    benchmark: True
+    max_epochs: 100
+    check_val_every_n_epoch: 4
+    accelerator: gpu
+    devices: 1
+    log_every_n_steps: 50
+    logger: False
+    callbacks:
+        - _target_: fmcib.callbacks.SavePredictions
+          path: "preds.csv" # Note: Change path to the CSV file to save predictions to.
+          save_preview_samples: 1
+system:
+    _target_: lighter.LighterSystem
+    batch_size: 8
+    pin_memory: True
+    num_workers: 0
+    model:
+        _target_: fmcib.models.LoadModel
+        trunk:
+            _target_: monai.networks.nets.resnet50
+            widen_factor: 2
+            n_input_channels: 1
+            feed_forward: False
+        weights_path: "./models/baselines/task1/supervised.torch" # Download the models folder from HF
+        heads: [4096, 2048, 8] # Note: Change to [4096, 2048, 2] for Task 2 and [4096, 2048, 512, 256, 2] for Task 3
+
+
+    postprocessing:
+      metrics:
+        pred:
+          - "$lambda x: torch.softmax(x, 1)" # Note: Change to $lambda x: torch.sigmoid(x) for Task 2 and Task 3
+      # criterion: # Note: Uncomment for Task 2 and Task 3
+      #   target: 
+      #     - "$lambda x: x.float()"
+
+    criterion: null
+    optimizer: null
+    scheduler: null
+    datasets:
+        train: null
+        val: null
+        test: null
+        predict:
+            _target_: fmcib.datasets.SSLRadiomicsDataset
+            path: "./data/preprocessing/deeplesion/annotations/task1_test.csv" # Note: Change path to the CSV file to extract features from.
+            label: "Coarse_lesion_type" # Note: Change the label to "malignancy" for task 2 and "survival" for task 3
+            radius: 25
+            orient: True # Note: Set orient to False for task 2 and task 3
+            resample_spacing: [1, 1, 1]
+            enable_negatives: False
+            transform:
+                _target_: monai.transforms.Compose
+                transforms:               
+                    - _target_: monai.transforms.ToTensor
+                    - _target_: monai.transforms.EnsureChannelFirst
+                      channel_dim: no_channel
+                    - _target_: monai.transforms.NormalizeIntensity
+                      subtrahend: -1024
+                      divisor: 3072
+                    - _target_: monai.transforms.SpatialPad
+                      spatial_size: [50, 50, 50]                  

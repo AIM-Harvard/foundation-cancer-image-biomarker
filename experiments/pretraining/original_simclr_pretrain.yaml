@@ -37,7 +37,7 @@ system:
     num_workers: 6
 
     model:
-      _target_: fmcib.ssl.models.SimCLR
+      _target_: fmcib.ssl.modules.SimCLR
       num_ftrs: 4096
       out_dim: 128
       backbone:

@@ -34,7 +34,7 @@ system:
     drop_last_batch: False 
     num_workers: 3
     model:
-        _target_: fmcib.models.LoadPretrainedModel
+        _target_: fmcib.models.LoadModel
         trunk:
           _target_: monai.networks.nets.resnet50
           widen_factor: 1
@@ -43,11 +43,16 @@ system:
           conv1_t_stride: 1
           feed_forward: False
           pretrained: False
-        weights_path: "/home/suraj/Repositories/foundation-cancer-image-biomarker/models/sota/Med3D/pretrain/resnet_50.pth"
+        weights_path: "/home/suraj/Repositories/foundation-cancer-image-biomarker/models/pretrained/med3d/resnet_50.pth"
         heads: [2048, 1024, 512, 256, 1] # Note: Change to [4096, 2048, 1] for Task 2 and [4096, 2048, 512, 256, 1] Task 3
 
-    post_criterion_activation: "$torch.sigmoid" # Note: Change to $torch.sigmoid for Task 2 and Task 3
-    cast_target_dtype_to: "$torch.float32" # Note: Uncomment for Task 2 and Task 3
+    postprocessing:
+      metrics:
+        pred:
+          - "$lambda x: torch.softmax(x, 1)" # Note: Change to $lambda x: torch.sigmoid(x) for Task 2 and Task 3    
+      # criterion:
+      #   target: # Note: Uncomment for Task 2 and Task 3
+      #     - "$lambda x: x.float()"
 
     criterion:
         _target_: torch.nn.CrossEntropyLoss # Note: Change to torch.nn.BCEWithLogitsLoss for Task 2 and Task 3
