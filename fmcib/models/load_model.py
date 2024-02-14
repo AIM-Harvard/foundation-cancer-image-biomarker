@@ -40,6 +40,7 @@ class LoadModel(nn.Module):
         """
         super().__init__()
         self.trunk = trunk
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         head_layers = []
         for idx in range(len(heads) - 1):
             current_layers = []
@@ -95,7 +96,7 @@ class LoadModel(nn.Module):
 
         Raises the appropriate warnings and logs informational messages.
         """
-        pretrained_model = torch.load(weights)
+        pretrained_model = torch.load(weights, map_location=self.device)
 
         if "trunk_state_dict" in pretrained_model:  # Loading ViSSL pretrained model
             trained_trunk = pretrained_model["trunk_state_dict"]
