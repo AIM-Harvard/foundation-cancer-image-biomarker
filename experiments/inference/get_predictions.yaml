@@ -13,9 +13,9 @@ trainer:
           save_preview_samples: 1
 system:
     _target_: lighter.LighterSystem
-    batch_size: 8
+    batch_size: 32
     pin_memory: True
-    num_workers: 0
+    num_workers: 8
     model:
         _target_: fmcib.models.LoadModel
         trunk:
@@ -28,7 +28,7 @@ system:
 
 
     postprocessing:
-      metrics:
+      logging:
         pred:
           - "$lambda x: torch.softmax(x, 1)" # Note: Change to $lambda x: torch.sigmoid(x) for Task 2 and Task 3
       # criterion: # Note: Uncomment for Task 2 and Task 3

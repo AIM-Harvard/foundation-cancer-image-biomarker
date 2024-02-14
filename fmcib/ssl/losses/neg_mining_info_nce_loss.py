@@ -18,16 +18,42 @@ class NegativeMiningInfoNCECriterion(nn.Module):
     https://arxiv.org/abs/2002.05709.
 
     Args:
-        temperature (float): the temperature to be applied on the logits
-        buffer_params:
-            world_size (int): total number of trainers in training
-            embedding_dim (int): output dimensions of the features projects
-            effective_batch_size (int): total batch size used (includes positives)
+        temperature (float): The temperature to be applied on the logits.
+        buffer_params (dict): A dictionary containing the following keys:
+            - world_size (int): Total number of trainers in training.
+            - embedding_dim (int): Output dimensions of the features projects.
+            - effective_batch_size (int): Total batch size used (includes positives).
     """
 
     def __init__(
         self, embedding_dim, batch_size, world_size, gather_distributed=False, temperature: float = 0.1, balanced: bool = True
     ):
+        """
+        Initialize the NegativeMiningInfoNCECriterion class.
+
+        Args:
+            embedding_dim (int): The dimension of the embedding space.
+            batch_size (int): The size of the input batch.
+            world_size (int): The number of distributed processes.
+            gather_distributed (bool): Whether to gather distributed data.
+            temperature (float): The temperature used in the computation.
+            balanced (bool): Whether to use balanced sampling.
+
+        Attributes:
+            embedding_dim (int): The dimension of the embedding space.
+            use_gpu (bool): Whether to use GPU for computations.
+            temperature (float): The temperature used in the computation.
+            num_pos (int): The number of positive samples.
+            num_neg (int): The number of negative samples.
+            criterion (nn.CrossEntropyLoss): The loss function.
+            gather_distributed (bool): Whether to gather distributed data.
+            world_size (int): The number of distributed processes.
+            effective_batch_size (int): The effective batch size, taking into account world size and number of positive samples.
+            pos_mask (None or Tensor): Mask for positive samples.
+            neg_mask (None or Tensor): Mask for negative samples.
+            balanced (bool): Whether to use balanced sampling.
+            setup (bool): Whether the setup has been done.
+        """
         super(NegativeMiningInfoNCECriterion, self).__init__()
         self.embedding_dim = embedding_dim
         self.use_gpu = torch.cuda.is_available()
@@ -47,7 +73,7 @@ class NegativeMiningInfoNCECriterion(nn.Module):
 
     def precompute_pos_neg_mask(self):
         """
-        We precompute the positive and negative masks to speed up the loss calculation
+        Precompute the positive and negative masks to speed up the loss calculation.
         """
         # computed once at the begining of training
 
@@ -140,6 +166,26 @@ class NegativeMiningInfoNCECriterion(nn.Module):
         return loss
 
     def __repr__(self):
+        """
+        Return a string representation of the object.
+
+        Returns:
+            str: A formatted string representation of the object.
+
+        Examples:
+            The following example shows the string representation of the object:
+
+            {
+              'name': <object_name>,
+              'temperature': <temperature_value>,
+              'num_negatives': <num_negatives_value>,
+              'num_pos': <num_pos_value>,
+              'dist_rank': <dist_rank_value>
+            }
+
+        Note:
+            This function is intended to be used with the pprint module for pretty printing.
+        """
         num_negatives = self.effective_batch_size - 2
         T = self.temperature
         num_pos = self.num_pos

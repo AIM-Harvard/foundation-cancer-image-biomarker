@@ -628,10 +628,9 @@ analysis/figures
 analysis/result_csvs/
 *.zip
 experiments/linear_evaluation/*.csv
-outputs/*
 *.pkl
 logs/
 checkpoints/
 data/csvs/
-models
-outputs
+./models
+./outputs

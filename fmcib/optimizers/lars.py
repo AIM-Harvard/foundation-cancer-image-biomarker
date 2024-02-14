@@ -66,6 +66,23 @@ class LARS(Optimizer):
         trust_coefficient=0.001,
         eps=1e-8,
     ):
+        """
+        Initialize an optimizer with the given parameters.
+
+        Args:
+            params (iterable): Iterable of parameters to optimize.
+            lr (float, optional): Learning rate. Default is required.
+            momentum (float, optional): Momentum factor. Default is 0.
+            dampening (float, optional): Dampening for momentum. Default is 0.
+            weight_decay (float, optional): Weight decay factor. Default is 0.
+            nesterov (bool, optional): Use Nesterov momentum. Default is False.
+            trust_coefficient (float, optional): Trust coefficient. Default is 0.001.
+            eps (float, optional): Small value for numerical stability. Default is 1e-08.
+
+        Raises:
+            ValueError: If an invalid value is provided for lr, momentum, or weight_decay.
+            ValueError: If nesterov momentum is enabled without providing a momentum and zero dampening.
+        """
         if lr is not required and lr < 0.0:
             raise ValueError(f"Invalid learning rate: {lr}")
         if momentum < 0.0:
@@ -88,6 +105,18 @@ class LARS(Optimizer):
         super().__init__(params, defaults)
 
     def __setstate__(self, state):
+        """
+        Set the state of the optimizer.
+
+        Args:
+            state (dict): A dictionary containing the state of the optimizer.
+
+        Returns:
+            None
+
+        Note:
+            This method is an override of the `__setstate__` method of the superclass. It sets the state of the optimizer using the provided dictionary. Additionally, it sets the `nesterov` parameter in each group of the optimizer to `False` if it is not already present.
+        """
         super().__setstate__(state)
 
         for group in self.param_groups:
@@ -95,9 +124,10 @@ class LARS(Optimizer):
 
     @torch.no_grad()
     def step(self, closure=None):
-        """Performs a single optimization step.
+        """
+        Performs a single optimization step.
 
-        Args:
+        Parameters:
             closure (callable, optional): A closure that reevaluates the model
                 and returns the loss.
         """

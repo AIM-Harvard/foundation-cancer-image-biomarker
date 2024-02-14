@@ -14,16 +14,29 @@ from monai.transforms import MapTransform, Transform
 
 
 class SeedBasedPatchCropd(MapTransform):
+    """
+    A class representing a seed-based patch crop transformation.
+
+    Inherits from MapTransform.
+
+    Attributes:
+        keys (list): List of keys for images in the input data dictionary.
+        roi_size (tuple): Tuple indicating the size of the region of interest (ROI).
+        allow_missing_keys (bool): If True, do not raise an error if some keys in the input data dictionary are missing.
+        coord_orientation (str): Coordinate system (RAS or LPS) of input coordinates.
+        global_coordinates (bool): If True, coordinates are in global coordinates; otherwise, local coordinates.
+    """
+
     def __init__(self, keys, roi_size, allow_missing_keys=False, coord_orientation="RAS", global_coordinates=True) -> None:
         """
         Initialize SeedBasedPatchCropd class.
 
         Args:
-            keys: List of keys for images in the input data dictionary.
-            roi_size: Tuple indicating the size of the region of interest (ROI).
-            allow_missing_keys: If True, do not raise an error if some keys in the input data dictionary are missing.
-            coord_orientation: Coordinate system (RAS or LPS) of input coordinates.
-            global_coordinates: If True, coordinates are in global coordinates; otherwise, local coordinates.
+            keys (List): List of keys for images in the input data dictionary.
+            roi_size (Tuple): Tuple indicating the size of the region of interest (ROI).
+            allow_missing_keys (bool): If True, do not raise an error if some keys in the input data dictionary are missing.
+            coord_orientation (str): Coordinate system (RAS or LPS) of input coordinates.
+            global_coordinates (bool): If True, coordinates are in global coordinates; otherwise, local coordinates.
         """
         super().__init__(keys=keys, allow_missing_keys=allow_missing_keys)
         self.coord_orientation = coord_orientation
@@ -35,10 +48,10 @@ class SeedBasedPatchCropd(MapTransform):
         Apply transformation to given data.
 
         Args:
-            data: Dictionary with image keys and required center coordinates.
+            data (dict): Dictionary with image keys and required center coordinates.
 
         Returns:
-            Dictionary with cropped patches for each key in the input data dictionary.
+            dict: Dictionary with cropped patches for each key in the input data dictionary.
         """
         d = dict(data)
 
@@ -58,12 +71,32 @@ class SeedBasedPatchCropd(MapTransform):
 
 
 class SeedBasedPatchCrop(Transform):
+    """
+    A class representing a seed-based patch crop transformation.
+
+    Attributes:
+        roi_size: Tuple indicating the size of the region of interest (ROI).
+
+    Methods:
+        __call__: Crop a patch from the input image centered around the seed coordinate.
+
+    Args:
+        roi_size: Tuple indicating the size of the region of interest (ROI).
+
+    Returns:
+        NdarrayOrTensor: Cropped patch of shape (C, Ph, Pw, Pd), where (Ph, Pw, Pd) is the patch size.
+
+    Raises:
+        AssertionError: If the input image has dimensions other than (C, H, W, D)
+        AssertionError: If the coordinates are invalid (e.g., min_h >= max_h)
+    """
+
     def __init__(self, roi_size) -> None:
         """
         Initialize SeedBasedPatchCrop class.
 
         Args:
-            roi_size: Tuple indicating the size of the region of interest (ROI).
+            roi_size (tuple): Tuple indicating the size of the region of interest (ROI).
         """
         super().__init__()
         self.roi_size = roi_size
@@ -73,9 +106,9 @@ class SeedBasedPatchCrop(Transform):
         Crop a patch from the input image centered around the seed coordinate.
 
         Args:
-            img: Image to crop, with dimensions (C, H, W, D). C is the number of channels.
-            center: Seed coordinate around which to crop the patch (X, Y, Z).
-            global_coordinates: If True, seed coordinate is in global space; otherwise, local space.
+            img (NdarrayOrTensor): Image to crop, with dimensions (C, H, W, D). C is the number of channels.
+            center (tuple): Seed coordinate around which to crop the patch (X, Y, Z).
+            global_coordinates (bool): If True, seed coordinate is in global space; otherwise, local space.
 
         Returns:
             NdarrayOrTensor: Cropped patch of shape (C, Ph, Pw, Pd), where (Ph, Pw, Pd) is the patch size.

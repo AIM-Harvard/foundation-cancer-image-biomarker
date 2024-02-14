@@ -18,7 +18,9 @@ SITK_INTERPOLATOR_DICT = {
 
 
 def resample_image_to_spacing(image, new_spacing, default_value, interpolator="linear"):
-    """Resample an image to a new spacing."""
+    """
+    Resample an image to a new spacing.
+    """
     assert interpolator in SITK_INTERPOLATOR_DICT, (
         f"Interpolator '{interpolator}' not part of SimpleITK. "
         f"Please choose one of the following {list(SITK_INTERPOLATOR_DICT.keys())}."
@@ -46,7 +48,9 @@ def resample_image_to_spacing(image, new_spacing, default_value, interpolator="l
 
 
 def slice_image(image, patch_idx):
-    """Slice an image."""
+    """
+    Slice an image.
+    """
 
     start, stop = zip(*patch_idx)
     slice_filter = sitk.SliceImageFilter()
@@ -56,6 +60,21 @@ def slice_image(image, patch_idx):
 
 
 def is_overlapping(patch1, patch2):
+    """
+    Check if two patches are overlapping.
+
+    Args:
+        patch1 (list of tuples): A list of tuples representing the ranges of each axis in patch1.
+        patch2 (list of tuples): A list of tuples representing the ranges of each axis in patch2.
+
+    Returns:
+        bool: True if the two patches overlap, False otherwise.
+
+    Note:
+        This function assumes that each patch is represented by a list of tuples, where each tuple represents the range of an axis in the patch.
+        The range of an axis is represented by a tuple (start, end), where start is the start value of the range and end is the end value of the range.
+        The patches are considered overlapping if there is any overlap in the ranges of their axes.
+    """
     overlap_by_axis = [max(axis1[0], axis2[0]) < min(axis1[1], axis2[1]) for axis1, axis2 in zip(patch1, patch2)]
 
     return np.all(overlap_by_axis)

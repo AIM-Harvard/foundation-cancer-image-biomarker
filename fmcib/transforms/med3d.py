@@ -3,16 +3,40 @@ from monai.transforms import Transform
 
 
 class IntensityNormalizeOneVolume(Transform):
+    """
+    A class representing an intensity normalized volume.
+
+    Attributes:
+        None
+
+    Methods:
+        __call__(self, volume): Normalize the intensity of an n-dimensional volume based on the mean and standard deviation of the non-zero region.
+
+        Args:
+            volume (numpy.ndarray): The input n-dimensional volume.
+
+        Returns:
+            out (numpy.ndarray): The normalized n-dimensional volume.
+    """
+
     def __init__(self):
+        """
+        Initialize the object.
+
+        Returns:
+            None
+        """
         super().__init__()
 
     def __call__(self, volume):
         """
-        normalize the itensity of an nd volume based on the mean and std of nonzeor region
-        inputs:
-            volume: the input nd volume
-        outputs:
-            out: the normalized nd volume
+        Normalize the intensity of an nd volume based on the mean and std of the non-zero region.
+
+        Args:
+            volume: The input nd volume.
+
+        Returns:
+            out: The normalized nd volume.
         """
         volume = volume.astype(np.float32)
         low, high = np.percentile(volume, [0.5, 99.5])

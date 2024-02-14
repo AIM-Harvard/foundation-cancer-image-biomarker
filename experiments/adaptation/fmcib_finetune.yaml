@@ -26,7 +26,7 @@ system:
     _target_: lighter.LighterSystem
     batch_size: 32
     pin_memory: True
-    drop_last_batch: True 
+    drop_last_batch: False 
     num_workers: 12
     model:
         _target_: fmcib.models.LoadModel
@@ -69,7 +69,8 @@ system:
           num_classes: 8 
         - _target_: torchmetrics.AUROC
           task: multiclass # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
-          num_classes: 8 
+          num_classes: 8
+
       val: "%#train"
       test: "%#train"
 
@@ -85,6 +86,9 @@ system:
         transform:
             _target_: monai.transforms.Compose
             transforms:
+                - _target_: monai.transforms.NormalizeIntensity
+                  subtrahend: -1024
+                  divisor: 3072            
                 - _target_: monai.transforms.ToTensor
                 - _target_: monai.transforms.EnsureChannelFirst
                   channel_dim: no_channel
@@ -99,9 +103,7 @@ system:
                   prob: 0.5
                 - _target_: monai.transforms.RandRotate90
                   prob: 0.5
-                - _target_: monai.transforms.NormalizeIntensity
-                  subtrahend: -1024
-                  divisor: 3072
+
       val:
         _target_: fmcib.datasets.SSLRadiomicsDataset
         path: null # Note: Change path
@@ -113,13 +115,14 @@ system:
         transform:
             _target_: monai.transforms.Compose
             transforms:
+                - _target_: monai.transforms.NormalizeIntensity
+                  subtrahend: -1024
+                  divisor: 3072            
                 - _target_: monai.transforms.ToTensor
                 - _target_: monai.transforms.EnsureChannelFirst
                   channel_dim: no_channel
                 - _target_: monai.transforms.SpatialPad
                   spatial_size: [50, 50, 50]
-                - _target_: monai.transforms.NormalizeIntensity
-                  subtrahend: -1024
-                  divisor: 3072
+
                   
       test: null

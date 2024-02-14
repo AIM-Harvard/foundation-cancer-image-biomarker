@@ -10,16 +10,23 @@ class NTXentLoss(lightly_NTXentLoss):
     """
 
     def __init__(self, temperature: float = 0.1, gather_distributed: bool = False):
+        """
+        Initialize an instance of the class.
+
+        Args:
+            temperature (float, optional): The temperature parameter for the instance. Defaults to 0.1.
+            gather_distributed (bool, optional): Whether to gather distributed data. Defaults to False.
+        """
         super().__init__(temperature, gather_distributed)
 
     def forward(self, out: List):
-        """Forward pass through Negative mining contrastive Cross-Entropy Loss.
+        """
+        Forward pass through Negative mining contrastive Cross-Entropy Loss.
 
         Args:
-            out: List of tensors
+            out (List[torch.Tensor]): List of tensors
 
         Returns:
-            Contrastive Cross Entropy Loss value.
-
+            float: Contrastive Cross Entropy Loss value.
         """
         return super().forward(*out)

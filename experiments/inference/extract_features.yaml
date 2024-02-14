@@ -18,12 +18,12 @@ system:
     num_workers: 6
     model:
         _target_: fmcib.models.LoadModel
-        trunk:
+        trunk: # Note: If changing the model, change the trunk to the corresponding model.
             _target_: monai.networks.nets.resnet50
             widen_factor: 2
             n_input_channels: 1
             feed_forward: False
-        weights_path: "./model_weights.torch"
+        weights_path: "./model_weights.torch" # Note: Change path to the model weights file.
 
     criterion: null
     optimizer: null
@@ -50,4 +50,4 @@ system:
                       subtrahend: -1024
                       divisor: 3072
                     - _target_: monai.transforms.SpatialPad
-                      spatial_size: [50, 50, 50]                  
+                      spatial_size: [50, 50, 50]

@@ -7,7 +7,8 @@ torch.set_float32_matmul_precision("medium")
 
 
 class SwaV(nn.Module):
-    """Implements the SwAV (Swapping Assignments between multiple Views of the same image) model.
+    """
+    Implements the SwAV (Swapping Assignments between multiple Views of the same image) model.
 
     Args:
         backbone (nn.Module): CNN backbone for feature extraction.
@@ -31,6 +32,31 @@ class SwaV(nn.Module):
         start_queue_at_epoch: int = 0,
         n_steps_frozen_prototypes: int = 0,
     ):
+        """
+        Initialize a SwaV model.
+
+        Args:
+            backbone (nn.Module): The backbone model.
+            num_ftrs (int): The number of input features.
+            out_dim (int): The dimension of the output.
+            n_prototypes (int): The number of prototypes.
+            n_queues (int): The number of queues.
+            queue_length (int, optional): The length of the queue. Default is 0.
+            start_queue_at_epoch (int, optional): The epoch at which to start using the queue. Default is 0.
+            n_steps_frozen_prototypes (int, optional): The number of steps to freeze prototypes. Default is 0.
+
+        Returns:
+            None
+
+        Attributes:
+            backbone (nn.Module): The backbone model.
+            projection_head (SwaVProjectionHead): The projection head.
+            prototypes (SwaVPrototypes): The prototypes.
+            queues (nn.ModuleList, optional): The queues. If n_queues > 0, this will be initialized with MemoryBankModules.
+            queue_length (int, optional): The length of the queue.
+            num_features_queued (int): The number of features queued.
+            start_queue_at_epoch (int): The epoch at which to start using the queue.
+        """
         super().__init__()
         # Backbone for feature extraction
         self.backbone = backbone
@@ -48,7 +74,8 @@ class SwaV(nn.Module):
             self.start_queue_at_epoch = start_queue_at_epoch
 
     def forward(self, input, epoch=None, step=None):
-        """Performs the forward pass for the SwAV model.
+        """
+        Performs the forward pass for the SwAV model.
 
         Args:
             input (Tuple[List[Tensor], List[Tensor]]): A tuple consisting of a list of high-resolution input images
@@ -57,7 +84,7 @@ class SwaV(nn.Module):
             step (int, optional): Current training step. Required if `n_steps_frozen_prototypes` > 0. Defaults to None.
 
         Returns:
-            Tuple[List[Tensor], List[Tensor], List[Tensor]]: A Tuple containing lists of high-resolution prototypes,
+            Tuple[List[Tensor], List[Tensor], List[Tensor]]: A tuple containing lists of high-resolution prototypes,
                 low-resolution prototypes, and queue prototypes.
         """
         high_resolution, low_resolution = input
@@ -78,7 +105,8 @@ class SwaV(nn.Module):
         return high_resolution_prototypes, low_resolution_prototypes, queue_prototypes
 
     def _subforward(self, input):
-        """Subforward pass to compute features for the input image.
+        """
+        Subforward pass to compute features for the input image.
 
         Args:
             input (Tensor): Input image tensor.
@@ -96,7 +124,8 @@ class SwaV(nn.Module):
 
     @torch.no_grad()
     def _get_queue_prototypes(self, high_resolution_features, epoch=None):
-        """Compute the queue prototypes for the given high-resolution features.
+        """
+        Compute the queue prototypes for the given high-resolution features.
 
         Args:
             high_resolution_features (List[Tensor]): List of high-resolution feature tensors.

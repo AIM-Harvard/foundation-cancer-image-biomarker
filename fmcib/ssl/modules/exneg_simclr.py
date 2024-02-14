@@ -17,6 +17,20 @@ class ExNegSimCLR(lightly_SimCLR):
     """
 
     def __init__(self, backbone: nn.Module, num_ftrs: int = 32, out_dim: int = 128) -> None:
+        """
+        Initialize the object.
+
+        Args:
+            backbone (nn.Module): The backbone neural network.
+            num_ftrs (int, optional): The number of input features for the projection head. Default is 32.
+            out_dim (int, optional): The output dimension of the projection head. Default is 128.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
         super().__init__(backbone, num_ftrs, out_dim)
         # replace the projection head with a new one
         self.projection_head = SimCLRProjectionHead(num_ftrs, num_ftrs // 2, out_dim, batch_norm=False)
@@ -30,7 +44,7 @@ class ExNegSimCLR(lightly_SimCLR):
             return_features (bool): Whether to return the intermediate feature embeddings. Default is False.
 
         Returns:
-            out (Dict): Output dictionary containing the forward pass results for each input view.
+            Dict: Output dictionary containing the forward pass results for each input view.
         """
         assert isinstance(x, dict), "Input to forward must be a `dict` for ExNegSimCLR"
         out = {}

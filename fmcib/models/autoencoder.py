@@ -5,7 +5,36 @@ from monai.networks.nets import AutoEncoder
 
 
 class CustomAE(AutoEncoder):
+    """
+    A custom AutoEncoder class.
+
+    Inherits from AutoEncoder.
+
+    Attributes:
+        padding (int): The padding size for the convolutional layers.
+        decoder (bool, optional): Determines if the decoder part of the network is included.
+        kwargs: Additional keyword arguments passed to the parent class.
+
+    Methods:
+        _get_encode_layer(in_channels, out_channels, strides, is_last): Returns a single layer of the encoder part of the network.
+        _get_decode_layer(in_channels, out_channels, strides, is_last): Returns a single layer of the decoder part of the network.
+    """
+
     def __init__(self, padding, decoder=True, **kwargs):
+        """
+        Initialize the object.
+
+        Args:
+            padding (int): Padding value.
+            decoder (bool, optional): If True, use a decoder. Defaults to True.
+            **kwargs: Additional keyword arguments.
+
+        Attributes:
+            padding (int): Padding value.
+
+        Raises:
+            None
+        """
         self.padding = padding
         super().__init__(**kwargs)
         if not decoder:

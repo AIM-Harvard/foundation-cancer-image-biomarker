@@ -9,13 +9,26 @@ In order to extract features from our models, you can use the following, (at roo
 lighter predict --config_file ./experiments/inference/extract_features.yaml
 ```
 
-
 !!! note
-     While the above pipeline will allow you to extract features, we provide an easier and simpler way to do this through Google Colab. To promote accessibility to our work, we have simplified the feature extraction process and provide the notebook [here](https://colab.research.google.com/drive/1JMtj_4W0uNPzrVnM9EpN1_xpaB-5KC1H?usp=sharing). Alternatively, you can reproduce this in a local environment using the notebook in 
+     While the above pipeline will allow you to extract features, we provide an easier and simpler, recommended API to do this. Please refer to [Quick Start](../getting-started/quick-start.md) or [Cloud Quick Start](../getting-started/cloud-quick-start.md)
+
+However, this method might be preferred when features need to be extracted from different models (used as baselines in our study). Follow the `Note:` in the corresponding config file to change model paths. 
 
 ## Running predictions from our supervised models (Finetuned FM/ Baselines)
 
+
 To run predictions from our models (both supervised and self-supervised), we provide YAML files that can be run with the lighter interface. These are found in `experiments/inference`, namely `get_predictions.yaml` for getting the predictions. 
+
+Beofre running the predictions config, if you haven't downloaded the `models` folder contraining all our baselines, you can do so using 
+
+```bash
+pip install -U "huggingface_hub[cli]"
+
+huggingface-cli download surajpaib/fmcib models models # Run in the root of the repo
+
+```
+
+This will pull all the models from hugging face. Following this you can use any of these models to get predictions on the dataset of choice. 
 
 These can be run using (at root folder location)
 

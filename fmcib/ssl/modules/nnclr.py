@@ -19,6 +19,23 @@ class NNCLR(nn.Module):
         out_dim: int = 256,
         memory_bank_size: int = 4096,
     ) -> None:
+        """
+        Initialize the NNCLR model.
+
+        Args:
+            backbone (nn.Module): The backbone neural network model.
+            num_ftrs (int, optional): The number of features in the backbone output. Default is 4096.
+            proj_hidden_dim (int, optional): The hidden dimension of the projection head. Default is 4096.
+            pred_hidden_dim (int, optional): The hidden dimension of the prediction head. Default is 4096.
+            out_dim (int, optional): The output dimension of the model. Default is 256.
+            memory_bank_size (int, optional): The size of the memory bank module. Default is 4096.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
         super().__init__()
         self.backbone = backbone
         self.projection_head = NNCLRProjectionHead(num_ftrs, proj_hidden_dim, out_dim)
@@ -31,6 +48,19 @@ class NNCLR(nn.Module):
         get_nearest_neighbor: bool = True,
     ):
         # forward pass of first input x0
+        """
+        Forward pass of the model.
+
+        Args:
+            x (List[torch.Tensor]): A list containing two input tensors.
+            get_nearest_neighbor (bool, optional): Whether to compute and update the nearest neighbor vectors.
+                Defaults to True.
+
+        Returns:
+            Tuple[Tuple[torch.Tensor, torch.Tensor], Tuple[torch.Tensor, torch.Tensor]]:
+                A tuple containing two tuples. The inner tuples contain the projection and prediction vectors
+                for each input tensor.
+        """
         x0, x1 = x
         f0 = self.backbone(x0).flatten(start_dim=1)
         z0 = self.projection_head(f0)

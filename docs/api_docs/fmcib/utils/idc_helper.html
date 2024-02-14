@@ -28,6 +28,7 @@
 </summary>
 <pre><code class="python">import concurrent.futures
 import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -36,9 +37,56 @@ import pydicom
 import pydicom_seg
 import SimpleITK as sitk
 import wget
-from dcmrtstruct2nii import dcmrtstruct2nii
-from dcmrtstruct2nii.adapters.input.image.dcminputadapter import DcmInputAdapter
-from dcmrtstruct2nii.adapters.output.niioutputadapter import NiiOutputAdapter
+
+
+class SuppressPrint:
+    &#34;&#34;&#34;
+    A class that temporarily suppresses print statements.
+
+    Methods:
+        __enter__(): Sets sys.stdout to a dummy file object, suppressing print output.
+        __exit__(exc_type, exc_val, exc_tb): Restores sys.stdout to its original value.
+    &#34;&#34;&#34;
+
+    def __enter__(self):
+        &#34;&#34;&#34;
+        Enter the context manager and redirect the standard output to nothing.
+
+        Returns:
+            object: The context manager object.
+
+        Notes:
+            This context manager is used to redirect the standard output to nothing using the `open` function.
+            It saves the original standard output and assigns a new output destination as `/dev/null` on Unix-like systems.
+        &#34;&#34;&#34;
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, &#34;w&#34;)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        &#34;&#34;&#34;
+        Restores the original stdout and closes the modified stdout.
+
+        Args:
+            exc_type (type): The exception type, if an exception occurred. Otherwise, None.
+            exc_val (Exception): The exception instance, if an exception occurred. Otherwise, None.
+            exc_tb (traceback): The traceback object, if an exception occurred. Otherwise, None.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        &#34;&#34;&#34;
+        sys.stdout.close()
+        sys.stdout = self._original_stdout
+
+
+with SuppressPrint():
+    from dcmrtstruct2nii import dcmrtstruct2nii
+    from dcmrtstruct2nii.adapters.input.image.dcminputadapter import DcmInputAdapter
+    from dcmrtstruct2nii.adapters.output.niioutputadapter import NiiOutputAdapter
+
 from google.cloud import storage
 from loguru import logger
 from tqdm import tqdm
@@ -66,7 +114,7 @@ def download_from_manifest(df, save_dir, samples):
     &#34;&#34;&#34;
     Downloads DICOM data from IDC (Imaging Data Commons) based on the provided manifest.
 
-    Args:
+    Parameters:
         df (pandas.DataFrame): The manifest DataFrame containing information about the DICOM files.
         save_dir (pathlib.Path): The directory where the downloaded DICOM files will be saved.
         samples (int): The number of random samples to download. If None, all available samples will be downloaded.
@@ -87,6 +135,18 @@ def download_from_manifest(df, save_dir, samples):
         df = df[df[&#34;PatientID&#34;].isin(selected_elements)]
 
     def download_file(row):
+        &#34;&#34;&#34;
+        Download a file from Google Cloud Storage.
+
+        Args:
+            row (dict): A dictionary containing the row data.
+
+        Raises:
+            None
+
+        Returns:
+            None
+        &#34;&#34;&#34;
         bucket_name, directory, file = row[&#34;gcs_url&#34;].split(&#34;/&#34;)[-3:]
         fn = f&#34;{directory}/{file}&#34;
         bucket = storage_client.bucket(bucket_name)
@@ -110,7 +170,7 @@ def download_LUNG1(path, samples=None):
     &#34;&#34;&#34;
     Downloads the LUNG1 data manifest from Dropbox and saves it to the specified path.
 
-    Args:
+    Parameters:
         path (str): The directory path where the LUNG1 data manifest will be saved.
         samples (list, optional): A list of specific samples to download. If None, all samples will be downloaded.
 
@@ -170,7 +230,6 @@ def process_series_dir(series_dir):
 
     Raises:
         None
-
     &#34;&#34;&#34;
     # Check if RTSTRUCT file exists
     rtstuct_files = list(series_dir.glob(&#34;*RTSTRUCT*&#34;))
@@ -225,7 +284,6 @@ def build_image_seed_dict(path, samples=None):
 
     Returns:
         pd.DataFrame: A DataFrame containing the image seeds.
-
     &#34;&#34;&#34;
     sorted_dir = Path(path).resolve()
     series_dirs = [x.parent for x in sorted_dir.rglob(&#34;*.dcm&#34;)]
@@ -284,7 +342,6 @@ def build_image_seed_dict(path, samples=None):
 
     Returns:
         pd.DataFrame: A DataFrame containing the image seeds.
-
     &#34;&#34;&#34;
     sorted_dir = Path(path).resolve()
     series_dirs = [x.parent for x in sorted_dir.rglob(&#34;*.dcm&#34;)]
@@ -346,13 +403,9 @@ def build_image_seed_dict(path, samples=None):
 </code></dt>
 <dd>
 <div class="desc"><p>Downloads the LUNG1 data manifest from Dropbox and saves it to the specified path.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
-<dd>The directory path where the LUNG1 data manifest will be saved.</dd>
-<dt><strong><code>samples</code></strong> :&ensp;<code>list</code>, optional</dt>
-<dd>A list of specific samples to download. If None, all samples will be downloaded.</dd>
-</dl>
+<h2 id="parameters">Parameters</h2>
+<p>path (str): The directory path where the LUNG1 data manifest will be saved.
+samples (list, optional): A list of specific samples to download. If None, all samples will be downloaded.</p>
 <h2 id="returns">Returns</h2>
 <p>None</p></div>
 <details class="source">
@@ -363,7 +416,7 @@ def build_image_seed_dict(path, samples=None):
     &#34;&#34;&#34;
     Downloads the LUNG1 data manifest from Dropbox and saves it to the specified path.
 
-    Args:
+    Parameters:
         path (str): The directory path where the LUNG1 data manifest will be saved.
         samples (list, optional): A list of specific samples to download. If None, all samples will be downloaded.
 
@@ -434,15 +487,10 @@ def build_image_seed_dict(path, samples=None):
 </code></dt>
 <dd>
 <div class="desc"><p>Downloads DICOM data from IDC (Imaging Data Commons) based on the provided manifest.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>df</code></strong> :&ensp;<code>pandas.DataFrame</code></dt>
-<dd>The manifest DataFrame containing information about the DICOM files.</dd>
-<dt><strong><code>save_dir</code></strong> :&ensp;<code>pathlib.Path</code></dt>
-<dd>The directory where the downloaded DICOM files will be saved.</dd>
-<dt><strong><code>samples</code></strong> :&ensp;<code>int</code></dt>
-<dd>The number of random samples to download. If None, all available samples will be downloaded.</dd>
-</dl>
+<h2 id="parameters">Parameters</h2>
+<p>df (pandas.DataFrame): The manifest DataFrame containing information about the DICOM files.
+save_dir (pathlib.Path): The directory where the downloaded DICOM files will be saved.
+samples (int): The number of random samples to download. If None, all available samples will be downloaded.</p>
 <h2 id="returns">Returns</h2>
 <p>None</p></div>
 <details class="source">
@@ -453,7 +501,7 @@ def build_image_seed_dict(path, samples=None):
     &#34;&#34;&#34;
     Downloads DICOM data from IDC (Imaging Data Commons) based on the provided manifest.
 
-    Args:
+    Parameters:
         df (pandas.DataFrame): The manifest DataFrame containing information about the DICOM files.
         save_dir (pathlib.Path): The directory where the downloaded DICOM files will be saved.
         samples (int): The number of random samples to download. If None, all available samples will be downloaded.
@@ -474,6 +522,18 @@ def build_image_seed_dict(path, samples=None):
         df = df[df[&#34;PatientID&#34;].isin(selected_elements)]
 
     def download_file(row):
+        &#34;&#34;&#34;
+        Download a file from Google Cloud Storage.
+
+        Args:
+            row (dict): A dictionary containing the row data.
+
+        Raises:
+            None
+
+        Returns:
+            None
+        &#34;&#34;&#34;
         bucket_name, directory, file = row[&#34;gcs_url&#34;].split(&#34;/&#34;)[-3:]
         fn = f&#34;{directory}/{file}&#34;
         bucket = storage_client.bucket(bucket_name)
@@ -526,7 +586,6 @@ def build_image_seed_dict(path, samples=None):
 
     Raises:
         None
-
     &#34;&#34;&#34;
     # Check if RTSTRUCT file exists
     rtstuct_files = list(series_dir.glob(&#34;*RTSTRUCT*&#34;))
@@ -574,6 +633,64 @@ def build_image_seed_dict(path, samples=None):
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fmcib.utils.idc_helper.SuppressPrint"><code class="flex name class">
+<span>class <span class="ident">SuppressPrint</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>A class that temporarily suppresses print statements.</p>
+<h2 id="methods">Methods</h2>
+<p><strong>enter</strong>(): Sets sys.stdout to a dummy file object, suppressing print output.
+<strong>exit</strong>(exc_type, exc_val, exc_tb): Restores sys.stdout to its original value.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SuppressPrint:
+    &#34;&#34;&#34;
+    A class that temporarily suppresses print statements.
+
+    Methods:
+        __enter__(): Sets sys.stdout to a dummy file object, suppressing print output.
+        __exit__(exc_type, exc_val, exc_tb): Restores sys.stdout to its original value.
+    &#34;&#34;&#34;
+
+    def __enter__(self):
+        &#34;&#34;&#34;
+        Enter the context manager and redirect the standard output to nothing.
+
+        Returns:
+            object: The context manager object.
+
+        Notes:
+            This context manager is used to redirect the standard output to nothing using the `open` function.
+            It saves the original standard output and assigns a new output destination as `/dev/null` on Unix-like systems.
+        &#34;&#34;&#34;
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, &#34;w&#34;)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        &#34;&#34;&#34;
+        Restores the original stdout and closes the modified stdout.
+
+        Args:
+            exc_type (type): The exception type, if an exception occurred. Otherwise, None.
+            exc_val (Exception): The exception instance, if an exception occurred. Otherwise, None.
+            exc_tb (traceback): The traceback object, if an exception occurred. Otherwise, None.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        &#34;&#34;&#34;
+        sys.stdout.close()
+        sys.stdout = self._original_stdout</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -595,6 +712,13 @@ def build_image_seed_dict(path, samples=None):
 <li><code><a title="fmcib.utils.idc_helper.download_RADIO" href="#fmcib.utils.idc_helper.download_RADIO">download_RADIO</a></code></li>
 <li><code><a title="fmcib.utils.idc_helper.download_from_manifest" href="#fmcib.utils.idc_helper.download_from_manifest">download_from_manifest</a></code></li>
 <li><code><a title="fmcib.utils.idc_helper.process_series_dir" href="#fmcib.utils.idc_helper.process_series_dir">process_series_dir</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fmcib.utils.idc_helper.SuppressPrint" href="#fmcib.utils.idc_helper.SuppressPrint">SuppressPrint</a></code></h4>
+</li>
 </ul>
 </li>
 </ul>

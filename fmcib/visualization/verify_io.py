@@ -11,7 +11,7 @@ def visualize_seed_point(row):
 
     Args:
         row (pandas.Series): A row containing the information of the seed point, including the image path and the coordinates.
-        The following columns are expected: "image_path", "coordX", "coordY", "coordZ".
+            The following columns are expected: "image_path", "coordX", "coordY", "coordZ".
 
     Returns:
         None
