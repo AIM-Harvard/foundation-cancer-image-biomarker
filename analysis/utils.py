@@ -62,7 +62,7 @@ def get_model_stats(y_true, y_pred, nsamples=1000, fn="roc_auc_score"):
         roc_auc = eval(fn)(y_true_sample, y_pred_sample)
         auc_values.append(roc_auc)
 
-    return np.mean(auc_values), np.percentile(auc_values, (2.5, 97.5))
+    return auc_values
 
 
 def plot_km_curve(df, save_path=None, title=None):
@@ -107,7 +107,7 @@ def plot_km_curve(df, save_path=None, title=None):
 
     plt.show()
     if save_path is not None:
-        fig.savefig(save_path, bbox_inches="tight", dpi=300)
+        fig.savefig(save_path, bbox_inches="tight", format="pdf")
 
 
 def get_univariate_result(df):
