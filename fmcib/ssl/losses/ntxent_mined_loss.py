@@ -23,10 +23,25 @@ class NTXentNegativeMinedLoss(torch.nn.Module):
 
     Raises:
         ValueError: If the absolute value of temperature is less than 1e-8.
-
     """
 
     def __init__(self, temperature: float = 0.1, gather_distributed: bool = False):
+        """
+        Initialize the NTXentNegativeMinedLoss object.
+
+        Args:
+            temperature (float, optional): The temperature parameter for the loss function. Defaults to 0.1.
+            gather_distributed (bool, optional): Whether to use distributed gathering or not. Defaults to False.
+
+        Raises:
+            ValueError: If the absolute value of the temperature is too small.
+
+        Attributes:
+            temperature (float): The temperature parameter for the loss function.
+            gather_distributed (bool): Whether to use distributed gathering or not.
+            cross_entropy (torch.nn.CrossEntropyLoss): The cross entropy loss function.
+            eps (float): A small value to avoid division by zero.
+        """
         super(NTXentNegativeMinedLoss, self).__init__()
         self.temperature = temperature
         self.gather_distributed = gather_distributed
@@ -37,7 +52,8 @@ class NTXentNegativeMinedLoss(torch.nn.Module):
             raise ValueError("Illegal temperature: abs({}) < 1e-8".format(self.temperature))
 
     def forward(self, out: Dict):
-        """Forward pass through Negative mining contrastive Cross-Entropy Loss.
+        """
+        Forward pass through Negative mining contrastive Cross-Entropy Loss.
 
         Args:
             out (Dict): Dictionary with `positive` and `negative` keys to represent positive selected and negative selected samples.
@@ -47,7 +63,6 @@ class NTXentNegativeMinedLoss(torch.nn.Module):
 
         Raises:
             AssertionError: If `positive` or `negative` keys are not specified in the input dictionary.
-
         """
 
         assert "positive" in out, "`positive` key needs to be specified"

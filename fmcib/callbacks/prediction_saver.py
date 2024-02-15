@@ -7,80 +7,101 @@ import torchvision
 from loguru import logger
 from pytorch_lightning.callbacks import BasePredictionWriter
 
-from .utils import decollate
-
-
-def handle_image(image):
-    image = image.squeeze()
-    if image.dim() == 3:
-        return image[image.shape[0] // 2]
-    else:
-        return image
+from .utils import decollate, handle_image
 
 
 class SavePredictions(BasePredictionWriter):
     """
-    A class for saving predictions during training.
+    A class that saves model predictions.
 
-    Args:
-        path (str): The path to save the predictions CSV file.
-        save_preview (bool, optional): Whether to save image previews. Defaults to False.
+    Attributes:
+        path (str): The path to save the output CSV file.
+        save_preview_samples (bool): If True, save preview images.
+        keys (List[str]): A list of keys.
     """
 
-    def __init__(self, path: str, save_preview: bool = False):
+    def __init__(self, path: str, save_preview_samples: bool = False, keys: List[str] = None):
+        """
+        Initialize an instance of the class.
+
+        Args:
+            path (str): The path to save the output CSV file.
+            save_preview_samples (bool, optional): A flag indicating whether to save preview samples. Defaults to False.
+            keys (List[str], optional): A list of keys. Defaults to None.
+
+        Raises:
+            None
+
+        Returns:
+            None
+        """
         super().__init__("epoch")
         self.output_csv = Path(path)
-        self.save_preview = save_preview
+        self.keys = keys
+        self.save_preview_samples = save_preview_samples
         self.output_csv.parent.mkdir(parents=True, exist_ok=True)
-        self.df = pd.DataFrame()
 
-    def save_previews(self, dataset):
+    def save_preview_image(self, data, tag):
         """
-        Save image previews from the dataset.
+        Save a preview image to a specified directory.
 
         Args:
-            dataset: The dataset containing the images.
+            self (object): The object calling the function. (self in Python)
+            data (tuple): A tuple containing the image data and its corresponding tag.
+            tag (str): The tag for the image.
+
+        Returns:
+            None
+
+        Raises:
+            None
         """
-        logger.info("Saving image previews")
-        self.output_dir = self.output_csv.parent / "previews"
+        self.output_dir = self.output_csv.parent / f"previews_{self.output_csv.stem}"
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        for idx, data_item in enumerate(iter(dataset)):
-            image, _ = data_item
-            image = handle_image(image)
-            fp = self.output_dir / f"{idx}.png"
-            torchvision.utils.save_image(image, fp)
+        image, _ = data
+        image = handle_image(image)
+        fp = self.output_dir / f"{tag}.png"
+        torchvision.utils.save_image(image, fp)
 
-    def write_on_epoch_end(self, trainer, pl_module: "LightningModule", predictions: List[Any], batch_indices: List[Any]):
+    def write_on_epoch_end(
+        self,
+        trainer,
+        pl_module: "LightningModule",
+        predictions: List[Any],
+        batch_indices: List[Any],
+    ):
         """
-        Write predictions to the CSV file at the end of each epoch.
+        Write predictions on epoch end.
 
         Args:
-            trainer: The PyTorch Lightning trainer.
-            pl_module (LightningModule): The PyTorch Lightning module.
-            predictions (List[Any]): The list of predictions.
-            batch_indices (List[Any]): The list of batch indices.
+            self: The instance of the class.
+            trainer: The trainer object.
+            pl_module (LightningModule): The Lightning module.
+            predictions (List[Any]): A list of prediction values.
+            batch_indices (List[Any]): A list of batch indices.
+
+        Raises:
+            AssertionError: If 'predict' is not present in pl_module.datasets.
+            AssertionError: If 'data' is not defined in pl_module.datasets.
+
+        Returns:
+            None
         """
-        assert getattr(pl_module, "predict_dataset"), "`predict_dataset` not defined"
-        dataset = pl_module.predict_dataset
+        rows = []
+        assert "predict" in pl_module.datasets, "`data` not defined"
+        dataset = pl_module.datasets["predict"]
+        predictions = [pred for batch_pred in predictions for pred in batch_pred["pred"]]
 
-        if self.save_preview:
-            self.save_previews(dataset)
+        for idx, (row, pred) in enumerate(zip(dataset.get_rows(), predictions)):
+            for i, v in enumerate(pred):
+                row[f"pred_{i}"] = v.item()
 
-        assert getattr(dataset, "get_rows"), "The dataset must have `get_image_paths` defined for predict functionality"
-        rows = dataset.get_rows()
+            rows.append(row)
 
-        out = decollate(predictions)
-        assert len(out) == len(rows), "Length of image_paths and predictions do not match"
+            # Save image previews
+            if idx <= self.save_preview_samples:
+                input = dataset[idx]
+                self.save_preview_image(input, idx)
 
-        for pred, row in zip(out, rows):
-            # Handle multiple output cases (features and multi-class)
-            if isinstance(pred, list):
-                for idx, v in enumerate(pred):
-                    row[f"pred_{idx}"] = v
-            # Single class case
-            else:
-                row["pred"] = pred
-
-            self.df = self.df.append(row, ignore_index=True)
-
-        self.df.to_csv(self.output_csv)
+        df = pd.DataFrame(rows)
+        df.to_csv(self.output_csv)

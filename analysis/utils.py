@@ -1,135 +1,72 @@
 import numpy as np
+import scipy
 from lifelines import KaplanMeierFitter
 from lifelines.plotting import add_at_risk_counts
 from lifelines.statistics import multivariate_logrank_test
 from matplotlib import pyplot as plt
 from matplotlib import rcParams
-from sklearn.metrics import auc, average_precision_score, balanced_accuracy_score, roc_curve
+from sklearn.metrics import accuracy_score, average_precision_score, balanced_accuracy_score, roc_auc_score
+from sklearn.preprocessing import label_binarize
 
 rcParams["font.size"] = 16
 plt.rcParams["figure.dpi"] = 400
 
 
-def average_precision(target, pred, n_classes):
-    """ "
-    Function to calculate average precision for a given target and prediction. Handles cases when prediction is multiclass
-    and target is provided as class labels
-    """
-    if n_classes == 1:
-        return average_precision_score(target, pred)
-    else:
-        per_class_scores = []
-        for class_idx in range(n_classes):
-            binarized_target = [1 if t == class_idx else 0 for t in target]
-            score = average_precision_score(binarized_target, pred[class_idx])
-            per_class_scores.append(score)
-        return per_class_scores
+def mean_average_precision(y_true, y_pred):
+    y_true = label_binarize(y_true, classes=np.unique(y_true))
+    avg_precisions = [average_precision_score(y_true[:, i], y_pred[:, i]) for i in range(y_true.shape[1])]
+    return np.mean(avg_precisions)
 
 
-def auc_roc(target, pred, n_classes):
-    """ "
-    Function to calculate AUC precision for a given target and prediction. Handles cases when prediction is multiclass
-    and target is provided as class labels
-    """
-    if n_classes == 1:
-        fpr, tpr, _ = roc_curve(target, pred)
-        return auc(fpr, tpr)
-    else:
-        per_class_scores = []
-        for class_idx in range(n_classes):
-            (
-                fpr,
-                tpr,
-                _,
-            ) = roc_curve(target, pred[class_idx], pos_label=class_idx)
-            score = auc(fpr, tpr)
-            per_class_scores.append(score)
-        return per_class_scores
+def balanced_accuracy(y_true, y_pred):
+    return balanced_accuracy_score(y_true, np.argmax(y_pred, axis=1))
 
 
-def get_ci(time, pred, event, sample_target=True, axis=-1):
-    import lifelines
+def get_model_comparison_stats(y_true, pred_proba_1, pred_proba_2, nsamples=1000, fn="roc_auc_score"):
+    auc_differences = []
+    bootstrap_auc_differences = []
 
-    ci_values = []
-    if len(pred.shape) > 1:
-        for sample in range(pred.shape[0]):
-            T = time[sample] if sample_target else time
-            E = event[sample] if sample_target else event
-            ci = lifelines.utils.concordance_index(T, pred[sample], E)
-            ci_values.append(ci)
-    else:
-        return lifelines.utils.concordance_index(time, pred, event)
+    metric1 = eval(fn)(y_true, pred_proba_1)
+    metric2 = eval(fn)(y_true, pred_proba_2)
+    observed_difference = metric1 - metric2
 
-    return np.array(ci_values)
+    for _ in range(nsamples):
+        mask_size = pred_proba_1.shape[0] if len(pred_proba_1.shape) < 2 else (pred_proba_1.shape[0], 1)
+        mask = np.random.randint(2, size=mask_size)
+        p1 = np.where(mask, pred_proba_1, pred_proba_2)
+        p2 = np.where(mask, pred_proba_2, pred_proba_1)
+        metric1 = eval(fn)(y_true, p1)
+        metric2 = eval(fn)(y_true, p2)
+        auc_differences.append(metric1 - metric2)
 
+        idx = np.random.randint(y_true.shape[0], size=y_true.shape[0])
+        y_true_sample = y_true[idx]
+        y_pred_sample_1 = pred_proba_1[idx]
+        y_pred_sample_2 = pred_proba_2[idx]
 
-def balanced_acc(target, pred, _):
-    """ "
-    Function to calculate AUC precision for a given target and prediction. Handles cases when prediction is multiclass
-    and target is provided as class labels
-    """
-    pred_label = np.argmax(pred, axis=0)
-    return balanced_accuracy_score(target, pred_label)
+        metric1 = eval(fn)(y_true_sample, y_pred_sample_1)
+        metric2 = eval(fn)(y_true_sample, y_pred_sample_2)
+        bootstrap_auc_differences.append(metric1 - metric2)
 
-
-def get_score(target, pred, fn="average_precision", sample_target=True, n_classes=1, axis=0):
-    """ "
-    Function to calculate a given metric/statistic for a given target and prediction.
-    It is assumed that the prediction is a probability distribution over classes.
-    The function is designed to work with `scipy.stats.bootstrap` function
-    """
-    expected_pred_dim = 1 if n_classes == 1 else 2
-    if len(pred.shape) > expected_pred_dim:
-        if n_classes != 1:
-            class_axis = (np.array(pred.shape) == n_classes).nonzero()[0][0]
-            pred = np.swapaxes(pred, 0, class_axis)
-            target = np.swapaxes(target, 0, class_axis) if sample_target else target
-
-        resamples_axes = 1 if n_classes > 1 else 0
-        n_resamples = pred.shape[resamples_axes]
-        bootstrap_scores = []
-        for sample in range(n_resamples):
-            score = eval(fn)(
-                target[sample] if sample_target else target, np.take(pred, sample, axis=resamples_axes), n_classes
-            )
-            mean_score = np.mean(score)
-            bootstrap_scores.append(mean_score)
-
-        return np.array(bootstrap_scores)
-
-    # General case
-    else:
-        if axis != -1:
-            pred = np.swapaxes(pred, -1, axis)
-        metric_scores = eval(fn)(target, pred, n_classes)
-        return np.mean(metric_scores)
+    pvalue = np.mean(np.array(auc_differences) >= observed_difference)
+    diff_ci = np.percentile(bootstrap_auc_differences, (2.5, 97.5))
+    return diff_ci, pvalue
 
 
-def get_score_difference(target, pred1, pred2, fn="average_precision", sample_target=True, n_classes=1, axis=0):
-    """ "
-    Function to calculate a difference metric/statistic for a given target and two predictions.
-    In our case, we compare predictions from two different model implementation
-    It is assumed that the predictions are a probability distribution over classes.
-    The function is designed to work with `scipy.stats.bootstrap` and `scipy.stats.permutation_test` functions
-    """
-    score1 = get_score(target, pred1, fn, sample_target, n_classes, axis)
-    score2 = get_score(target, pred2, fn, sample_target, n_classes, axis)
-    return score1 - score2
+def get_model_stats(y_true, y_pred, nsamples=1000, fn="roc_auc_score"):
+    auc_values = []
+    for _ in range(nsamples):
+        idx = np.random.randint(y_true.shape[0], size=y_true.shape[0])
+        y_true_sample = y_true[idx]
+        y_pred_sample = y_pred[idx]
+        roc_auc = eval(fn)(y_true_sample, y_pred_sample)
+        auc_values.append(roc_auc)
+
+    return auc_values
 
 
-def get_ci_differences(time, event, pred1, pred2, sample_target=True, axis=0):
-    """ "
-    Function to calculate CI differences for two predictions.
-    In our case, we compare predictions from two different model implementation
-    It is assumed that the predictions are a probability distribution over classes.
-    The function is designed to work with `scipy.stats.bootstrap` and `scipy.stats.permutation_test` functions
-    """
-    ci1 = get_ci(time, pred1, event, sample_target, axis)
-    ci2 = get_ci(time, pred2, event, sample_target, axis)
-    return ci1 - ci2
-
-
-def plot_km_curve(df):
+def plot_km_curve(df, save_path=None, title=None):
+    df = df.copy()
     fig = plt.figure(figsize=(10, 8))
     time_filter = 5
     df.loc[df["Survival.time"] / 365.0 >= time_filter, "deadstatus.event"] = 0
@@ -138,16 +75,18 @@ def plot_km_curve(df):
     T = df["Survival.time"] / 365.0
     E = df["deadstatus.event"]
 
+    # Bluegreen and red colors like ggsurvplot
+    colors = ["#8F1D2F", "#1D6C8E"]
     timeline = np.linspace(0, 5, 100)
 
     conds = []
     kmfs = []
-    for group in sorted(df["group"].unique()):
+    for idx, group in enumerate(sorted(df["group"].unique())):
         cond = df["group"] == group
         conds.append(cond)
         kmf = KaplanMeierFitter()
         kmf.fit(T[cond], event_observed=E[cond], label=group, timeline=timeline)
-        kmf.plot(ax=ax, show_censors=True, ci_alpha=0.1)
+        kmf.plot(ax=ax, show_censors=True, ci_alpha=0.1, color=colors[idx])
         kmfs.append(kmf)
 
     G = df["group"]
@@ -158,8 +97,17 @@ def plot_km_curve(df):
     ax.set_ylabel("Survival probability")
     ax.set_xlabel("time (years)")
     ax.legend(loc="lower left")
-    ax.text(2, 0.9, f"n={len(df)} \nlog-rank test, p={np.round(results.p_value, 3)}", fontstyle="italic")
+    if results.p_value < 0.001:
+        ax.text(2, 0.9, f"n={len(df)} \nlog-rank test, p<0.001", fontstyle="italic")
+    else:
+        ax.text(2, 0.9, f"n={len(df)} \nlog-rank test, p={np.round(results.p_value, 3)}", fontstyle="italic")
+
+    if title is not None:
+        ax.set_title(title)
+
     plt.show()
+    if save_path is not None:
+        fig.savefig(save_path, bbox_inches="tight", format="pdf")
 
 
 def get_univariate_result(df):
@@ -168,3 +116,12 @@ def get_univariate_result(df):
     cph = CoxPHFitter()
     cph.fit(df, duration_col="Survival.time", event_col="deadstatus.event", formula="group")
     cph.print_summary()
+    summary_dict = {
+        "beta": cph.summary["coef"].to_dict()["group"],
+        "HR": cph.summary["exp(coef)"].to_dict()["group"],
+        "HR low CI": cph.summary["exp(coef) lower 95%"].to_dict()["group"],
+        "HR high CI": cph.summary["exp(coef) upper 95%"].to_dict()["group"],
+        "p.value": cph.summary["p"].to_dict()["group"],
+    }
+
+    return summary_dict

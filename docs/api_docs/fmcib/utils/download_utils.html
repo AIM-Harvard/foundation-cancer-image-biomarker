@@ -31,6 +31,20 @@
 
 # create this bar_progress method which is invoked automatically from wget
 def bar_progress(current, total, width=80):
+    &#34;&#34;&#34;
+    Display a progress bar for a download.
+
+    Args:
+        current (int): The current progress value.
+        total (int): The total progress value.
+        width (int, optional): The width of the progress bar in characters. Defaults to 80.
+
+    Raises:
+        None
+
+    Returns:
+        None
+    &#34;&#34;&#34;
     progress_message = &#34;Downloading: %d%% [%d / %d] bytes&#34; % (current / total * 100, current, total)
     # Don&#39;t use print() as it will print in new line every time.
     sys.stdout.write(&#34;\r&#34; + progress_message)
@@ -48,12 +62,39 @@ def bar_progress(current, total, width=80):
 <span>def <span class="ident">bar_progress</span></span>(<span>current, total, width=80)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Display a progress bar for a download.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>current</code></strong> :&ensp;<code>int</code></dt>
+<dd>The current progress value.</dd>
+<dt><strong><code>total</code></strong> :&ensp;<code>int</code></dt>
+<dd>The total progress value.</dd>
+<dt><strong><code>width</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The width of the progress bar in characters. Defaults to 80.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>None</p>
+<h2 id="returns">Returns</h2>
+<p>None</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def bar_progress(current, total, width=80):
+    &#34;&#34;&#34;
+    Display a progress bar for a download.
+
+    Args:
+        current (int): The current progress value.
+        total (int): The total progress value.
+        width (int, optional): The width of the progress bar in characters. Defaults to 80.
+
+    Raises:
+        None
+
+    Returns:
+        None
+    &#34;&#34;&#34;
     progress_message = &#34;Downloading: %d%% [%d / %d] bytes&#34; % (current / total * 100, current, total)
     # Don&#39;t use print() as it will print in new line every time.
     sys.stdout.write(&#34;\r&#34; + progress_message)
