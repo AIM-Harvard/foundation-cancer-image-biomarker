@@ -22,23 +22,14 @@ jobs:
             poetry version prerelease
     
 
-        - name: Commit changes
+        - name: Commit & push changes
           run: |
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
             git add .
             git commit -m "Bump version" || echo "No changes to commit"
+            git push
    
-            
-        - name: Update diagram
-          uses: githubocto/repo-visualizer@main
-          with:
-            excluded_paths: "ignore,.github"
-            should_push: false
-            
-        - name: Push changes
-          run: git push
-          
         - name: Build and publish to pypi
           uses: JRubics/poetry-publish@v1.16
           with:
