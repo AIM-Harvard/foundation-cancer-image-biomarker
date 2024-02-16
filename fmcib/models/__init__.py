@@ -20,7 +20,7 @@ def get_linear_classifier(weights_path=None, download_url="https://www.dropbox.c
     return pickle.load(open(weights_path, "rb"))
 
 
-def fmcib_model():
+def fmcib_model(eval_mode=True):
     trunk = resnet50(
         pretrained=False,
         n_input_channels=1,
@@ -34,4 +34,8 @@ def fmcib_model():
     if not (current_path / "model_weights.torch").exists():
         wget.download(weights_url, bar=bar_progress)
     model = LoadModel(trunk=trunk, weights_path=current_path / "model_weights.torch", heads=[])
+
+    if eval_mode:
+        model.eval()
+
     return model

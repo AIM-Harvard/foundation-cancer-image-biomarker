@@ -56,16 +56,15 @@ model = fmcib_model()
 Note that for best performance, using similar data-preprocessing methods are recommended, these can be accessed using, 
 
 ```python
-from fmcib.preprocessing import get_transforms
+from fmcib.preprocessing import preprocess
 from fmcib.models import fmcib_model
 import pandas as pd
 
-T = get_transforms()
-model = fmcib_model()
+model = fmcib_model(eval_mode=False) # By default the model is in eval mode. Set to false if you want to train it 
 
 df = pd.read_csv("csv_path_here")
 
-image = T(df.iloc[0])
+image = preprocess(df.iloc[0])
 out = model(image)
 
 ```
