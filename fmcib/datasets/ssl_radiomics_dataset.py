@@ -16,17 +16,46 @@ class SSLRadiomicsDataset(Dataset):
 
     Args:
         path (str): The path to the dataset.
-        label (str, optional): The label column name in the dataset annotations. Defaults to None.
-        radius (int, optional): The radius around the centroid for positive patch extraction. Defaults to 25.
-        orient (bool, optional): Whether to orient the images to LPI orientation. Defaults to False.
-        resample_spacing (float or tuple, optional): The desired spacing for resampling the images. Defaults to None.
-        enable_negatives (bool, optional): Whether to include negative samples. Defaults to True.
-        transform (callable, optional): A function/transform to apply on the images. Defaults to None.
+        label (str, optional): The label column name in the dataset annotations. Default is None.
+        radius (int, optional): The radius around the centroid for positive patch extraction. Default is 25.
+        orient (bool, optional): Whether to orient the images to LPI orientation. Default is False.
+        resample_spacing (float or tuple, optional): The desired spacing for resampling the images. Default is None.
+        enable_negatives (bool, optional): Whether to include negative samples. Default is True.
+        transform (callable, optional): A function/transform to apply on the images. Default is None.
     """
 
     def __init__(
-        self, path, label=None, radius=25, orient=False, resample_spacing=None, enable_negatives=True, transform=None
+        self,
+        path,
+        label=None,
+        radius=25,
+        orient=False,
+        resample_spacing=None,
+        enable_negatives=True,
+        transform=None,
+        orient_patch=True,
+        input_is_target=False,
     ):
+        """
+        Creates an instance of the SSLRadiomicsDataset class with the given parameters.
+
+        Args:
+            path (str): The path to the dataset.
+            label (Optional[str]): The label to use for the dataset. Defaults to None.
+            radius (int): The radius parameter. Defaults to 25.
+            orient (bool): True if the dataset should be oriented, False otherwise. Defaults to False.
+            resample_spacing (Optional[...]): The resample spacing parameter. Defaults to None.
+            enable_negatives (bool): True if negatives are enabled, False otherwise. Defaults to True.
+            transform: The transformation to apply to the dataset. Defaults to None.
+            orient_patch (bool): True if the patch should be oriented, False otherwise. Defaults to True.
+            input_is_target (bool): True if the input is the target, False otherwise. Defaults to False.
+
+        Raises:
+            None.
+
+        Returns:
+            None.
+        """
         monai.data.set_track_meta(False)
         sitk.ProcessObject.SetGlobalDefaultNumberOfThreads(1)
         super(SSLRadiomicsDataset, self).__init__()
@@ -38,17 +67,29 @@ class SSLRadiomicsDataset(Dataset):
         self.label = label
         self.enable_negatives = enable_negatives
         self.transform = transform
+        self.orient_patch = orient_patch
+        self.input_is_target = input_is_target
         self.annotations = pd.read_csv(self._path)
         self._num_samples = len(self.annotations)  # set the length of the dataset
 
     def get_rows(self):
+        """
+        Get the rows of the annotations as a list of dictionaries.
+
+        Returns:
+            list of dict: The rows of the annotations as dictionaries.
+        """
         return self.annotations.to_dict(orient="records")
 
     def get_labels(self):
-        """ "
-        Function to get labels for when they are available in the dataset
-        For example this is to be used for the medical image dataset with labels
-        available in the annotations
+        """
+        Function to get labels for when they are available in the dataset.
+
+        Args:
+            None
+
+        Returns:
+            None
         """
 
         labels = self.annotations[self.label].values
@@ -57,22 +98,28 @@ class SSLRadiomicsDataset(Dataset):
 
     def __len__(self):
         """
-        Size of the dataset
+        Size of the dataset.
         """
         return self._num_samples
 
     def get_negative_sample(self, image):
         """
-        Extract a negative sample from the image backgroundwith no overlap to the positive sample
+        Extract a negative sample from the image background with no overlap to the positive sample.
 
-        image: Image to extract sample
-        positive_patch_idx: Index of the positive patch in [(xmin, xmax), (ymin, ymax), (zmin, zmax)]
-
+        Parameters:
+            image: Image to extract sample
+            positive_patch_idx: Index of the positive patch in [(xmin, xmax), (ymin, ymax), (zmin, zmax)]
         """
         positive_patch_size = [self.radius * 2] * 3
         valid_patch_size = monai.data.utils.get_valid_patch_size(image.GetSize(), positive_patch_size)
 
         def get_random_patch():
+            """
+            Get a random patch from an image.
+
+            Returns:
+                list: A list containing the start and end indices of the random patch.
+            """
             random_patch_idx = [
                 [x.start, x.stop] for x in monai.data.utils.get_random_patch(image.GetSize(), valid_patch_size)
             ]
@@ -90,8 +137,7 @@ class SSLRadiomicsDataset(Dataset):
         #     escape_count += 1
 
         random_patch = slice_image(image, random_patch_idx)
-
-        random_patch = sitk.DICOMOrient(random_patch, "LPS")
+        random_patch = sitk.DICOMOrient(random_patch, "LPS") if self.orient_patch else random_patch
         negative_array = sitk.GetArrayFromImage(random_patch)
 
         negative_tensor = negative_array if self.transform is None else self.transform(negative_array)
@@ -99,8 +145,7 @@ class SSLRadiomicsDataset(Dataset):
 
     def __getitem__(self, idx: int):
         """
-        implement how to load the data corresponding to idx element in the dataset
-        from your data source
+        Implement how to load the data corresponding to the idx element in the dataset from your data source.
         """
 
         # Get a row from the CSV file
@@ -119,11 +164,18 @@ class SSLRadiomicsDataset(Dataset):
         # Extract positive with a specified radius around centroid
         patch_idx = [(c - self.radius, c + self.radius) for c in centroid]
         patch_image = slice_image(image, patch_idx)
-        patch_image = sitk.DICOMOrient(patch_image, "LPS")
+
+        patch_image = sitk.DICOMOrient(patch_image, "LPS") if self.orient_patch else patch_image
 
         array = sitk.GetArrayFromImage(patch_image)
         tensor = array if self.transform is None else self.transform(array)
-        target = int(row[self.label]) if self.label is not None else False
+
+        if self.label is not None:
+            target = int(row[self.label])
+        elif self.input_is_target:
+            target = tensor.clone()
+        else:
+            target = None
 
         if self.enable_negatives:
             return {"positive": tensor, "negative": self.get_negative_sample(image)}, target

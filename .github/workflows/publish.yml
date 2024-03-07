@@ -1,0 +1,39 @@
+name: Auto Publish
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v2
+        - name: Set up Python
+          uses: actions/setup-python@v2.2.2
+          with:
+            python-version: 3.8
+
+        - name: Install poetry
+          run: make setup
+
+        - name: Bump version
+          run: |
+            poetry version prerelease
+    
+
+        - name: Commit & push changes
+          run: |
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git commit -m "Bump version" || echo "No changes to commit"
+            git push
+   
+        - name: Build and publish to pypi
+          uses: JRubics/poetry-publish@v1.16
+          with:
+            python_version: 3.8
+            pypi_token: ${{ secrets.PYPI_TOKEN }}
+            allow_poetry_pre_release: "yes"
+            ignore_dev_requirements: "yes"

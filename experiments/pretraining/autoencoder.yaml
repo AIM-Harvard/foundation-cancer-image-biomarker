@@ -1,0 +1,98 @@
+trainer:
+  _target_: pytorch_lightning.Trainer
+  benchmark: True
+  max_epochs: 100
+  check_val_every_n_epoch: 5
+  accelerator: gpu
+  strategy: ddp
+  devices: 2
+  sync_batchnorm: True
+  log_every_n_steps: 1
+  logger: False
+    
+  callbacks:
+    - _target_: pytorch_lightning.callbacks.ModelCheckpoint
+      dirpath:  /mnt/data1/RadiomicsFoundationModel/checkpoints/autoencoder_pretrain
+      verbose: True
+      save_last: True
+      every_n_epochs: 1
+      save_on_train_epoch_end: True
+
+    - _target_: lighter.callbacks.LighterLogger
+      project: ssl_radiomics_pretrain
+      log_dir: ./logs
+      tensorboard: False
+      wandb: True
+      input_type: image
+      pred_type: image
+      max_samples: 10
+
+system:
+  # _target_: torch.compile
+  # model: 
+    _target_: lighter.LighterSystem
+    batch_size: 32 # Change to lower batch size if GPU memory is smaller. 
+    pin_memory: True
+    drop_last_batch: True # Used in SSL cases because of negatives
+    num_workers: 6
+
+    model:
+      _target_: fmcib.models.AutoEncoder
+      spatial_dims: 3
+      in_channels: 1
+      out_channels: 1
+      num_res_units: 0
+      channels: [128, 512, 128, 256, 1024, 256, 1024]
+      strides: [2, 2, 2, 1, 2, 2, 2]
+      padding: 2 
+      inter_channels: [2048,]
+
+    criterion:
+      _target_: torch.nn.L1Loss
+
+    optimizers:
+      _target_: torch.optim.Adam
+      params: "$@system#model.parameters()"
+      lr: 0.001
+      weight_decay: 1.0e-6
+    
+    schedulers:
+      scheduler:
+        _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+        optimizer: "@system#optimizers"
+        T_max: "$(@trainer#max_epochs) * len(@system#train_dataset)//(@system#batch_size * @trainer#devices)" # Compute total steps
+      interval: "step"
+
+    train_metrics: null
+    val_metrics: "@system#train_metrics"
+    test_metrics: "@system#train_metrics"
+    
+    train_dataset:
+      _target_: fmcib.datasets.SSLRadiomicsDataset
+      enable_negatives: False
+      path: "data/preprocessing/deeplesion/annotations/pretrain.csv"
+      orient: True
+      input_is_target: True
+      resample_spacing: [1, 1, 1]
+      transform:
+        _target_: torchvision.transforms.Compose
+        transforms:
+          - _target_: monai.transforms.ToTensor
+          - _target_: monai.transforms.AddChannel
+          - _target_: monai.transforms.NormalizeIntensity
+            subtrahend: -1024
+            divisor: 3072
+            # Random Transforms begin
+          - _target_: fmcib.transforms.RandomResizedCrop3D
+            size: 50
+          - _target_: monai.transforms.RandAxisFlip
+            prob: 0.5
+          - _target_: monai.transforms.RandHistogramShift
+            prob: 0.5
+          - _target_: monai.transforms.RandGaussianSmooth
+            prob: 0.5
+          - _target_: monai.transforms.SpatialPad
+            spatial_size: [50, 50, 50]
+
+    val_dataset: null
+    test_dataset: null

@@ -617,4 +617,20 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/osx,python,pycharm,windows,visualstudio,visualstudiocode
 *.dcm
 *.torch
+*.pt
+*.pth
 dist/
+
+# Project specific ignores
+analysis/figures
+*.svg
+*.png
+analysis/result_csvs/
+*.zip
+experiments/linear_evaluation/*.csv
+*.pkl
+logs/
+checkpoints/
+data/csvs/
+./models
+./outputs

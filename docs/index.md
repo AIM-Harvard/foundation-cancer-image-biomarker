@@ -2,80 +2,61 @@
 hide:
   - title
 ---
-#
+# 
+
+<center>
+This is the the official documentation for the paper: "<b>Foundation Model for Cancer Imaging Biomarkers </b>"
+</center>
 <div style="display: flex;"><img src="assets/Header.png"/></div>
 
 
-This is the the official repository for the paper:<br>
- "<i>Foundation Models for Quantitative Biomarker Discovery in Cancer Imaging </i>" <br>
-Suraj Pai, Dennis Bontempi, Vasco Prudente, Ibrahim Hadzic, Mateo Sokač, Tafadzwa L. Chaunzwa, Simon Bernatz, Ahmed Hosny, Raymond H Mak, Nicolai J Birkbak, Hugo JWL Aerts
-
-## Quick Start (in under 15 mins!)
-We provide two notebooks that can be run in google colab to promote the use of our model by the community,
-
-1. A reproducibility notebook that allows users to recreate our analysis for NSCLC prognostication, from downloading the data to obtaining results matching our manuscript. <br><center>
-[![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Svk8VaZHWAYdZHE45DNdWXVqhe7v9sFR?usp=sharing) </center>
-
-2. A bring your own use case notebook that shows you how you can use the foundation model for your data. <br> <center>
-[![](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1JMtj_4W0uNPzrVnM9EpN1_xpaB-5KC1H?usp=sharing) </center>
+<i><font size="-1">Suraj Pai, Dennis Bontempi, Ibrahim Hadzic, Vasco Prudente, Mateo Sokač, Tafadzwa L. Chaunzwa, Simon Bernatz, Ahmed Hosny, Raymond H Mak, Nicolai J Birkbak, Hugo JWL Aerts</i></font>
 
 
-<b>You are not limited to using Colab and you can run our model on your data locally in only 3 steps!</b>
+## Documentation Walkthrough
 
-<u>Step 1:</u> Install all our dependencies:
-```bash
-pip install foundation-cancer-image-biomarker --pre
-```
+[Getting Started](./getting-started/quick-start.md)<br> This section of the documentation explains how you can install our package and get started with a working example. 
 
-<u>Step 2:</u>  Generate a CSV file with the path to your images and seed points (in physical coordinates),
+!!! note
+    [We also provide quickstart examples that run in a free-cloud based environment](./getting-started/cloud-quick-start.md) (through Google Colab) so you can get familiar with our workflows, without having to download anything on your local machine!!
 
-| **image_path**               | **coordX** | **coordY** | **coordZ** |
-|------------------------------|------------|------------|------------|
-| /content/data/dummy_0.nii.gz | 55.0       | 119.0      | 27.0       |
+[Replication Guide](./user-guide/data.md)<br> If you would like to pre-train a foundation model on your own unannotated data or would like to replicate the training and evaluation from our study, see here. 
 
-<u>Step 3:</u>  Run this in your code environment,
-```python
-from fmcib.run import get_features
+[Tutorials](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/tree/master/tutorials)<br> We provide comprehensive tutorials that use the foundation model for cancer imaging biomarkers and compare against other popularly used methods. If you would like to build your own study using our foundation model, these set of tutorials are highly recommended as the starting point. 
 
-feature_df = get_features("csv_path_here")
-```
-
-This will preprocess your data, download our pre-trained model and execute inference on whatever device you have (CPU/GPU) and return a dataframe with the features.
-
-&emsp;
-## Overview
-A foundation model, based on a deep convolutional encoder architecture, was pre-trained by contrasting volumes with and without lesions (see <b>a.</b> in Figure). The foundation model was then used to extract biomarkers and evaluated for three classification tasks on diverse datasets. (see <b>b.</b>). We adapted foundation model to specific use cases by extracting features or through fine-tuning (see <b>c.</b>). Performance of the foundation models was compared against conventional supervised implementations, trained from scratch (left) and fine-tuned from a different task (right) (in <b>d</b>). The comparison was made through several criteria for different use cases, including quantitative performance, stability, and biological analysis. Biological, clinical, and stability analyses are limited to use case 2 due to the availability of associated data. 
- 
-<div style="display: flex; justify-content: center"><img src="assets/images/overview_v5.png" width=800 /></div>
+[API Docs](./api_docs/fmcib/index.html) <br> This is for the more advanced user who would like to deep-dive into different methods and classes provided by our package. 
 
  
-&emsp;
 ## License
 This project is licensed under the terms of the `MIT` license.
  See [LICENSE](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/blob/master/LICENSE) for more details.
 
-&emsp;
 ## Acknowledgements
 Code development, testing, and documentation: [Suraj Pai](), [Ibrahim Hadzic]() <br>
 Framework used for building the code: [project-lighter](https://github.com/project-lighter/lighter)
 
 project-lighter was developed internally within our lab by Ibrahim Hadzic and Suraj Pai. 
 
-&emsp;
 ## Disclaimer
 The code and data of this repository are provided to promote reproducible research. They are not intended for clinical care or
 commercial use. The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
 
-&emsp;
 ## Code Citation
-Will be updated to reflect a Zenodo DOI upon publication
+Please cite the  DOIs if you use our code in your project. 
+
 ```bibtex
-@misc{foundation-cancer-image-biomarker,
-  author = {AIM-Harvard},
-  title = {Official repo for "Foundation Models for Quantitative Biomarker Discovery in Cancer Imaging"},
-  year = {2023},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/AIM-Harvard/foundation-cancer-image-biomarker}}
+@software{suraj_pai_2024_10535536,
+  author       = {Suraj Pai and
+                  Ibrahim Hadzic},
+  title        = {{AIM-Harvard/foundation-cancer-image-biomarker: 
+                   v0.0.1}},
+  month        = jan,
+  year         = 2024,
+  publisher    = {Zenodo},
+  version      = {v0.0.1},
+  doi          = {10.5281/zenodo.10535536},
+  url          = {https://doi.org/10.5281/zenodo.10535536}
 }
+
+
 ```

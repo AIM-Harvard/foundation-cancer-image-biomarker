@@ -1,0 +1,55 @@
+trainer:
+    _target_: pytorch_lightning.Trainer
+    benchmark: True
+    max_epochs: 100
+    check_val_every_n_epoch: 4
+    accelerator: gpu
+    devices: 1
+    log_every_n_steps: 50
+    logger: False
+    callbacks:
+        - _target_: fmcib.callbacks.SavePredictions
+          path: "out.csv" # Note: Change path to the CSV file to save predictions to.
+          save_preview_samples: 5
+
+system:
+    _target_: lighter.LighterSystem
+    batch_size: 32
+    pin_memory: True
+    num_workers: 6
+    model:
+        _target_: fmcib.models.LoadModel
+        trunk:
+          _target_: fmcib.models.ModelsGenesisUNet3D
+          decoder: False
+        weights_path: ./models/pretrained/models_genesis/Genesis_Chest_CT.pt
+    criterion: null
+    optimizers: null
+    schedulers: null
+    train_dataset: null
+    val_dataset: null
+    test_dataset: null
+
+    predict_dataset:
+        _target_: fmcib.datasets.SSLRadiomicsDataset
+        path: "./data/preprocessing/deeplesion/annotations/task1_test.csv" # Note: Change path to the CSV file to extract features from.
+        label: "survival" # Note: Change the label to "malignancy" for task 2 and "survival" for task 3
+        radius: 24
+        orient: False # Note: Set orient to False for task 2 and task 3
+        resample_spacing: [1, 1, 1]
+        enable_negatives: False
+        transform:
+            _target_: monai.transforms.Compose
+            transforms:               
+                - _target_: monai.transforms.Transpose ## Only for Models Genesis
+                  indices: [2, 1, 0]
+                - _target_: monai.transforms.ToTensor
+                - _target_: monai.transforms.AddChannel
+                - _target_: monai.transforms.SpatialPad
+                  spatial_size: [48, 48, 48]
+                - _target_: monai.transforms.ScaleIntensityRange
+                  a_min: -1000
+                  a_max: 1000
+                  b_min: 0.0
+                  b_max: 1.0
+                  clip: True

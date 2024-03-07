@@ -35,83 +35,104 @@ import torchvision
 from loguru import logger
 from pytorch_lightning.callbacks import BasePredictionWriter
 
-from .utils import decollate
-
-
-def handle_image(image):
-    image = image.squeeze()
-    if image.dim() == 3:
-        return image[image.shape[0] // 2]
-    else:
-        return image
+from .utils import decollate, handle_image
 
 
 class SavePredictions(BasePredictionWriter):
     &#34;&#34;&#34;
-    A class for saving predictions during training.
+    A class that saves model predictions.
 
-    Args:
-        path (str): The path to save the predictions CSV file.
-        save_preview (bool, optional): Whether to save image previews. Defaults to False.
+    Attributes:
+        path (str): The path to save the output CSV file.
+        save_preview_samples (bool): If True, save preview images.
+        keys (List[str]): A list of keys.
     &#34;&#34;&#34;
 
-    def __init__(self, path: str, save_preview: bool = False):
+    def __init__(self, path: str, save_preview_samples: bool = False, keys: List[str] = None):
+        &#34;&#34;&#34;
+        Initialize an instance of the class.
+
+        Args:
+            path (str): The path to save the output CSV file.
+            save_preview_samples (bool, optional): A flag indicating whether to save preview samples. Defaults to False.
+            keys (List[str], optional): A list of keys. Defaults to None.
+
+        Raises:
+            None
+
+        Returns:
+            None
+        &#34;&#34;&#34;
         super().__init__(&#34;epoch&#34;)
         self.output_csv = Path(path)
-        self.save_preview = save_preview
+        self.keys = keys
+        self.save_preview_samples = save_preview_samples
         self.output_csv.parent.mkdir(parents=True, exist_ok=True)
-        self.df = pd.DataFrame()
 
-    def save_previews(self, dataset):
+    def save_preview_image(self, data, tag):
         &#34;&#34;&#34;
-        Save image previews from the dataset.
+        Save a preview image to a specified directory.
 
         Args:
-            dataset: The dataset containing the images.
+            self (object): The object calling the function. (self in Python)
+            data (tuple): A tuple containing the image data and its corresponding tag.
+            tag (str): The tag for the image.
+
+        Returns:
+            None
+
+        Raises:
+            None
         &#34;&#34;&#34;
-        logger.info(&#34;Saving image previews&#34;)
-        self.output_dir = self.output_csv.parent / &#34;previews&#34;
+        self.output_dir = self.output_csv.parent / f&#34;previews_{self.output_csv.stem}&#34;
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        for idx, data_item in enumerate(iter(dataset)):
-            image, _ = data_item
-            image = handle_image(image)
-            fp = self.output_dir / f&#34;{idx}.png&#34;
-            torchvision.utils.save_image(image, fp)
+        image, _ = data
+        image = handle_image(image)
+        fp = self.output_dir / f&#34;{tag}.png&#34;
+        torchvision.utils.save_image(image, fp)
 
-    def write_on_epoch_end(self, trainer, pl_module: &#34;LightningModule&#34;, predictions: List[Any], batch_indices: List[Any]):
+    def write_on_epoch_end(
+        self,
+        trainer,
+        pl_module: &#34;LightningModule&#34;,
+        predictions: List[Any],
+        batch_indices: List[Any],
+    ):
         &#34;&#34;&#34;
-        Write predictions to the CSV file at the end of each epoch.
+        Write predictions on epoch end.
 
         Args:
-            trainer: The PyTorch Lightning trainer.
-            pl_module (LightningModule): The PyTorch Lightning module.
-            predictions (List[Any]): The list of predictions.
-            batch_indices (List[Any]): The list of batch indices.
+            self: The instance of the class.
+            trainer: The trainer object.
+            pl_module (LightningModule): The Lightning module.
+            predictions (List[Any]): A list of prediction values.
+            batch_indices (List[Any]): A list of batch indices.
+
+        Raises:
+            AssertionError: If &#39;predict&#39; is not present in pl_module.datasets.
+            AssertionError: If &#39;data&#39; is not defined in pl_module.datasets.
+
+        Returns:
+            None
         &#34;&#34;&#34;
-        assert getattr(pl_module, &#34;predict_dataset&#34;), &#34;`predict_dataset` not defined&#34;
-        dataset = pl_module.predict_dataset
+        rows = []
+        assert &#34;predict&#34; in pl_module.datasets, &#34;`data` not defined&#34;
+        dataset = pl_module.datasets[&#34;predict&#34;]
+        predictions = [pred for batch_pred in predictions for pred in batch_pred[&#34;pred&#34;]]
 
-        if self.save_preview:
-            self.save_previews(dataset)
+        for idx, (row, pred) in enumerate(zip(dataset.get_rows(), predictions)):
+            for i, v in enumerate(pred):
+                row[f&#34;pred_{i}&#34;] = v.item()
 
-        assert getattr(dataset, &#34;get_rows&#34;), &#34;The dataset must have `get_image_paths` defined for predict functionality&#34;
-        rows = dataset.get_rows()
+            rows.append(row)
 
-        out = decollate(predictions)
-        assert len(out) == len(rows), &#34;Length of image_paths and predictions do not match&#34;
+            # Save image previews
+            if idx &lt;= self.save_preview_samples:
+                input = dataset[idx]
+                self.save_preview_image(input, idx)
 
-        for pred, row in zip(out, rows):
-            # Handle multiple output cases (features and multi-class)
-            if isinstance(pred, list):
-                for idx, v in enumerate(pred):
-                    row[f&#34;pred_{idx}&#34;] = v
-            # Single class case
-            else:
-                row[&#34;pred&#34;] = pred
-
-            self.df = self.df.append(row, ignore_index=True)
-
-        self.df.to_csv(self.output_csv)</code></pre>
+        df = pd.DataFrame(rows)
+        df.to_csv(self.output_csv)</code></pre>
 </details>
 </section>
 <section>
@@ -119,113 +140,138 @@ class SavePredictions(BasePredictionWriter):
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="fmcib.callbacks.prediction_saver.handle_image"><code class="name flex">
-<span>def <span class="ident">handle_image</span></span>(<span>image)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def handle_image(image):
-    image = image.squeeze()
-    if image.dim() == 3:
-        return image[image.shape[0] // 2]
-    else:
-        return image</code></pre>
-</details>
-</dd>
-</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
 <dt id="fmcib.callbacks.prediction_saver.SavePredictions"><code class="flex name class">
 <span>class <span class="ident">SavePredictions</span></span>
-<span>(</span><span>path: str, save_preview: bool = False)</span>
+<span>(</span><span>path: str, save_preview_samples: bool = False, keys: List[str] = None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>A class for saving predictions during training.</p>
+<div class="desc"><p>A class that saves model predictions.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
+<dd>The path to save the output CSV file.</dd>
+<dt><strong><code>save_preview_samples</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If True, save preview images.</dd>
+<dt><strong><code>keys</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of keys.</dd>
+</dl>
+<p>Initialize an instance of the class.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
-<dd>The path to save the predictions CSV file.</dd>
-<dt><strong><code>save_preview</code></strong> :&ensp;<code>bool</code>, optional</dt>
-<dd>Whether to save image previews. Defaults to False.</dd>
-</dl></div>
+<dd>The path to save the output CSV file.</dd>
+<dt><strong><code>save_preview_samples</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>A flag indicating whether to save preview samples. Defaults to False.</dd>
+<dt><strong><code>keys</code></strong> :&ensp;<code>List[str]</code>, optional</dt>
+<dd>A list of keys. Defaults to None.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>None</p>
+<h2 id="returns">Returns</h2>
+<p>None</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class SavePredictions(BasePredictionWriter):
     &#34;&#34;&#34;
-    A class for saving predictions during training.
+    A class that saves model predictions.
 
-    Args:
-        path (str): The path to save the predictions CSV file.
-        save_preview (bool, optional): Whether to save image previews. Defaults to False.
+    Attributes:
+        path (str): The path to save the output CSV file.
+        save_preview_samples (bool): If True, save preview images.
+        keys (List[str]): A list of keys.
     &#34;&#34;&#34;
 
-    def __init__(self, path: str, save_preview: bool = False):
+    def __init__(self, path: str, save_preview_samples: bool = False, keys: List[str] = None):
+        &#34;&#34;&#34;
+        Initialize an instance of the class.
+
+        Args:
+            path (str): The path to save the output CSV file.
+            save_preview_samples (bool, optional): A flag indicating whether to save preview samples. Defaults to False.
+            keys (List[str], optional): A list of keys. Defaults to None.
+
+        Raises:
+            None
+
+        Returns:
+            None
+        &#34;&#34;&#34;
         super().__init__(&#34;epoch&#34;)
         self.output_csv = Path(path)
-        self.save_preview = save_preview
+        self.keys = keys
+        self.save_preview_samples = save_preview_samples
         self.output_csv.parent.mkdir(parents=True, exist_ok=True)
-        self.df = pd.DataFrame()
 
-    def save_previews(self, dataset):
+    def save_preview_image(self, data, tag):
         &#34;&#34;&#34;
-        Save image previews from the dataset.
+        Save a preview image to a specified directory.
 
         Args:
-            dataset: The dataset containing the images.
+            self (object): The object calling the function. (self in Python)
+            data (tuple): A tuple containing the image data and its corresponding tag.
+            tag (str): The tag for the image.
+
+        Returns:
+            None
+
+        Raises:
+            None
         &#34;&#34;&#34;
-        logger.info(&#34;Saving image previews&#34;)
-        self.output_dir = self.output_csv.parent / &#34;previews&#34;
+        self.output_dir = self.output_csv.parent / f&#34;previews_{self.output_csv.stem}&#34;
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        for idx, data_item in enumerate(iter(dataset)):
-            image, _ = data_item
-            image = handle_image(image)
-            fp = self.output_dir / f&#34;{idx}.png&#34;
-            torchvision.utils.save_image(image, fp)
+        image, _ = data
+        image = handle_image(image)
+        fp = self.output_dir / f&#34;{tag}.png&#34;
+        torchvision.utils.save_image(image, fp)
 
-    def write_on_epoch_end(self, trainer, pl_module: &#34;LightningModule&#34;, predictions: List[Any], batch_indices: List[Any]):
+    def write_on_epoch_end(
+        self,
+        trainer,
+        pl_module: &#34;LightningModule&#34;,
+        predictions: List[Any],
+        batch_indices: List[Any],
+    ):
         &#34;&#34;&#34;
-        Write predictions to the CSV file at the end of each epoch.
+        Write predictions on epoch end.
 
         Args:
-            trainer: The PyTorch Lightning trainer.
-            pl_module (LightningModule): The PyTorch Lightning module.
-            predictions (List[Any]): The list of predictions.
-            batch_indices (List[Any]): The list of batch indices.
+            self: The instance of the class.
+            trainer: The trainer object.
+            pl_module (LightningModule): The Lightning module.
+            predictions (List[Any]): A list of prediction values.
+            batch_indices (List[Any]): A list of batch indices.
+
+        Raises:
+            AssertionError: If &#39;predict&#39; is not present in pl_module.datasets.
+            AssertionError: If &#39;data&#39; is not defined in pl_module.datasets.
+
+        Returns:
+            None
         &#34;&#34;&#34;
-        assert getattr(pl_module, &#34;predict_dataset&#34;), &#34;`predict_dataset` not defined&#34;
-        dataset = pl_module.predict_dataset
+        rows = []
+        assert &#34;predict&#34; in pl_module.datasets, &#34;`data` not defined&#34;
+        dataset = pl_module.datasets[&#34;predict&#34;]
+        predictions = [pred for batch_pred in predictions for pred in batch_pred[&#34;pred&#34;]]
 
-        if self.save_preview:
-            self.save_previews(dataset)
+        for idx, (row, pred) in enumerate(zip(dataset.get_rows(), predictions)):
+            for i, v in enumerate(pred):
+                row[f&#34;pred_{i}&#34;] = v.item()
 
-        assert getattr(dataset, &#34;get_rows&#34;), &#34;The dataset must have `get_image_paths` defined for predict functionality&#34;
-        rows = dataset.get_rows()
+            rows.append(row)
 
-        out = decollate(predictions)
-        assert len(out) == len(rows), &#34;Length of image_paths and predictions do not match&#34;
+            # Save image previews
+            if idx &lt;= self.save_preview_samples:
+                input = dataset[idx]
+                self.save_preview_image(input, idx)
 
-        for pred, row in zip(out, rows):
-            # Handle multiple output cases (features and multi-class)
-            if isinstance(pred, list):
-                for idx, v in enumerate(pred):
-                    row[f&#34;pred_{idx}&#34;] = v
-            # Single class case
-            else:
-                row[&#34;pred&#34;] = pred
-
-            self.df = self.df.append(row, ignore_index=True)
-
-        self.df.to_csv(self.output_csv)</code></pre>
+        df = pd.DataFrame(rows)
+        df.to_csv(self.output_csv)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -234,91 +280,124 @@ class SavePredictions(BasePredictionWriter):
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="fmcib.callbacks.prediction_saver.SavePredictions.save_previews"><code class="name flex">
-<span>def <span class="ident">save_previews</span></span>(<span>self, dataset)</span>
+<dt id="fmcib.callbacks.prediction_saver.SavePredictions.save_preview_image"><code class="name flex">
+<span>def <span class="ident">save_preview_image</span></span>(<span>self, data, tag)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Save image previews from the dataset.</p>
+<div class="desc"><p>Save a preview image to a specified directory.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>dataset</code></strong></dt>
-<dd>The dataset containing the images.</dd>
-</dl></div>
+<dt><strong><code>self</code></strong> :&ensp;<code>object</code></dt>
+<dd>The object calling the function. (self in Python)</dd>
+<dt><strong><code>data</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>A tuple containing the image data and its corresponding tag.</dd>
+<dt><strong><code>tag</code></strong> :&ensp;<code>str</code></dt>
+<dd>The tag for the image.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None</p>
+<h2 id="raises">Raises</h2>
+<p>None</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def save_previews(self, dataset):
+<pre><code class="python">def save_preview_image(self, data, tag):
     &#34;&#34;&#34;
-    Save image previews from the dataset.
+    Save a preview image to a specified directory.
 
     Args:
-        dataset: The dataset containing the images.
+        self (object): The object calling the function. (self in Python)
+        data (tuple): A tuple containing the image data and its corresponding tag.
+        tag (str): The tag for the image.
+
+    Returns:
+        None
+
+    Raises:
+        None
     &#34;&#34;&#34;
-    logger.info(&#34;Saving image previews&#34;)
-    self.output_dir = self.output_csv.parent / &#34;previews&#34;
+    self.output_dir = self.output_csv.parent / f&#34;previews_{self.output_csv.stem}&#34;
     self.output_dir.mkdir(parents=True, exist_ok=True)
-    for idx, data_item in enumerate(iter(dataset)):
-        image, _ = data_item
-        image = handle_image(image)
-        fp = self.output_dir / f&#34;{idx}.png&#34;
-        torchvision.utils.save_image(image, fp)</code></pre>
+    image, _ = data
+    image = handle_image(image)
+    fp = self.output_dir / f&#34;{tag}.png&#34;
+    torchvision.utils.save_image(image, fp)</code></pre>
 </details>
 </dd>
 <dt id="fmcib.callbacks.prediction_saver.SavePredictions.write_on_epoch_end"><code class="name flex">
 <span>def <span class="ident">write_on_epoch_end</span></span>(<span>self, trainer, pl_module: LightningModule, predictions: List[Any], batch_indices: List[Any])</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Write predictions to the CSV file at the end of each epoch.</p>
+<div class="desc"><p>Write predictions on epoch end.</p>
 <h2 id="args">Args</h2>
 <dl>
+<dt><strong><code>self</code></strong></dt>
+<dd>The instance of the class.</dd>
 <dt><strong><code>trainer</code></strong></dt>
-<dd>The PyTorch Lightning trainer.</dd>
+<dd>The trainer object.</dd>
 <dt><strong><code>pl_module</code></strong> :&ensp;<code>LightningModule</code></dt>
-<dd>The PyTorch Lightning module.</dd>
+<dd>The Lightning module.</dd>
 <dt><strong><code>predictions</code></strong> :&ensp;<code>List[Any]</code></dt>
-<dd>The list of predictions.</dd>
+<dd>A list of prediction values.</dd>
 <dt><strong><code>batch_indices</code></strong> :&ensp;<code>List[Any]</code></dt>
-<dd>The list of batch indices.</dd>
-</dl></div>
+<dd>A list of batch indices.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>AssertionError</code></dt>
+<dd>If 'predict' is not present in pl_module.datasets.</dd>
+<dt><code>AssertionError</code></dt>
+<dd>If 'data' is not defined in pl_module.datasets.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def write_on_epoch_end(self, trainer, pl_module: &#34;LightningModule&#34;, predictions: List[Any], batch_indices: List[Any]):
+<pre><code class="python">def write_on_epoch_end(
+    self,
+    trainer,
+    pl_module: &#34;LightningModule&#34;,
+    predictions: List[Any],
+    batch_indices: List[Any],
+):
     &#34;&#34;&#34;
-    Write predictions to the CSV file at the end of each epoch.
+    Write predictions on epoch end.
 
     Args:
-        trainer: The PyTorch Lightning trainer.
-        pl_module (LightningModule): The PyTorch Lightning module.
-        predictions (List[Any]): The list of predictions.
-        batch_indices (List[Any]): The list of batch indices.
+        self: The instance of the class.
+        trainer: The trainer object.
+        pl_module (LightningModule): The Lightning module.
+        predictions (List[Any]): A list of prediction values.
+        batch_indices (List[Any]): A list of batch indices.
+
+    Raises:
+        AssertionError: If &#39;predict&#39; is not present in pl_module.datasets.
+        AssertionError: If &#39;data&#39; is not defined in pl_module.datasets.
+
+    Returns:
+        None
     &#34;&#34;&#34;
-    assert getattr(pl_module, &#34;predict_dataset&#34;), &#34;`predict_dataset` not defined&#34;
-    dataset = pl_module.predict_dataset
+    rows = []
+    assert &#34;predict&#34; in pl_module.datasets, &#34;`data` not defined&#34;
+    dataset = pl_module.datasets[&#34;predict&#34;]
+    predictions = [pred for batch_pred in predictions for pred in batch_pred[&#34;pred&#34;]]
 
-    if self.save_preview:
-        self.save_previews(dataset)
+    for idx, (row, pred) in enumerate(zip(dataset.get_rows(), predictions)):
+        for i, v in enumerate(pred):
+            row[f&#34;pred_{i}&#34;] = v.item()
 
-    assert getattr(dataset, &#34;get_rows&#34;), &#34;The dataset must have `get_image_paths` defined for predict functionality&#34;
-    rows = dataset.get_rows()
+        rows.append(row)
 
-    out = decollate(predictions)
-    assert len(out) == len(rows), &#34;Length of image_paths and predictions do not match&#34;
+        # Save image previews
+        if idx &lt;= self.save_preview_samples:
+            input = dataset[idx]
+            self.save_preview_image(input, idx)
 
-    for pred, row in zip(out, rows):
-        # Handle multiple output cases (features and multi-class)
-        if isinstance(pred, list):
-            for idx, v in enumerate(pred):
-                row[f&#34;pred_{idx}&#34;] = v
-        # Single class case
-        else:
-            row[&#34;pred&#34;] = pred
-
-        self.df = self.df.append(row, ignore_index=True)
-
-    self.df.to_csv(self.output_csv)</code></pre>
+    df = pd.DataFrame(rows)
+    df.to_csv(self.output_csv)</code></pre>
 </details>
 </dd>
 </dl>
@@ -337,17 +416,12 @@ class SavePredictions(BasePredictionWriter):
 <li><code><a title="fmcib.callbacks" href="index.html">fmcib.callbacks</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="fmcib.callbacks.prediction_saver.handle_image" href="#fmcib.callbacks.prediction_saver.handle_image">handle_image</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="fmcib.callbacks.prediction_saver.SavePredictions" href="#fmcib.callbacks.prediction_saver.SavePredictions">SavePredictions</a></code></h4>
 <ul class="">
-<li><code><a title="fmcib.callbacks.prediction_saver.SavePredictions.save_previews" href="#fmcib.callbacks.prediction_saver.SavePredictions.save_previews">save_previews</a></code></li>
+<li><code><a title="fmcib.callbacks.prediction_saver.SavePredictions.save_preview_image" href="#fmcib.callbacks.prediction_saver.SavePredictions.save_preview_image">save_preview_image</a></code></li>
 <li><code><a title="fmcib.callbacks.prediction_saver.SavePredictions.write_on_epoch_end" href="#fmcib.callbacks.prediction_saver.SavePredictions.write_on_epoch_end">write_on_epoch_end</a></code></li>
 </ul>
 </li>

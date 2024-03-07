@@ -23,17 +23,17 @@ extra_css:
 nav:
   - 'index.md'
   - 'Getting Started': 
-    - 'Pre-requisites': 'getting-started/prereqs.md'
     - 'Installation': 'getting-started/installation.md'
-    - 'Repository Structure': 'getting-started/repository-structure.md'
-
-  - 'User Guide':
+    - 'Cloud Quick Start': 'getting-started/cloud-quick-start.md'
+    - 'Quick Start': 'getting-started/quick-start.md'
+  - 'Replication Guide':
     - 'Data Download and Preprocessing': 'user-guide/data.md'
-    - 'Download Trained Models': 'user-guide/download_models.md'
-    - 'Reproduce Models': 'user-guide/reproduce_models.md'
-    - 'Model Inference': 'user-guide/inference.md'
-    - 'Replicate Analysis': 'user-guide/analysis.md'
-
+    - 'Pre-training the FM': 'user-guide/reproduce_fm.md'
+    - 'Adapt the FM to downstream tasks': 'user-guide/fm_adaptation.md'
+    - 'Extracting Features & Predictions': 'user-guide/inference.md'
+    - 'Reproduce Analysis': 'user-guide/analysis.md'
+    # - 'Training baselines': 'user-guide/reproduce_baselines.md'
+  - 'Tutorials': https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/tree/master/tutorials
   - 'API Reference': 'api_docs/fmcib'
 
 markdown_extensions:
