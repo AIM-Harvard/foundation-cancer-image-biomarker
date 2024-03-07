@@ -47,7 +47,7 @@ def download_from_manifest(df, save_dir, samples):
         None
     """
     # Instantiates a client
-    storage_client = storage.Client()
+    storage_client = storage.Client.create_anonymous_client()
     logger.info("Downloading DICOM data from IDC (Imaging Data Commons) ...")
     (save_dir / "dicom").mkdir(exist_ok=True, parents=True)
 
