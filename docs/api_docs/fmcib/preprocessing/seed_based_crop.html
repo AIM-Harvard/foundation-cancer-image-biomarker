@@ -51,16 +51,29 @@ from monai.transforms import MapTransform, Transform
 
 
 class SeedBasedPatchCropd(MapTransform):
+    &#34;&#34;&#34;
+    A class representing a seed-based patch crop transformation.
+
+    Inherits from MapTransform.
+
+    Attributes:
+        keys (list): List of keys for images in the input data dictionary.
+        roi_size (tuple): Tuple indicating the size of the region of interest (ROI).
+        allow_missing_keys (bool): If True, do not raise an error if some keys in the input data dictionary are missing.
+        coord_orientation (str): Coordinate system (RAS or LPS) of input coordinates.
+        global_coordinates (bool): If True, coordinates are in global coordinates; otherwise, local coordinates.
+    &#34;&#34;&#34;
+
     def __init__(self, keys, roi_size, allow_missing_keys=False, coord_orientation=&#34;RAS&#34;, global_coordinates=True) -&gt; None:
         &#34;&#34;&#34;
         Initialize SeedBasedPatchCropd class.
 
         Args:
-            keys: List of keys for images in the input data dictionary.
-            roi_size: Tuple indicating the size of the region of interest (ROI).
-            allow_missing_keys: If True, do not raise an error if some keys in the input data dictionary are missing.
-            coord_orientation: Coordinate system (RAS or LPS) of input coordinates.
-            global_coordinates: If True, coordinates are in global coordinates; otherwise, local coordinates.
+            keys (List): List of keys for images in the input data dictionary.
+            roi_size (Tuple): Tuple indicating the size of the region of interest (ROI).
+            allow_missing_keys (bool): If True, do not raise an error if some keys in the input data dictionary are missing.
+            coord_orientation (str): Coordinate system (RAS or LPS) of input coordinates.
+            global_coordinates (bool): If True, coordinates are in global coordinates; otherwise, local coordinates.
         &#34;&#34;&#34;
         super().__init__(keys=keys, allow_missing_keys=allow_missing_keys)
         self.coord_orientation = coord_orientation
@@ -72,10 +85,10 @@ class SeedBasedPatchCropd(MapTransform):
         Apply transformation to given data.
 
         Args:
-            data: Dictionary with image keys and required center coordinates.
+            data (dict): Dictionary with image keys and required center coordinates.
 
         Returns:
-            Dictionary with cropped patches for each key in the input data dictionary.
+            dict: Dictionary with cropped patches for each key in the input data dictionary.
         &#34;&#34;&#34;
         d = dict(data)
 
@@ -95,12 +108,32 @@ class SeedBasedPatchCropd(MapTransform):
 
 
 class SeedBasedPatchCrop(Transform):
+    &#34;&#34;&#34;
+    A class representing a seed-based patch crop transformation.
+
+    Attributes:
+        roi_size: Tuple indicating the size of the region of interest (ROI).
+
+    Methods:
+        __call__: Crop a patch from the input image centered around the seed coordinate.
+
+    Args:
+        roi_size: Tuple indicating the size of the region of interest (ROI).
+
+    Returns:
+        NdarrayOrTensor: Cropped patch of shape (C, Ph, Pw, Pd), where (Ph, Pw, Pd) is the patch size.
+
+    Raises:
+        AssertionError: If the input image has dimensions other than (C, H, W, D)
+        AssertionError: If the coordinates are invalid (e.g., min_h &gt;= max_h)
+    &#34;&#34;&#34;
+
     def __init__(self, roi_size) -&gt; None:
         &#34;&#34;&#34;
         Initialize SeedBasedPatchCrop class.
 
         Args:
-            roi_size: Tuple indicating the size of the region of interest (ROI).
+            roi_size (tuple): Tuple indicating the size of the region of interest (ROI).
         &#34;&#34;&#34;
         super().__init__()
         self.roi_size = roi_size
@@ -110,9 +143,9 @@ class SeedBasedPatchCrop(Transform):
         Crop a patch from the input image centered around the seed coordinate.
 
         Args:
-            img: Image to crop, with dimensions (C, H, W, D). C is the number of channels.
-            center: Seed coordinate around which to crop the patch (X, Y, Z).
-            global_coordinates: If True, seed coordinate is in global space; otherwise, local space.
+            img (NdarrayOrTensor): Image to crop, with dimensions (C, H, W, D). C is the number of channels.
+            center (tuple): Seed coordinate around which to crop the patch (X, Y, Z).
+            global_coordinates (bool): If True, seed coordinate is in global space; otherwise, local space.
 
         Returns:
             NdarrayOrTensor: Cropped patch of shape (C, Ph, Pw, Pd), where (Ph, Pw, Pd) is the patch size.
@@ -156,25 +189,35 @@ class SeedBasedPatchCrop(Transform):
 <span>(</span><span>roi_size)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>An abstract class of a <code>Transform</code>.
-A transform is callable that processes <code>data</code>.</p>
-<p>It could be stateful and may modify <code>data</code> in place,
-the implementation should be aware of:</p>
-<pre><code>#. thread safety when mutating its own states.
-   When used from a multi-process context, transform's instance variables are read-only.
-   thread-unsafe transforms should inherit :py:class:&lt;code&gt;monai.transforms.ThreadUnsafe&lt;/code&gt;.
-#. &lt;code&gt;data&lt;/code&gt; content unused by this transform may still be used in the
-   subsequent transforms in a composed transform.
-#. storing too much information in &lt;code&gt;data&lt;/code&gt; may cause some memory issue or IPC sync issue,
-   especially in the multi-processing environment of PyTorch DataLoader.
-</code></pre>
-<p>See Also</p>
-<pre><code>:py:class:&lt;code&gt;monai.transforms.Compose&lt;/code&gt;
-</code></pre>
-<p>Initialize SeedBasedPatchCrop class.</p>
+<div class="desc"><p>A class representing a seed-based patch crop transformation.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>roi_size</code></strong></dt>
+<dd>Tuple indicating the size of the region of interest (ROI).</dd>
+</dl>
+<h2 id="methods">Methods</h2>
+<p><strong>call</strong>: Crop a patch from the input image centered around the seed coordinate.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>roi_size</code></strong></dt>
+<dd>Tuple indicating the size of the region of interest (ROI).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>NdarrayOrTensor</code></dt>
+<dd>Cropped patch of shape (C, Ph, Pw, Pd), where (Ph, Pw, Pd) is the patch size.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>AssertionError</code></dt>
+<dd>If the input image has dimensions other than (C, H, W, D)</dd>
+<dt><code>AssertionError</code></dt>
+<dd>If the coordinates are invalid (e.g., min_h &gt;= max_h)</dd>
+</dl>
+<p>Initialize SeedBasedPatchCrop class.</p>
+<h2 id="args_1">Args</h2>
+<dl>
+<dt><strong><code>roi_size</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>Tuple indicating the size of the region of interest (ROI).</dd>
 </dl></div>
 <details class="source">
@@ -182,12 +225,32 @@ the implementation should be aware of:</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class SeedBasedPatchCrop(Transform):
+    &#34;&#34;&#34;
+    A class representing a seed-based patch crop transformation.
+
+    Attributes:
+        roi_size: Tuple indicating the size of the region of interest (ROI).
+
+    Methods:
+        __call__: Crop a patch from the input image centered around the seed coordinate.
+
+    Args:
+        roi_size: Tuple indicating the size of the region of interest (ROI).
+
+    Returns:
+        NdarrayOrTensor: Cropped patch of shape (C, Ph, Pw, Pd), where (Ph, Pw, Pd) is the patch size.
+
+    Raises:
+        AssertionError: If the input image has dimensions other than (C, H, W, D)
+        AssertionError: If the coordinates are invalid (e.g., min_h &gt;= max_h)
+    &#34;&#34;&#34;
+
     def __init__(self, roi_size) -&gt; None:
         &#34;&#34;&#34;
         Initialize SeedBasedPatchCrop class.
 
         Args:
-            roi_size: Tuple indicating the size of the region of interest (ROI).
+            roi_size (tuple): Tuple indicating the size of the region of interest (ROI).
         &#34;&#34;&#34;
         super().__init__()
         self.roi_size = roi_size
@@ -197,9 +260,9 @@ the implementation should be aware of:</p>
         Crop a patch from the input image centered around the seed coordinate.
 
         Args:
-            img: Image to crop, with dimensions (C, H, W, D). C is the number of channels.
-            center: Seed coordinate around which to crop the patch (X, Y, Z).
-            global_coordinates: If True, seed coordinate is in global space; otherwise, local space.
+            img (NdarrayOrTensor): Image to crop, with dimensions (C, H, W, D). C is the number of channels.
+            center (tuple): Seed coordinate around which to crop the patch (X, Y, Z).
+            global_coordinates (bool): If True, seed coordinate is in global space; otherwise, local space.
 
         Returns:
             NdarrayOrTensor: Cropped patch of shape (C, Ph, Pw, Pd), where (Ph, Pw, Pd) is the patch size.
@@ -233,47 +296,46 @@ the implementation should be aware of:</p>
 <li>monai.transforms.transform.Transform</li>
 <li>abc.ABC</li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fmcib.preprocessing.seed_based_crop.SeedBasedPatchCrop.backend"><code class="name">var <span class="ident">backend</span> : list[TransformBackends]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 <dt id="fmcib.preprocessing.seed_based_crop.SeedBasedPatchCropd"><code class="flex name class">
 <span>class <span class="ident">SeedBasedPatchCropd</span></span>
 <span>(</span><span>keys, roi_size, allow_missing_keys=False, coord_orientation='RAS', global_coordinates=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>A subclass of :py:class:<code>monai.transforms.Transform</code> with an assumption
-that the <code>data</code> input of <code>self.__call__</code> is a MutableMapping such as <code>dict</code>.</p>
-<p>The <code>keys</code> parameter will be used to get and set the actual data
-item to transform.
-That is, the callable of this transform should
-follow the pattern:</p>
-<pre><code>.. code-block:: python
-
-    def __call__(self, data):
-        for key in self.keys:
-            if key in data:
-                # update output data with some_transform_function(data[key]).
-            else:
-                # raise exception unless allow_missing_keys==True.
-        return data
-</code></pre>
-<h2 id="raises">Raises</h2>
+<div class="desc"><p>A class representing a seed-based patch crop transformation.</p>
+<p>Inherits from MapTransform.</p>
+<h2 id="attributes">Attributes</h2>
 <dl>
-<dt><code>ValueError</code></dt>
-<dd>When <code>keys</code> is an empty iterable.</dd>
-<dt><code>TypeError</code></dt>
-<dd>When <code>keys</code> type is not in <code>Union[Hashable, Iterable[Hashable]]</code>.</dd>
+<dt><strong><code>keys</code></strong> :&ensp;<code>list</code></dt>
+<dd>List of keys for images in the input data dictionary.</dd>
+<dt><strong><code>roi_size</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>Tuple indicating the size of the region of interest (ROI).</dd>
+<dt><strong><code>allow_missing_keys</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If True, do not raise an error if some keys in the input data dictionary are missing.</dd>
+<dt><strong><code>coord_orientation</code></strong> :&ensp;<code>str</code></dt>
+<dd>Coordinate system (RAS or LPS) of input coordinates.</dd>
+<dt><strong><code>global_coordinates</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If True, coordinates are in global coordinates; otherwise, local coordinates.</dd>
 </dl>
 <p>Initialize SeedBasedPatchCropd class.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>keys</code></strong></dt>
+<dt><strong><code>keys</code></strong> :&ensp;<code>List</code></dt>
 <dd>List of keys for images in the input data dictionary.</dd>
-<dt><strong><code>roi_size</code></strong></dt>
+<dt><strong><code>roi_size</code></strong> :&ensp;<code>Tuple</code></dt>
 <dd>Tuple indicating the size of the region of interest (ROI).</dd>
-<dt><strong><code>allow_missing_keys</code></strong></dt>
+<dt><strong><code>allow_missing_keys</code></strong> :&ensp;<code>bool</code></dt>
 <dd>If True, do not raise an error if some keys in the input data dictionary are missing.</dd>
-<dt><strong><code>coord_orientation</code></strong></dt>
+<dt><strong><code>coord_orientation</code></strong> :&ensp;<code>str</code></dt>
 <dd>Coordinate system (RAS or LPS) of input coordinates.</dd>
-<dt><strong><code>global_coordinates</code></strong></dt>
+<dt><strong><code>global_coordinates</code></strong> :&ensp;<code>bool</code></dt>
 <dd>If True, coordinates are in global coordinates; otherwise, local coordinates.</dd>
 </dl></div>
 <details class="source">
@@ -281,16 +343,29 @@ follow the pattern:</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class SeedBasedPatchCropd(MapTransform):
+    &#34;&#34;&#34;
+    A class representing a seed-based patch crop transformation.
+
+    Inherits from MapTransform.
+
+    Attributes:
+        keys (list): List of keys for images in the input data dictionary.
+        roi_size (tuple): Tuple indicating the size of the region of interest (ROI).
+        allow_missing_keys (bool): If True, do not raise an error if some keys in the input data dictionary are missing.
+        coord_orientation (str): Coordinate system (RAS or LPS) of input coordinates.
+        global_coordinates (bool): If True, coordinates are in global coordinates; otherwise, local coordinates.
+    &#34;&#34;&#34;
+
     def __init__(self, keys, roi_size, allow_missing_keys=False, coord_orientation=&#34;RAS&#34;, global_coordinates=True) -&gt; None:
         &#34;&#34;&#34;
         Initialize SeedBasedPatchCropd class.
 
         Args:
-            keys: List of keys for images in the input data dictionary.
-            roi_size: Tuple indicating the size of the region of interest (ROI).
-            allow_missing_keys: If True, do not raise an error if some keys in the input data dictionary are missing.
-            coord_orientation: Coordinate system (RAS or LPS) of input coordinates.
-            global_coordinates: If True, coordinates are in global coordinates; otherwise, local coordinates.
+            keys (List): List of keys for images in the input data dictionary.
+            roi_size (Tuple): Tuple indicating the size of the region of interest (ROI).
+            allow_missing_keys (bool): If True, do not raise an error if some keys in the input data dictionary are missing.
+            coord_orientation (str): Coordinate system (RAS or LPS) of input coordinates.
+            global_coordinates (bool): If True, coordinates are in global coordinates; otherwise, local coordinates.
         &#34;&#34;&#34;
         super().__init__(keys=keys, allow_missing_keys=allow_missing_keys)
         self.coord_orientation = coord_orientation
@@ -302,10 +377,10 @@ follow the pattern:</p>
         Apply transformation to given data.
 
         Args:
-            data: Dictionary with image keys and required center coordinates.
+            data (dict): Dictionary with image keys and required center coordinates.
 
         Returns:
-            Dictionary with cropped patches for each key in the input data dictionary.
+            dict: Dictionary with cropped patches for each key in the input data dictionary.
         &#34;&#34;&#34;
         d = dict(data)
 
@@ -329,6 +404,13 @@ follow the pattern:</p>
 <li>monai.transforms.transform.Transform</li>
 <li>abc.ABC</li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fmcib.preprocessing.seed_based_crop.SeedBasedPatchCropd.backend"><code class="name">var <span class="ident">backend</span> : list[TransformBackends]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -348,9 +430,15 @@ follow the pattern:</p>
 <ul>
 <li>
 <h4><code><a title="fmcib.preprocessing.seed_based_crop.SeedBasedPatchCrop" href="#fmcib.preprocessing.seed_based_crop.SeedBasedPatchCrop">SeedBasedPatchCrop</a></code></h4>
+<ul class="">
+<li><code><a title="fmcib.preprocessing.seed_based_crop.SeedBasedPatchCrop.backend" href="#fmcib.preprocessing.seed_based_crop.SeedBasedPatchCrop.backend">backend</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="fmcib.preprocessing.seed_based_crop.SeedBasedPatchCropd" href="#fmcib.preprocessing.seed_based_crop.SeedBasedPatchCropd">SeedBasedPatchCropd</a></code></h4>
+<ul class="">
+<li><code><a title="fmcib.preprocessing.seed_based_crop.SeedBasedPatchCropd.backend" href="#fmcib.preprocessing.seed_based_crop.SeedBasedPatchCropd.backend">backend</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

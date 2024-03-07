@@ -1,0 +1,1427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>fmcib.models.models_genesis API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fmcib.models.models_genesis</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+
+class ContBatchNorm3d(nn.modules.batchnorm._BatchNorm):
+    &#34;&#34;&#34;
+    A class representing a 3D contextual batch normalization layer.
+
+    Attributes:
+        running_mean (torch.Tensor): The running mean of the batch normalization.
+        running_var (torch.Tensor): The running variance of the batch normalization.
+        weight (torch.Tensor): The learnable weights of the batch normalization.
+        bias (torch.Tensor): The learnable bias of the batch normalization.
+        momentum (float): The momentum for updating the running statistics.
+        eps (float): Small value added to the denominator for numerical stability.
+    &#34;&#34;&#34;
+
+    def _check_input_dim(self, input):
+        &#34;&#34;&#34;
+        Check if the input tensor is 5-dimensional.
+
+        Args:
+            input (torch.Tensor): Input tensor to check the dimensionality.
+
+        Raises:
+            ValueError: If the input tensor is not 5-dimensional.
+        &#34;&#34;&#34;
+        if input.dim() != 5:
+            raise ValueError(&#34;expected 5D input (got {}D input)&#34;.format(input.dim()))
+        # super(ContBatchNorm3d, self)._check_input_dim(input)
+
+    def forward(self, input):
+        &#34;&#34;&#34;
+        Apply forward pass for the input through batch normalization layer.
+
+        Args:
+            input (Tensor): Input tensor to be normalized.
+
+        Returns:
+            Tensor: Normalized output tensor.
+
+        Raises:
+            ValueError: If the dimensions of the input tensor do not match the expected input dimensions.
+        &#34;&#34;&#34;
+        self._check_input_dim(input)
+        return F.batch_norm(input, self.running_mean, self.running_var, self.weight, self.bias, True, self.momentum, self.eps)
+
+
+class LUConv(nn.Module):
+    &#34;&#34;&#34;
+    A class representing a LUConv module.
+
+    This module performs a convolution operation on the input data with a specified number of input channels and output channels.
+    The convolution is followed by batch normalization and an activation function.
+
+    Attributes:
+        in_chan (int): The number of input channels.
+        out_chan (int): The number of output channels.
+        act (str): The activation function to be applied. Can be one of &#39;relu&#39;, &#39;prelu&#39;, or &#39;elu&#39;.
+    &#34;&#34;&#34;
+
+    def __init__(self, in_chan, out_chan, act):
+        &#34;&#34;&#34;
+        Initialize a LUConv layer.
+
+        Args:
+            in_chan (int): Number of input channels.
+            out_chan (int): Number of output channels.
+            act (str): Activation function. Options: &#39;relu&#39;, &#39;prelu&#39;, &#39;elu&#39;.
+
+        Returns:
+            None
+
+        Raises:
+            TypeError: If the activation function is not one of the specified options.
+        &#34;&#34;&#34;
+        super(LUConv, self).__init__()
+        self.conv1 = nn.Conv3d(in_chan, out_chan, kernel_size=3, padding=1)
+        self.bn1 = ContBatchNorm3d(out_chan)
+
+        if act == &#34;relu&#34;:
+            self.activation = nn.ReLU(out_chan)
+        elif act == &#34;prelu&#34;:
+            self.activation = nn.PReLU(out_chan)
+        elif act == &#34;elu&#34;:
+            self.activation = nn.ELU(inplace=True)
+        else:
+            raise
+
+    def forward(self, x):
+        &#34;&#34;&#34;
+        Apply forward pass through the neural network.
+
+        Args:
+            x (Tensor): Input tensor to the network.
+
+        Returns:
+            Tensor: Output tensor after passing through the network.
+        &#34;&#34;&#34;
+        out = self.activation(self.bn1(self.conv1(x)))
+        return out
+
+
+def _make_nConv(in_channel, depth, act, double_chnnel=False):
+    &#34;&#34;&#34;
+    Make a two-layer convolutional neural network module.
+
+    Args:
+        in_channel (int): The number of input channels.
+        depth (int): The depth of the network.
+        act: Activation function to be used in the network.
+        double_channel (bool, optional): If True, double the number of channels in the network. Defaults to False.
+
+    Returns:
+        nn.Sequential: A sequential module representing the two-layer convolutional network.
+
+    Note:
+        - If double_channel is True, the first layer will have 32 * 2 ** (depth + 1) channels and the second layer will have the same number of channels.
+        - If double_channel is False, the first layer will have 32 * 2 ** depth channels and the second layer will have 32 * 2 ** depth * 2 channels.
+    &#34;&#34;&#34;
+    if double_chnnel:
+        layer1 = LUConv(in_channel, 32 * (2 ** (depth + 1)), act)
+        layer2 = LUConv(32 * (2 ** (depth + 1)), 32 * (2 ** (depth + 1)), act)
+    else:
+        layer1 = LUConv(in_channel, 32 * (2**depth), act)
+        layer2 = LUConv(32 * (2**depth), 32 * (2**depth) * 2, act)
+
+    return nn.Sequential(layer1, layer2)
+
+
+# class InputTransition(nn.Module):
+#     def __init__(self, outChans, elu):
+#         super(InputTransition, self).__init__()
+#         self.conv1 = nn.Conv3d(1, 16, kernel_size=5, padding=2)
+#         self.bn1 = ContBatchNorm3d(16)
+#         self.relu1 = ELUCons(elu, 16)
+#
+#     def forward(self, x):
+#         # do we want a PRELU here as well?
+#         out = self.bn1(self.conv1(x))
+#         # split input in to 16 channels
+#         x16 = torch.cat((x, x, x, x, x, x, x, x,
+#                          x, x, x, x, x, x, x, x), 1)
+#         out = self.relu1(torch.add(out, x16))
+#         return out
+
+
+class DownTransition(nn.Module):
+    &#34;&#34;&#34;
+    A class representing a down transition module in a neural network.
+
+    Attributes:
+        in_channel (int): The number of input channels.
+        depth (int): The depth of the down transition module.
+        act (nn.Module): The activation function used in the module.
+    &#34;&#34;&#34;
+
+    def __init__(self, in_channel, depth, act):
+        &#34;&#34;&#34;
+        Initialize a DownTransition object.
+
+        Args:
+            in_channel (int): The number of channels in the input.
+            depth (int): The depth of the DownTransition.
+            act (function): The activation function.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        &#34;&#34;&#34;
+        super(DownTransition, self).__init__()
+        self.ops = _make_nConv(in_channel, depth, act)
+        self.maxpool = nn.MaxPool3d(2)
+        self.current_depth = depth
+
+    def forward(self, x):
+        &#34;&#34;&#34;
+        Perform a forward pass through the neural network.
+
+        Args:
+            x (Tensor): The input tensor.
+
+        Returns:
+            tuple: A tuple containing two tensors. The first tensor is the output of the forward pass. The second tensor is the output before applying the max pooling operation.
+
+        Raises:
+            None
+        &#34;&#34;&#34;
+        if self.current_depth == 3:
+            out = self.ops(x)
+            out_before_pool = out
+        else:
+            out_before_pool = self.ops(x)
+            out = self.maxpool(out_before_pool)
+        return out, out_before_pool
+
+
+class UpTransition(nn.Module):
+    &#34;&#34;&#34;
+    A class representing an up transition layer in a neural network.
+
+    Attributes:
+        inChans (int): The number of input channels.
+        outChans (int): The number of output channels.
+        depth (int): The depth of the layer.
+        act (str): The activation function to be applied.
+    &#34;&#34;&#34;
+
+    def __init__(self, inChans, outChans, depth, act):
+        &#34;&#34;&#34;
+        Initialize the UpTransition module.
+
+        Args:
+            inChans (int): The number of input channels.
+            outChans (int): The number of output channels.
+            depth (int): The depth of the module.
+            act (nn.Module): The activation function to be used.
+
+        Returns:
+            None.
+
+        Raises:
+            None.
+        &#34;&#34;&#34;
+        super(UpTransition, self).__init__()
+        self.depth = depth
+        self.up_conv = nn.ConvTranspose3d(inChans, outChans, kernel_size=2, stride=2)
+        self.ops = _make_nConv(inChans + outChans // 2, depth, act, double_chnnel=True)
+
+    def forward(self, x, skip_x):
+        &#34;&#34;&#34;
+        Forward pass of the neural network.
+
+        Args:
+            x (torch.Tensor): Input tensor.
+            skip_x (torch.Tensor): Tensor to be concatenated with the upsampled convolution output.
+
+        Returns:
+            torch.Tensor: The output tensor after passing through the network.
+        &#34;&#34;&#34;
+        out_up_conv = self.up_conv(x)
+        concat = torch.cat((out_up_conv, skip_x), 1)
+        out = self.ops(concat)
+        return out
+
+
+class OutputTransition(nn.Module):
+    &#34;&#34;&#34;
+    A class representing the output transition in a neural network.
+
+    Attributes:
+        inChans (int): The number of input channels.
+        n_labels (int): The number of output labels.
+    &#34;&#34;&#34;
+
+    def __init__(self, inChans, n_labels):
+        &#34;&#34;&#34;
+        Initialize the OutputTransition class.
+
+        Args:
+            inChans (int): Number of input channels.
+            n_labels (int): Number of output labels.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        &#34;&#34;&#34;
+        super(OutputTransition, self).__init__()
+        self.final_conv = nn.Conv3d(inChans, n_labels, kernel_size=1)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        &#34;&#34;&#34;
+        Forward pass through a neural network model.
+
+        Args:
+            x (Tensor): The input tensor.
+
+        Returns:
+            Tensor: The output tensor after passing through the model.
+        &#34;&#34;&#34;
+        out = self.sigmoid(self.final_conv(x))
+        return out
+
+
+class UNet3D(nn.Module):
+    # the number of convolutions in each layer corresponds
+    # to what is in the actual prototxt, not the intent
+    &#34;&#34;&#34;
+    A class representing a 3D UNet model for segmentation.
+
+    Attributes:
+        n_class (int): The number of classes for segmentation.
+        act (str): The activation function type used in the model.
+        decoder (bool): Whether to include the decoder part in the model.
+
+    Methods:
+        forward(x): Forward pass of the model.
+    &#34;&#34;&#34;
+
+    def __init__(self, n_class=1, act=&#34;relu&#34;, decoder=True):
+        &#34;&#34;&#34;
+        Initialize a 3D UNet neural network model.
+
+        Args:
+            n_class (int): The number of output classes. Defaults to 1.
+            act (str): The activation function to use. Defaults to &#39;relu&#39;.
+            decoder (bool): Whether to include the decoder layers. Defaults to True.
+
+        Attributes:
+            decoder (bool): Whether the model includes decoder layers.
+            down_tr64 (DownTransition): The first down transition layer.
+            down_tr128 (DownTransition): The second down transition layer.
+            down_tr256 (DownTransition): The third down transition layer.
+            down_tr512 (DownTransition): The fourth down transition layer.
+            up_tr256 (UpTransition): The first up transition layer. (Only exists if `decoder` is True)
+            up_tr128 (UpTransition): The second up transition layer. (Only exists if `decoder` is True)
+            up_tr64 (UpTransition): The third up transition layer. (Only exists if `decoder` is True)
+            out_tr (OutputTransition): The output transition layer. (Only exists if `decoder` is True)
+            avg_pool (nn.AvgPool3d): The average pooling layer. (Only exists if `decoder` is False)
+            flatten (nn.Flatten): The flattening layer. (Only exists if `decoder` is False)
+        &#34;&#34;&#34;
+        super(UNet3D, self).__init__()
+
+        self.decoder = decoder
+
+        self.down_tr64 = DownTransition(1, 0, act)
+        self.down_tr128 = DownTransition(64, 1, act)
+        self.down_tr256 = DownTransition(128, 2, act)
+        self.down_tr512 = DownTransition(256, 3, act)
+
+        if self.decoder:
+            self.up_tr256 = UpTransition(512, 512, 2, act)
+            self.up_tr128 = UpTransition(256, 256, 1, act)
+            self.up_tr64 = UpTransition(128, 128, 0, act)
+            self.out_tr = OutputTransition(64, n_class)
+        else:
+            self.avg_pool = nn.AvgPool3d(3, stride=2)
+            self.flatten = nn.Flatten()
+
+    def forward(self, x):
+        &#34;&#34;&#34;
+        Perform forward pass through the neural network.
+
+        Args:
+            x (Tensor): Input tensor to the network.
+
+        Returns:
+            Tensor: Output tensor from the network.
+
+        Note: This function performs a series of operations to downsample the input tensor, followed by upsampling if the &#39;decoder&#39; flag is set. If the &#39;decoder&#39; flag is not set, the output tensor goes through average pooling and flattening.
+
+        Raises:
+            None.
+        &#34;&#34;&#34;
+        self.out64, self.skip_out64 = self.down_tr64(x)
+        self.out128, self.skip_out128 = self.down_tr128(self.out64)
+        self.out256, self.skip_out256 = self.down_tr256(self.out128)
+        self.out512, self.skip_out512 = self.down_tr512(self.out256)
+
+        if self.decoder:
+            self.out_up_256 = self.up_tr256(self.out512, self.skip_out256)
+            self.out_up_128 = self.up_tr128(self.out_up_256, self.skip_out128)
+            self.out_up_64 = self.up_tr64(self.out_up_128, self.skip_out64)
+            self.out = self.out_tr(self.out_up_64)
+        else:
+            self.out = self.avg_pool(self.out512)
+            self.out = self.flatten(self.out)
+
+        return self.out</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fmcib.models.models_genesis.ContBatchNorm3d"><code class="flex name class">
+<span>class <span class="ident">ContBatchNorm3d</span></span>
+<span>(</span><span>num_features: int, eps: float = 1e-05, momentum: float = 0.1, affine: bool = True, track_running_stats: bool = True, device=None, dtype=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A class representing a 3D contextual batch normalization layer.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>running_mean</code></strong> :&ensp;<code>torch.Tensor</code></dt>
+<dd>The running mean of the batch normalization.</dd>
+<dt><strong><code>running_var</code></strong> :&ensp;<code>torch.Tensor</code></dt>
+<dd>The running variance of the batch normalization.</dd>
+<dt><strong><code>weight</code></strong> :&ensp;<code>torch.Tensor</code></dt>
+<dd>The learnable weights of the batch normalization.</dd>
+<dt><strong><code>bias</code></strong> :&ensp;<code>torch.Tensor</code></dt>
+<dd>The learnable bias of the batch normalization.</dd>
+<dt><strong><code>momentum</code></strong> :&ensp;<code>float</code></dt>
+<dd>The momentum for updating the running statistics.</dd>
+<dt><strong><code>eps</code></strong> :&ensp;<code>float</code></dt>
+<dd>Small value added to the denominator for numerical stability.</dd>
+</dl>
+<p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ContBatchNorm3d(nn.modules.batchnorm._BatchNorm):
+    &#34;&#34;&#34;
+    A class representing a 3D contextual batch normalization layer.
+
+    Attributes:
+        running_mean (torch.Tensor): The running mean of the batch normalization.
+        running_var (torch.Tensor): The running variance of the batch normalization.
+        weight (torch.Tensor): The learnable weights of the batch normalization.
+        bias (torch.Tensor): The learnable bias of the batch normalization.
+        momentum (float): The momentum for updating the running statistics.
+        eps (float): Small value added to the denominator for numerical stability.
+    &#34;&#34;&#34;
+
+    def _check_input_dim(self, input):
+        &#34;&#34;&#34;
+        Check if the input tensor is 5-dimensional.
+
+        Args:
+            input (torch.Tensor): Input tensor to check the dimensionality.
+
+        Raises:
+            ValueError: If the input tensor is not 5-dimensional.
+        &#34;&#34;&#34;
+        if input.dim() != 5:
+            raise ValueError(&#34;expected 5D input (got {}D input)&#34;.format(input.dim()))
+        # super(ContBatchNorm3d, self)._check_input_dim(input)
+
+    def forward(self, input):
+        &#34;&#34;&#34;
+        Apply forward pass for the input through batch normalization layer.
+
+        Args:
+            input (Tensor): Input tensor to be normalized.
+
+        Returns:
+            Tensor: Normalized output tensor.
+
+        Raises:
+            ValueError: If the dimensions of the input tensor do not match the expected input dimensions.
+        &#34;&#34;&#34;
+        self._check_input_dim(input)
+        return F.batch_norm(input, self.running_mean, self.running_var, self.weight, self.bias, True, self.momentum, self.eps)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>torch.nn.modules.batchnorm._BatchNorm</li>
+<li>torch.nn.modules.batchnorm._NormBase</li>
+<li>torch.nn.modules.module.Module</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.ContBatchNorm3d.affine"><code class="name">var <span class="ident">affine</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.ContBatchNorm3d.eps"><code class="name">var <span class="ident">eps</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.ContBatchNorm3d.momentum"><code class="name">var <span class="ident">momentum</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.ContBatchNorm3d.num_features"><code class="name">var <span class="ident">num_features</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.ContBatchNorm3d.track_running_stats"><code class="name">var <span class="ident">track_running_stats</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.ContBatchNorm3d.forward"><code class="name flex">
+<span>def <span class="ident">forward</span></span>(<span>self, input) ‑> Callable[..., Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Apply forward pass for the input through batch normalization layer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>input</code></strong> :&ensp;<code>Tensor</code></dt>
+<dd>Input tensor to be normalized.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Tensor</code></dt>
+<dd>Normalized output tensor.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the dimensions of the input tensor do not match the expected input dimensions.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forward(self, input):
+    &#34;&#34;&#34;
+    Apply forward pass for the input through batch normalization layer.
+
+    Args:
+        input (Tensor): Input tensor to be normalized.
+
+    Returns:
+        Tensor: Normalized output tensor.
+
+    Raises:
+        ValueError: If the dimensions of the input tensor do not match the expected input dimensions.
+    &#34;&#34;&#34;
+    self._check_input_dim(input)
+    return F.batch_norm(input, self.running_mean, self.running_var, self.weight, self.bias, True, self.momentum, self.eps)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fmcib.models.models_genesis.DownTransition"><code class="flex name class">
+<span>class <span class="ident">DownTransition</span></span>
+<span>(</span><span>in_channel, depth, act)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A class representing a down transition module in a neural network.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>in_channel</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of input channels.</dd>
+<dt><strong><code>depth</code></strong> :&ensp;<code>int</code></dt>
+<dd>The depth of the down transition module.</dd>
+<dt><strong><code>act</code></strong> :&ensp;<code>nn.Module</code></dt>
+<dd>The activation function used in the module.</dd>
+</dl>
+<p>Initialize a DownTransition object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>in_channel</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of channels in the input.</dd>
+<dt><strong><code>depth</code></strong> :&ensp;<code>int</code></dt>
+<dd>The depth of the DownTransition.</dd>
+<dt><strong><code>act</code></strong> :&ensp;<code>function</code></dt>
+<dd>The activation function.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None</p>
+<h2 id="raises">Raises</h2>
+<p>None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DownTransition(nn.Module):
+    &#34;&#34;&#34;
+    A class representing a down transition module in a neural network.
+
+    Attributes:
+        in_channel (int): The number of input channels.
+        depth (int): The depth of the down transition module.
+        act (nn.Module): The activation function used in the module.
+    &#34;&#34;&#34;
+
+    def __init__(self, in_channel, depth, act):
+        &#34;&#34;&#34;
+        Initialize a DownTransition object.
+
+        Args:
+            in_channel (int): The number of channels in the input.
+            depth (int): The depth of the DownTransition.
+            act (function): The activation function.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        &#34;&#34;&#34;
+        super(DownTransition, self).__init__()
+        self.ops = _make_nConv(in_channel, depth, act)
+        self.maxpool = nn.MaxPool3d(2)
+        self.current_depth = depth
+
+    def forward(self, x):
+        &#34;&#34;&#34;
+        Perform a forward pass through the neural network.
+
+        Args:
+            x (Tensor): The input tensor.
+
+        Returns:
+            tuple: A tuple containing two tensors. The first tensor is the output of the forward pass. The second tensor is the output before applying the max pooling operation.
+
+        Raises:
+            None
+        &#34;&#34;&#34;
+        if self.current_depth == 3:
+            out = self.ops(x)
+            out_before_pool = out
+        else:
+            out_before_pool = self.ops(x)
+            out = self.maxpool(out_before_pool)
+        return out, out_before_pool</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>torch.nn.modules.module.Module</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.DownTransition.call_super_init"><code class="name">var <span class="ident">call_super_init</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.DownTransition.dump_patches"><code class="name">var <span class="ident">dump_patches</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.DownTransition.training"><code class="name">var <span class="ident">training</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.DownTransition.forward"><code class="name flex">
+<span>def <span class="ident">forward</span></span>(<span>self, x) ‑> Callable[..., Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Perform a forward pass through the neural network.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>Tensor</code></dt>
+<dd>The input tensor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>A tuple containing two tensors. The first tensor is the output of the forward pass. The second tensor is the output before applying the max pooling operation.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forward(self, x):
+    &#34;&#34;&#34;
+    Perform a forward pass through the neural network.
+
+    Args:
+        x (Tensor): The input tensor.
+
+    Returns:
+        tuple: A tuple containing two tensors. The first tensor is the output of the forward pass. The second tensor is the output before applying the max pooling operation.
+
+    Raises:
+        None
+    &#34;&#34;&#34;
+    if self.current_depth == 3:
+        out = self.ops(x)
+        out_before_pool = out
+    else:
+        out_before_pool = self.ops(x)
+        out = self.maxpool(out_before_pool)
+    return out, out_before_pool</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fmcib.models.models_genesis.LUConv"><code class="flex name class">
+<span>class <span class="ident">LUConv</span></span>
+<span>(</span><span>in_chan, out_chan, act)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A class representing a LUConv module.</p>
+<p>This module performs a convolution operation on the input data with a specified number of input channels and output channels.
+The convolution is followed by batch normalization and an activation function.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>in_chan</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of input channels.</dd>
+<dt><strong><code>out_chan</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of output channels.</dd>
+<dt><strong><code>act</code></strong> :&ensp;<code>str</code></dt>
+<dd>The activation function to be applied. Can be one of 'relu', 'prelu', or 'elu'.</dd>
+</dl>
+<p>Initialize a LUConv layer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>in_chan</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of input channels.</dd>
+<dt><strong><code>out_chan</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of output channels.</dd>
+<dt><strong><code>act</code></strong> :&ensp;<code>str</code></dt>
+<dd>Activation function. Options: 'relu', 'prelu', 'elu'.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If the activation function is not one of the specified options.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LUConv(nn.Module):
+    &#34;&#34;&#34;
+    A class representing a LUConv module.
+
+    This module performs a convolution operation on the input data with a specified number of input channels and output channels.
+    The convolution is followed by batch normalization and an activation function.
+
+    Attributes:
+        in_chan (int): The number of input channels.
+        out_chan (int): The number of output channels.
+        act (str): The activation function to be applied. Can be one of &#39;relu&#39;, &#39;prelu&#39;, or &#39;elu&#39;.
+    &#34;&#34;&#34;
+
+    def __init__(self, in_chan, out_chan, act):
+        &#34;&#34;&#34;
+        Initialize a LUConv layer.
+
+        Args:
+            in_chan (int): Number of input channels.
+            out_chan (int): Number of output channels.
+            act (str): Activation function. Options: &#39;relu&#39;, &#39;prelu&#39;, &#39;elu&#39;.
+
+        Returns:
+            None
+
+        Raises:
+            TypeError: If the activation function is not one of the specified options.
+        &#34;&#34;&#34;
+        super(LUConv, self).__init__()
+        self.conv1 = nn.Conv3d(in_chan, out_chan, kernel_size=3, padding=1)
+        self.bn1 = ContBatchNorm3d(out_chan)
+
+        if act == &#34;relu&#34;:
+            self.activation = nn.ReLU(out_chan)
+        elif act == &#34;prelu&#34;:
+            self.activation = nn.PReLU(out_chan)
+        elif act == &#34;elu&#34;:
+            self.activation = nn.ELU(inplace=True)
+        else:
+            raise
+
+    def forward(self, x):
+        &#34;&#34;&#34;
+        Apply forward pass through the neural network.
+
+        Args:
+            x (Tensor): Input tensor to the network.
+
+        Returns:
+            Tensor: Output tensor after passing through the network.
+        &#34;&#34;&#34;
+        out = self.activation(self.bn1(self.conv1(x)))
+        return out</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>torch.nn.modules.module.Module</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.LUConv.call_super_init"><code class="name">var <span class="ident">call_super_init</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.LUConv.dump_patches"><code class="name">var <span class="ident">dump_patches</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.LUConv.training"><code class="name">var <span class="ident">training</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.LUConv.forward"><code class="name flex">
+<span>def <span class="ident">forward</span></span>(<span>self, x) ‑> Callable[..., Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Apply forward pass through the neural network.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>Tensor</code></dt>
+<dd>Input tensor to the network.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Tensor</code></dt>
+<dd>Output tensor after passing through the network.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forward(self, x):
+    &#34;&#34;&#34;
+    Apply forward pass through the neural network.
+
+    Args:
+        x (Tensor): Input tensor to the network.
+
+    Returns:
+        Tensor: Output tensor after passing through the network.
+    &#34;&#34;&#34;
+    out = self.activation(self.bn1(self.conv1(x)))
+    return out</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fmcib.models.models_genesis.OutputTransition"><code class="flex name class">
+<span>class <span class="ident">OutputTransition</span></span>
+<span>(</span><span>inChans, n_labels)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A class representing the output transition in a neural network.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>inChans</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of input channels.</dd>
+<dt><strong><code>n_labels</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of output labels.</dd>
+</dl>
+<p>Initialize the OutputTransition class.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inChans</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of input channels.</dd>
+<dt><strong><code>n_labels</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of output labels.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None</p>
+<h2 id="raises">Raises</h2>
+<p>None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class OutputTransition(nn.Module):
+    &#34;&#34;&#34;
+    A class representing the output transition in a neural network.
+
+    Attributes:
+        inChans (int): The number of input channels.
+        n_labels (int): The number of output labels.
+    &#34;&#34;&#34;
+
+    def __init__(self, inChans, n_labels):
+        &#34;&#34;&#34;
+        Initialize the OutputTransition class.
+
+        Args:
+            inChans (int): Number of input channels.
+            n_labels (int): Number of output labels.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        &#34;&#34;&#34;
+        super(OutputTransition, self).__init__()
+        self.final_conv = nn.Conv3d(inChans, n_labels, kernel_size=1)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        &#34;&#34;&#34;
+        Forward pass through a neural network model.
+
+        Args:
+            x (Tensor): The input tensor.
+
+        Returns:
+            Tensor: The output tensor after passing through the model.
+        &#34;&#34;&#34;
+        out = self.sigmoid(self.final_conv(x))
+        return out</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>torch.nn.modules.module.Module</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.OutputTransition.call_super_init"><code class="name">var <span class="ident">call_super_init</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.OutputTransition.dump_patches"><code class="name">var <span class="ident">dump_patches</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.OutputTransition.training"><code class="name">var <span class="ident">training</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.OutputTransition.forward"><code class="name flex">
+<span>def <span class="ident">forward</span></span>(<span>self, x) ‑> Callable[..., Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Forward pass through a neural network model.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>Tensor</code></dt>
+<dd>The input tensor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Tensor</code></dt>
+<dd>The output tensor after passing through the model.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forward(self, x):
+    &#34;&#34;&#34;
+    Forward pass through a neural network model.
+
+    Args:
+        x (Tensor): The input tensor.
+
+    Returns:
+        Tensor: The output tensor after passing through the model.
+    &#34;&#34;&#34;
+    out = self.sigmoid(self.final_conv(x))
+    return out</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fmcib.models.models_genesis.UNet3D"><code class="flex name class">
+<span>class <span class="ident">UNet3D</span></span>
+<span>(</span><span>n_class=1, act='relu', decoder=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A class representing a 3D UNet model for segmentation.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>n_class</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of classes for segmentation.</dd>
+<dt><strong><code>act</code></strong> :&ensp;<code>str</code></dt>
+<dd>The activation function type used in the model.</dd>
+<dt><strong><code>decoder</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to include the decoder part in the model.</dd>
+</dl>
+<h2 id="methods">Methods</h2>
+<p>forward(x): Forward pass of the model.</p>
+<p>Initialize a 3D UNet neural network model.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>n_class</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of output classes. Defaults to 1.</dd>
+<dt><strong><code>act</code></strong> :&ensp;<code>str</code></dt>
+<dd>The activation function to use. Defaults to 'relu'.</dd>
+<dt><strong><code>decoder</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to include the decoder layers. Defaults to True.</dd>
+</dl>
+<h2 id="attributes_1">Attributes</h2>
+<dl>
+<dt><strong><code>decoder</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether the model includes decoder layers.</dd>
+<dt><strong><code>down_tr64</code></strong> :&ensp;<code><a title="fmcib.models.models_genesis.DownTransition" href="#fmcib.models.models_genesis.DownTransition">DownTransition</a></code></dt>
+<dd>The first down transition layer.</dd>
+<dt><strong><code>down_tr128</code></strong> :&ensp;<code><a title="fmcib.models.models_genesis.DownTransition" href="#fmcib.models.models_genesis.DownTransition">DownTransition</a></code></dt>
+<dd>The second down transition layer.</dd>
+<dt><strong><code>down_tr256</code></strong> :&ensp;<code><a title="fmcib.models.models_genesis.DownTransition" href="#fmcib.models.models_genesis.DownTransition">DownTransition</a></code></dt>
+<dd>The third down transition layer.</dd>
+<dt><strong><code>down_tr512</code></strong> :&ensp;<code><a title="fmcib.models.models_genesis.DownTransition" href="#fmcib.models.models_genesis.DownTransition">DownTransition</a></code></dt>
+<dd>The fourth down transition layer.</dd>
+<dt><strong><code>up_tr256</code></strong> :&ensp;<code><a title="fmcib.models.models_genesis.UpTransition" href="#fmcib.models.models_genesis.UpTransition">UpTransition</a></code></dt>
+<dd>The first up transition layer. (Only exists if <code>decoder</code> is True)</dd>
+<dt><strong><code>up_tr128</code></strong> :&ensp;<code><a title="fmcib.models.models_genesis.UpTransition" href="#fmcib.models.models_genesis.UpTransition">UpTransition</a></code></dt>
+<dd>The second up transition layer. (Only exists if <code>decoder</code> is True)</dd>
+<dt><strong><code>up_tr64</code></strong> :&ensp;<code><a title="fmcib.models.models_genesis.UpTransition" href="#fmcib.models.models_genesis.UpTransition">UpTransition</a></code></dt>
+<dd>The third up transition layer. (Only exists if <code>decoder</code> is True)</dd>
+<dt><strong><code>out_tr</code></strong> :&ensp;<code><a title="fmcib.models.models_genesis.OutputTransition" href="#fmcib.models.models_genesis.OutputTransition">OutputTransition</a></code></dt>
+<dd>The output transition layer. (Only exists if <code>decoder</code> is True)</dd>
+<dt><strong><code>avg_pool</code></strong> :&ensp;<code>nn.AvgPool3d</code></dt>
+<dd>The average pooling layer. (Only exists if <code>decoder</code> is False)</dd>
+<dt><strong><code>flatten</code></strong> :&ensp;<code>nn.Flatten</code></dt>
+<dd>The flattening layer. (Only exists if <code>decoder</code> is False)</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UNet3D(nn.Module):
+    # the number of convolutions in each layer corresponds
+    # to what is in the actual prototxt, not the intent
+    &#34;&#34;&#34;
+    A class representing a 3D UNet model for segmentation.
+
+    Attributes:
+        n_class (int): The number of classes for segmentation.
+        act (str): The activation function type used in the model.
+        decoder (bool): Whether to include the decoder part in the model.
+
+    Methods:
+        forward(x): Forward pass of the model.
+    &#34;&#34;&#34;
+
+    def __init__(self, n_class=1, act=&#34;relu&#34;, decoder=True):
+        &#34;&#34;&#34;
+        Initialize a 3D UNet neural network model.
+
+        Args:
+            n_class (int): The number of output classes. Defaults to 1.
+            act (str): The activation function to use. Defaults to &#39;relu&#39;.
+            decoder (bool): Whether to include the decoder layers. Defaults to True.
+
+        Attributes:
+            decoder (bool): Whether the model includes decoder layers.
+            down_tr64 (DownTransition): The first down transition layer.
+            down_tr128 (DownTransition): The second down transition layer.
+            down_tr256 (DownTransition): The third down transition layer.
+            down_tr512 (DownTransition): The fourth down transition layer.
+            up_tr256 (UpTransition): The first up transition layer. (Only exists if `decoder` is True)
+            up_tr128 (UpTransition): The second up transition layer. (Only exists if `decoder` is True)
+            up_tr64 (UpTransition): The third up transition layer. (Only exists if `decoder` is True)
+            out_tr (OutputTransition): The output transition layer. (Only exists if `decoder` is True)
+            avg_pool (nn.AvgPool3d): The average pooling layer. (Only exists if `decoder` is False)
+            flatten (nn.Flatten): The flattening layer. (Only exists if `decoder` is False)
+        &#34;&#34;&#34;
+        super(UNet3D, self).__init__()
+
+        self.decoder = decoder
+
+        self.down_tr64 = DownTransition(1, 0, act)
+        self.down_tr128 = DownTransition(64, 1, act)
+        self.down_tr256 = DownTransition(128, 2, act)
+        self.down_tr512 = DownTransition(256, 3, act)
+
+        if self.decoder:
+            self.up_tr256 = UpTransition(512, 512, 2, act)
+            self.up_tr128 = UpTransition(256, 256, 1, act)
+            self.up_tr64 = UpTransition(128, 128, 0, act)
+            self.out_tr = OutputTransition(64, n_class)
+        else:
+            self.avg_pool = nn.AvgPool3d(3, stride=2)
+            self.flatten = nn.Flatten()
+
+    def forward(self, x):
+        &#34;&#34;&#34;
+        Perform forward pass through the neural network.
+
+        Args:
+            x (Tensor): Input tensor to the network.
+
+        Returns:
+            Tensor: Output tensor from the network.
+
+        Note: This function performs a series of operations to downsample the input tensor, followed by upsampling if the &#39;decoder&#39; flag is set. If the &#39;decoder&#39; flag is not set, the output tensor goes through average pooling and flattening.
+
+        Raises:
+            None.
+        &#34;&#34;&#34;
+        self.out64, self.skip_out64 = self.down_tr64(x)
+        self.out128, self.skip_out128 = self.down_tr128(self.out64)
+        self.out256, self.skip_out256 = self.down_tr256(self.out128)
+        self.out512, self.skip_out512 = self.down_tr512(self.out256)
+
+        if self.decoder:
+            self.out_up_256 = self.up_tr256(self.out512, self.skip_out256)
+            self.out_up_128 = self.up_tr128(self.out_up_256, self.skip_out128)
+            self.out_up_64 = self.up_tr64(self.out_up_128, self.skip_out64)
+            self.out = self.out_tr(self.out_up_64)
+        else:
+            self.out = self.avg_pool(self.out512)
+            self.out = self.flatten(self.out)
+
+        return self.out</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>torch.nn.modules.module.Module</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.UNet3D.call_super_init"><code class="name">var <span class="ident">call_super_init</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.UNet3D.dump_patches"><code class="name">var <span class="ident">dump_patches</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.UNet3D.training"><code class="name">var <span class="ident">training</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.UNet3D.forward"><code class="name flex">
+<span>def <span class="ident">forward</span></span>(<span>self, x) ‑> Callable[..., Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Perform forward pass through the neural network.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>Tensor</code></dt>
+<dd>Input tensor to the network.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Tensor</code></dt>
+<dd>Output tensor from the network.</dd>
+</dl>
+<p>Note: This function performs a series of operations to downsample the input tensor, followed by upsampling if the 'decoder' flag is set. If the 'decoder' flag is not set, the output tensor goes through average pooling and flattening.</p>
+<h2 id="raises">Raises</h2>
+<p>None.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forward(self, x):
+    &#34;&#34;&#34;
+    Perform forward pass through the neural network.
+
+    Args:
+        x (Tensor): Input tensor to the network.
+
+    Returns:
+        Tensor: Output tensor from the network.
+
+    Note: This function performs a series of operations to downsample the input tensor, followed by upsampling if the &#39;decoder&#39; flag is set. If the &#39;decoder&#39; flag is not set, the output tensor goes through average pooling and flattening.
+
+    Raises:
+        None.
+    &#34;&#34;&#34;
+    self.out64, self.skip_out64 = self.down_tr64(x)
+    self.out128, self.skip_out128 = self.down_tr128(self.out64)
+    self.out256, self.skip_out256 = self.down_tr256(self.out128)
+    self.out512, self.skip_out512 = self.down_tr512(self.out256)
+
+    if self.decoder:
+        self.out_up_256 = self.up_tr256(self.out512, self.skip_out256)
+        self.out_up_128 = self.up_tr128(self.out_up_256, self.skip_out128)
+        self.out_up_64 = self.up_tr64(self.out_up_128, self.skip_out64)
+        self.out = self.out_tr(self.out_up_64)
+    else:
+        self.out = self.avg_pool(self.out512)
+        self.out = self.flatten(self.out)
+
+    return self.out</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="fmcib.models.models_genesis.UpTransition"><code class="flex name class">
+<span>class <span class="ident">UpTransition</span></span>
+<span>(</span><span>inChans, outChans, depth, act)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A class representing an up transition layer in a neural network.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>inChans</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of input channels.</dd>
+<dt><strong><code>outChans</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of output channels.</dd>
+<dt><strong><code>depth</code></strong> :&ensp;<code>int</code></dt>
+<dd>The depth of the layer.</dd>
+<dt><strong><code>act</code></strong> :&ensp;<code>str</code></dt>
+<dd>The activation function to be applied.</dd>
+</dl>
+<p>Initialize the UpTransition module.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inChans</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of input channels.</dd>
+<dt><strong><code>outChans</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of output channels.</dd>
+<dt><strong><code>depth</code></strong> :&ensp;<code>int</code></dt>
+<dd>The depth of the module.</dd>
+<dt><strong><code>act</code></strong> :&ensp;<code>nn.Module</code></dt>
+<dd>The activation function to be used.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None.</p>
+<h2 id="raises">Raises</h2>
+<p>None.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UpTransition(nn.Module):
+    &#34;&#34;&#34;
+    A class representing an up transition layer in a neural network.
+
+    Attributes:
+        inChans (int): The number of input channels.
+        outChans (int): The number of output channels.
+        depth (int): The depth of the layer.
+        act (str): The activation function to be applied.
+    &#34;&#34;&#34;
+
+    def __init__(self, inChans, outChans, depth, act):
+        &#34;&#34;&#34;
+        Initialize the UpTransition module.
+
+        Args:
+            inChans (int): The number of input channels.
+            outChans (int): The number of output channels.
+            depth (int): The depth of the module.
+            act (nn.Module): The activation function to be used.
+
+        Returns:
+            None.
+
+        Raises:
+            None.
+        &#34;&#34;&#34;
+        super(UpTransition, self).__init__()
+        self.depth = depth
+        self.up_conv = nn.ConvTranspose3d(inChans, outChans, kernel_size=2, stride=2)
+        self.ops = _make_nConv(inChans + outChans // 2, depth, act, double_chnnel=True)
+
+    def forward(self, x, skip_x):
+        &#34;&#34;&#34;
+        Forward pass of the neural network.
+
+        Args:
+            x (torch.Tensor): Input tensor.
+            skip_x (torch.Tensor): Tensor to be concatenated with the upsampled convolution output.
+
+        Returns:
+            torch.Tensor: The output tensor after passing through the network.
+        &#34;&#34;&#34;
+        out_up_conv = self.up_conv(x)
+        concat = torch.cat((out_up_conv, skip_x), 1)
+        out = self.ops(concat)
+        return out</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>torch.nn.modules.module.Module</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.UpTransition.call_super_init"><code class="name">var <span class="ident">call_super_init</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.UpTransition.dump_patches"><code class="name">var <span class="ident">dump_patches</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fmcib.models.models_genesis.UpTransition.training"><code class="name">var <span class="ident">training</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fmcib.models.models_genesis.UpTransition.forward"><code class="name flex">
+<span>def <span class="ident">forward</span></span>(<span>self, x, skip_x) ‑> Callable[..., Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Forward pass of the neural network.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>torch.Tensor</code></dt>
+<dd>Input tensor.</dd>
+<dt><strong><code>skip_x</code></strong> :&ensp;<code>torch.Tensor</code></dt>
+<dd>Tensor to be concatenated with the upsampled convolution output.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>torch.Tensor</code></dt>
+<dd>The output tensor after passing through the network.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forward(self, x, skip_x):
+    &#34;&#34;&#34;
+    Forward pass of the neural network.
+
+    Args:
+        x (torch.Tensor): Input tensor.
+        skip_x (torch.Tensor): Tensor to be concatenated with the upsampled convolution output.
+
+    Returns:
+        torch.Tensor: The output tensor after passing through the network.
+    &#34;&#34;&#34;
+    out_up_conv = self.up_conv(x)
+    concat = torch.cat((out_up_conv, skip_x), 1)
+    out = self.ops(concat)
+    return out</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fmcib.models" href="index.html">fmcib.models</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fmcib.models.models_genesis.ContBatchNorm3d" href="#fmcib.models.models_genesis.ContBatchNorm3d">ContBatchNorm3d</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fmcib.models.models_genesis.ContBatchNorm3d.affine" href="#fmcib.models.models_genesis.ContBatchNorm3d.affine">affine</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.ContBatchNorm3d.eps" href="#fmcib.models.models_genesis.ContBatchNorm3d.eps">eps</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.ContBatchNorm3d.forward" href="#fmcib.models.models_genesis.ContBatchNorm3d.forward">forward</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.ContBatchNorm3d.momentum" href="#fmcib.models.models_genesis.ContBatchNorm3d.momentum">momentum</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.ContBatchNorm3d.num_features" href="#fmcib.models.models_genesis.ContBatchNorm3d.num_features">num_features</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.ContBatchNorm3d.track_running_stats" href="#fmcib.models.models_genesis.ContBatchNorm3d.track_running_stats">track_running_stats</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fmcib.models.models_genesis.DownTransition" href="#fmcib.models.models_genesis.DownTransition">DownTransition</a></code></h4>
+<ul class="">
+<li><code><a title="fmcib.models.models_genesis.DownTransition.call_super_init" href="#fmcib.models.models_genesis.DownTransition.call_super_init">call_super_init</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.DownTransition.dump_patches" href="#fmcib.models.models_genesis.DownTransition.dump_patches">dump_patches</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.DownTransition.forward" href="#fmcib.models.models_genesis.DownTransition.forward">forward</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.DownTransition.training" href="#fmcib.models.models_genesis.DownTransition.training">training</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fmcib.models.models_genesis.LUConv" href="#fmcib.models.models_genesis.LUConv">LUConv</a></code></h4>
+<ul class="">
+<li><code><a title="fmcib.models.models_genesis.LUConv.call_super_init" href="#fmcib.models.models_genesis.LUConv.call_super_init">call_super_init</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.LUConv.dump_patches" href="#fmcib.models.models_genesis.LUConv.dump_patches">dump_patches</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.LUConv.forward" href="#fmcib.models.models_genesis.LUConv.forward">forward</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.LUConv.training" href="#fmcib.models.models_genesis.LUConv.training">training</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fmcib.models.models_genesis.OutputTransition" href="#fmcib.models.models_genesis.OutputTransition">OutputTransition</a></code></h4>
+<ul class="">
+<li><code><a title="fmcib.models.models_genesis.OutputTransition.call_super_init" href="#fmcib.models.models_genesis.OutputTransition.call_super_init">call_super_init</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.OutputTransition.dump_patches" href="#fmcib.models.models_genesis.OutputTransition.dump_patches">dump_patches</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.OutputTransition.forward" href="#fmcib.models.models_genesis.OutputTransition.forward">forward</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.OutputTransition.training" href="#fmcib.models.models_genesis.OutputTransition.training">training</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fmcib.models.models_genesis.UNet3D" href="#fmcib.models.models_genesis.UNet3D">UNet3D</a></code></h4>
+<ul class="">
+<li><code><a title="fmcib.models.models_genesis.UNet3D.call_super_init" href="#fmcib.models.models_genesis.UNet3D.call_super_init">call_super_init</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.UNet3D.dump_patches" href="#fmcib.models.models_genesis.UNet3D.dump_patches">dump_patches</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.UNet3D.forward" href="#fmcib.models.models_genesis.UNet3D.forward">forward</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.UNet3D.training" href="#fmcib.models.models_genesis.UNet3D.training">training</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fmcib.models.models_genesis.UpTransition" href="#fmcib.models.models_genesis.UpTransition">UpTransition</a></code></h4>
+<ul class="">
+<li><code><a title="fmcib.models.models_genesis.UpTransition.call_super_init" href="#fmcib.models.models_genesis.UpTransition.call_super_init">call_super_init</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.UpTransition.dump_patches" href="#fmcib.models.models_genesis.UpTransition.dump_patches">dump_patches</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.UpTransition.forward" href="#fmcib.models.models_genesis.UpTransition.forward">forward</a></code></li>
+<li><code><a title="fmcib.models.models_genesis.UpTransition.training" href="#fmcib.models.models_genesis.UpTransition.training">training</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

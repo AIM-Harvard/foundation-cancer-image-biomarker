@@ -10,7 +10,7 @@ We developed the pretrained model using the DeepLesion dataset with 11,467 annot
 To download these models run,
 ````bash
 cd models
-bash download_pretrained_models.sh
+bash download_foundation_pretrained_model.sh
 ````
 
 You can also extract the dropbox links and place them in the target location mentioned.
@@ -24,7 +24,7 @@ The pre-trained model is implemented on downstreams task using supervised traini
 
 ### Supervised models
 
-We developed three supervised training approaches,
+We developed several baseline training approaches,
 
 <details><summary> Supervised model trained from random initialization </summary>
 
@@ -49,10 +49,15 @@ We developed three supervised training approaches,
 </details>
 
 
+
 To download these models run,
 ````bash
 cd models
-bash download_supervised_models.sh
+bash download_task1_baselines.sh
+bash download_task2_baselines.sh
+bash download_task3_baselines.sh
+
+
 ````
 
 

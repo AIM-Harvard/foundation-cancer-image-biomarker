@@ -1,0 +1,106 @@
+trainer:
+  _target_: pytorch_lightning.Trainer
+  benchmark: True
+  max_epochs: 100
+  check_val_every_n_epoch: 5
+  accelerator: gpu
+  strategy: ddp
+  devices: 2
+  sync_batchnorm: True
+  log_every_n_steps: 5
+  logger:
+    _target_: pytorch_lightning.loggers.WandbLogger
+    name: "fmcib_pretrain"
+    project: "fmcib"
+    save_dir: "./logs"
+
+  callbacks:
+    - _target_: pytorch_lightning.callbacks.ModelCheckpoint
+      dirpath:  /mnt/data1/RadiomicsFoundationModel/checkpoints/modsimclr
+      verbose: True
+      save_last: True
+      every_n_epochs: 1
+      save_on_train_epoch_end: True
+
+system:
+  # _target_: torch.compile
+  # model: 
+    _target_: lighter.LighterSystem
+    batch_size: 32 # Change to lower batch size if GPU memory is smaller. 
+    pin_memory: True
+    drop_last_batch: True # Used in SSL cases because of negatives
+    num_workers: 3
+
+    model:
+      _target_: fmcib.ssl.modules.ExNegSimCLR
+      num_ftrs: 4096
+      out_dim: 128
+      backbone:
+          _target_: monai.networks.nets.resnet.resnet50
+          pretrained: False
+          n_input_channels: 1
+          widen_factor: 2
+          conv1_t_stride: 2
+          feed_forward: False
+
+    criterion:
+      _target_: fmcib.ssl.losses.NegativeMiningInfoNCECriterion
+      embedding_dim: 128
+      batch_size: "@system#batch_size"
+      temperature: 0.1
+      gather_distributed: True
+      world_size: "@trainer#devices"
+
+    optimizer:
+      _target_: fmcib.optimizers.LARS
+      params: "$@system#model.parameters()"
+      lr: "$((@system#batch_size * @trainer#devices)/256) * 0.3" # Compute LR dynamically for different batch sizes
+      weight_decay: 1.0e-6
+      momentum: 0.9
+    
+    scheduler:
+        _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+        optimizer: "@system#optimizer"
+        T_max: "$(@trainer#max_epochs) * len(@system#datasets#train)//(@system#batch_size * @trainer#devices)" # Compute total steps
+
+    metrics:
+      train: null
+      val: "@system#metrics#train"
+      test: "@system#metrics#train"
+    
+    datasets:
+      train:
+        _target_: fmcib.datasets.SSLRadiomicsDataset
+        path: "./data/preprocessing/deeplesion/annotations/pretrain.csv"
+        orient: True
+        resample_spacing: [1, 1, 1]
+        transform:
+          _target_: torchvision.transforms.Compose
+          transforms:
+            - _target_: monai.transforms.ToTensor
+            - _target_: monai.transforms.EnsureChannelFirst
+              channel_dim: no_channel
+            - _target_: fmcib.transforms.Duplicate
+              transforms1:
+                _target_: torchvision.transforms.Compose
+                transforms:
+                  # Random Transforms begin
+                  - _target_: fmcib.transforms.RandomResizedCrop3D
+                    size: 50
+                  - _target_: monai.transforms.RandAxisFlip
+                    prob: 0.5
+                  - _target_: monai.transforms.RandHistogramShift
+                    prob: 0.5
+                  - _target_: monai.transforms.RandGaussianSmooth
+                    prob: 0.5
+                  - _target_: monai.transforms.SpatialPad
+                    spatial_size: [50, 50, 50]
+                  - _target_: monai.transforms.ThresholdIntensity
+                    threshold: -1024
+                    cval: -1024                  
+                  - _target_: monai.transforms.NormalizeIntensity
+                    subtrahend: -1024
+                    divisor: 3072
+              transforms2: "@#transforms1"
+      val: null
+      test: null

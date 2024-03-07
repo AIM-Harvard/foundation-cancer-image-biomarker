@@ -1,5 +1,6 @@
 import concurrent.futures
 import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -8,9 +9,56 @@ import pydicom
 import pydicom_seg
 import SimpleITK as sitk
 import wget
-from dcmrtstruct2nii import dcmrtstruct2nii
-from dcmrtstruct2nii.adapters.input.image.dcminputadapter import DcmInputAdapter
-from dcmrtstruct2nii.adapters.output.niioutputadapter import NiiOutputAdapter
+
+
+class SuppressPrint:
+    """
+    A class that temporarily suppresses print statements.
+
+    Methods:
+        __enter__(): Sets sys.stdout to a dummy file object, suppressing print output.
+        __exit__(exc_type, exc_val, exc_tb): Restores sys.stdout to its original value.
+    """
+
+    def __enter__(self):
+        """
+        Enter the context manager and redirect the standard output to nothing.
+
+        Returns:
+            object: The context manager object.
+
+        Notes:
+            This context manager is used to redirect the standard output to nothing using the `open` function.
+            It saves the original standard output and assigns a new output destination as `/dev/null` on Unix-like systems.
+        """
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, "w")
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Restores the original stdout and closes the modified stdout.
+
+        Args:
+            exc_type (type): The exception type, if an exception occurred. Otherwise, None.
+            exc_val (Exception): The exception instance, if an exception occurred. Otherwise, None.
+            exc_tb (traceback): The traceback object, if an exception occurred. Otherwise, None.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
+        sys.stdout.close()
+        sys.stdout = self._original_stdout
+
+
+with SuppressPrint():
+    from dcmrtstruct2nii import dcmrtstruct2nii
+    from dcmrtstruct2nii.adapters.input.image.dcminputadapter import DcmInputAdapter
+    from dcmrtstruct2nii.adapters.output.niioutputadapter import NiiOutputAdapter
+
 from google.cloud import storage
 from loguru import logger
 from tqdm import tqdm
@@ -38,7 +86,7 @@ def download_from_manifest(df, save_dir, samples):
     """
     Downloads DICOM data from IDC (Imaging Data Commons) based on the provided manifest.
 
-    Args:
+    Parameters:
         df (pandas.DataFrame): The manifest DataFrame containing information about the DICOM files.
         save_dir (pathlib.Path): The directory where the downloaded DICOM files will be saved.
         samples (int): The number of random samples to download. If None, all available samples will be downloaded.
@@ -59,6 +107,18 @@ def download_from_manifest(df, save_dir, samples):
         df = df[df["PatientID"].isin(selected_elements)]
 
     def download_file(row):
+        """
+        Download a file from Google Cloud Storage.
+
+        Args:
+            row (dict): A dictionary containing the row data.
+
+        Raises:
+            None
+
+        Returns:
+            None
+        """
         bucket_name, directory, file = row["gcs_url"].split("/")[-3:]
         fn = f"{directory}/{file}"
         bucket = storage_client.bucket(bucket_name)
@@ -82,7 +142,7 @@ def download_LUNG1(path, samples=None):
     """
     Downloads the LUNG1 data manifest from Dropbox and saves it to the specified path.
 
-    Args:
+    Parameters:
         path (str): The directory path where the LUNG1 data manifest will be saved.
         samples (list, optional): A list of specific samples to download. If None, all samples will be downloaded.
 
@@ -142,7 +202,6 @@ def process_series_dir(series_dir):
 
     Raises:
         None
-
     """
     # Check if RTSTRUCT file exists
     rtstuct_files = list(series_dir.glob("*RTSTRUCT*"))
@@ -197,7 +256,6 @@ def build_image_seed_dict(path, samples=None):
 
     Returns:
         pd.DataFrame: A DataFrame containing the image seeds.
-
     """
     sorted_dir = Path(path).resolve()
     series_dirs = [x.parent for x in sorted_dir.rglob("*.dcm")]

@@ -1,0 +1,128 @@
+trainer:
+  _target_: pytorch_lightning.Trainer
+  benchmark: True
+  max_epochs: 100
+  check_val_every_n_epoch: 5
+  accelerator: gpu
+  devices: 1
+  # sync_batchnorm: True
+  # precision: 16
+  log_every_n_steps: 1
+  logger:
+    _target_: pytorch_lightning.loggers.WandbLogger
+    name: "fmcib_finetune"
+    project: "fmcib"
+    save_dir: "./logs"
+
+  callbacks:
+    - _target_: pytorch_lightning.callbacks.ModelCheckpoint
+      dirpath:  ./checkpoints/fmcib_finetune_task1 # Note: Change as appropriate
+      verbose: True
+      save_last: True
+      every_n_epochs: 1
+      save_on_train_epoch_end: True
+
+system:
+    _target_: lighter.LighterSystem
+    batch_size: 32
+    pin_memory: True
+    drop_last_batch: False 
+    num_workers: 12
+    model:
+        _target_: fmcib.models.LoadModel
+        trunk:
+          _target_: monai.networks.nets.resnet50
+          widen_factor: 2
+          n_input_channels: 1
+          feed_forward: False
+        weights_path: "./model_weights.torch" # Note: Path to the FM weights. Download from Zenodo or HF
+        heads: [4096, 2048, 8] # Note: Change to [4096, 2048, 1] for Task 2 and [4096, 2048, 512, 256, 1] Task 3
+
+
+    postprocessing:
+      metrics:
+        pred:
+          - "$lambda x: torch.softmax(x, 1)" # Note: Change to $lambda x: torch.sigmoid(x) for Task 2 and Task 3    
+      # criterion:
+      #   target: # Note: Uncomment for Task 2 and Task 3
+      #     - "$lambda x: x.float()" 
+
+    criterion:
+        _target_: torch.nn.CrossEntropyLoss # Note: Change to torch.nn.BCEWithLogitsLoss for Task 2 and Task 3
+
+    optimizer:
+        _target_: torch.optim.Adam
+        params: "$@system#model.parameters()"
+        # lr: "$((@system#batch_size * @trainer#devices)/256) * 0.1" # Compute LR dynamically for different batch sizes
+        # weight_decay: 0.0
+        # momentum: 0.9
+
+    scheduler:
+      _target_: torch.optim.lr_scheduler.StepLR
+      optimizer: "@system#optimizer"
+      step_size: 30
+
+    metrics:
+      train: 
+        - _target_: torchmetrics.AveragePrecision
+          task: multiclass # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
+          num_classes: 8 
+        - _target_: torchmetrics.AUROC
+          task: multiclass # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
+          num_classes: 8
+
+      val: "%#train"
+      test: "%#train"
+
+    datasets:
+      train:
+        _target_: fmcib.datasets.SSLRadiomicsDataset
+        path: "./data/preprocessing/deeplesion/annotations/task1_train.csv" # Note: Change path
+        label: "Coarse_lesion_type" # Note: Change to "malignancy" for Task 2 and "survival" for Task 3
+        radius: 25
+        orient: True # Note: Set orient to False for task 2 and task 3
+        resample_spacing: [1, 1, 1]
+        enable_negatives: False
+        transform:
+            _target_: monai.transforms.Compose
+            transforms:
+                - _target_: monai.transforms.NormalizeIntensity
+                  subtrahend: -1024
+                  divisor: 3072            
+                - _target_: monai.transforms.ToTensor
+                - _target_: monai.transforms.EnsureChannelFirst
+                  channel_dim: no_channel
+                - _target_: monai.transforms.SpatialPad
+                  spatial_size: [50, 50, 50]
+                - _target_: monai.transforms.RandGaussianSmooth
+                  prob: 0.5
+                - _target_: monai.transforms.RandAffine
+                  prob: 0.5
+                  translate_range: [10, 10, 10]
+                - _target_: monai.transforms.RandAxisFlip
+                  prob: 0.5
+                - _target_: monai.transforms.RandRotate90
+                  prob: 0.5
+
+      val:
+        _target_: fmcib.datasets.SSLRadiomicsDataset
+        path: null # Note: Change path
+        label: "@system#datasets#train#label"
+        radius: "@system#datasets#train#radius"
+        orient: "@system#datasets#train#orient"
+        resample_spacing: "@system#datasets#train#resample_spacing"
+        enable_negatives: "@system#datasets#train#enable_negatives"
+        transform:
+            _target_: monai.transforms.Compose
+            transforms:
+                - _target_: monai.transforms.NormalizeIntensity
+                  subtrahend: -1024
+                  divisor: 3072            
+                - _target_: monai.transforms.ToTensor
+                - _target_: monai.transforms.EnsureChannelFirst
+                  channel_dim: no_channel
+                - _target_: monai.transforms.SpatialPad
+                  spatial_size: [50, 50, 50]
+
+                  
+      test: null
