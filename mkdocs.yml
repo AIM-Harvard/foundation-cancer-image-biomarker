@@ -20,6 +20,27 @@ theme:
       accent: blue
 extra_css:
   - assets/extra.css
+
+
+# Plugins
+# Auto API reference generation: https://mkdocstrings.github.io/recipes/#automatic-code-reference-pages
+plugins:
+  - search
+  - autorefs
+  - gen-files:
+      scripts:
+      - scripts/generate_api_reference_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+  - mkdocstrings:
+      handlers:
+        python:
+          docstring_style: google
+          options:
+            # Removed the default filter that excludes private members (that is, members whose names start with a single underscore).
+            filters: null      
+                
 nav:
   - 'index.md'
   - 'Getting Started': 
@@ -34,7 +55,7 @@ nav:
     - 'Reproduce Analysis': 'user-guide/analysis.md'
     # - 'Training baselines': 'user-guide/reproduce_baselines.md'
   - 'Tutorials': https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/tree/master/tutorials
-  - 'API Reference': 'api_docs/fmcib'
+  - 'API Reference': 'reference/'
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -47,7 +68,11 @@ markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences
+
 repo_url: https://github.com/AIM-Harvard/foundation-cancer-image-biomarker
+repo_name: AIM-Harvard/foundation-cancer-image-biomarker
 copyright: <a href="https://aim.hms.harvard.edu">AIM &copy; 2023</a>
 extra:
   generator: false
+
+
