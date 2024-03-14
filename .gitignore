@@ -634,3 +634,4 @@ checkpoints/
 data/csvs/
 ./models
 ./outputs
+docs/reference/*
