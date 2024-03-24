@@ -39,7 +39,8 @@ plugins:
           docstring_style: google
           options:
             # Removed the default filter that excludes private members (that is, members whose names start with a single underscore).
-            filters: null      
+            filters: null     
+            show_source: true 
                 
 nav:
   - 'index.md'
@@ -48,12 +49,13 @@ nav:
     - 'Cloud Quick Start': 'getting-started/cloud-quick-start.md'
     - 'Quick Start': 'getting-started/quick-start.md'
   - 'Replication Guide':
-    - 'Data Download and Preprocessing': 'user-guide/data.md'
-    - 'Pre-training the FM': 'user-guide/reproduce_fm.md'
-    - 'Adapt the FM to downstream tasks': 'user-guide/fm_adaptation.md'
-    - 'Extracting Features & Predictions': 'user-guide/inference.md'
-    - 'Reproduce Analysis': 'user-guide/analysis.md'
-    # - 'Training baselines': 'user-guide/reproduce_baselines.md'
+    - 'Data Download and Preprocessing': 'replication-guide/data.md'
+    - 'Pre-training the FM': 'replication-guide/reproduce_fm.md'
+    - 'Adapt the FM to downstream tasks': 'replication-guide/fm_adaptation.md'
+    - 'Baselines for downstream tasks': 'replication-guide/baselines.md'
+    - 'Extracting Features & Predictions': 'replication-guide/inference.md'
+    - 'Reproduce Analysis': 'replication-guide/analysis.md'
+    # - 'Training baselines': 'replication-guide/reproduce_baselines.md'
   - 'Tutorials': https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/tree/master/tutorials
   - 'API Reference': 'reference/'
 

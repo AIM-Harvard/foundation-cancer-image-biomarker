@@ -18,7 +18,10 @@ nav = mkdocs_gen_files.Nav()
 root = Path(__file__).parent.parent
 src = root / PACKAGE
 
-for path in sorted(src.rglob("*.py")):
+# Sort files by depth
+paths = sorted(src.rglob("*.py"), key=lambda path: len(path.parts))
+
+for path in paths:
     print(f"Processing {path}")
     module_path = path.relative_to(src).with_suffix("")
 
