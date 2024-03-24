@@ -1,14 +1,13 @@
 
-<center>
-This is the the official repository for the paper
+<div align="center">
+This is the official repository for the paper
+<br/><br/>
+</div>
 
-<br/>
-
-</center>
 <div style="display: flex; flex-direction: column; align-items: center;">
     <img src="./docs/assets/Header.png" style="width: 100%;"/>
     <div style="display: flex; justify-content: space-between; width: 100%;">
-        <img src="./docs/assets/Mhub_image.png" style="width: 50%;"/>
+        <img src="./docs/assets/Mhub_image.png" style="width: 49%;"/>
         <img src="./docs/assets/Mhub_image2.png" style="width: 50%;"/>
     </div>
     <a href="https://www.nature.com/articles/s42256-024-00807-9"><img src="./docs/assets/readpaper_logo.png" style="width: 100%;"></a>
@@ -27,10 +26,12 @@ This is the the official repository for the paper
 [![License](https://img.shields.io/github/license/AIM-Harvard/foundation-cancer-image-biomarker)](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/blob/master/LICENSE)
 [![Coverage](docs/assets/images/coverage.svg)](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/blob/master/docs/assets/images/coverage.svg)
 
-</div>
+
 
 ---
 **NOTE:**
  For detailed documentation check our [website](https://aim-harvard.github.io/foundation-cancer-image-biomarker/) 
 
 ---
+
+</div>
