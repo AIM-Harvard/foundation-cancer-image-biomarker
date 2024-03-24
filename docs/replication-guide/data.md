@@ -62,7 +62,7 @@ bash luna16.sh <path_to_download>
 The easiest way to download the LUNG1 and RADIO datasets is through s5cmd and [IDC manifests](https://learn.canceridc.dev/data/downloading-data)
 For convenience, the manifests for each of the already been provided in `data/download` under `nsclc_radiomics.csv` for LUNG1 and `nsclc_radiogenomics.`
 
-First, you'll need to install `s5cmd`. Follow the instructions here: https://github.com/peak/s5cmd?tab=readme-ov-file#installation
+First, you'll need to install `s5cmd`. Follow the instructions [here]https://github.com/peak/s5cmd?tab=readme-ov-file#installation
 
 Once you have s5cmd installed, run 
 

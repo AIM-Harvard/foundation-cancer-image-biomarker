@@ -3,14 +3,13 @@ hide:
   - title
 ---
 # 
-
-<center>
-This is the the official documentation for the paper: "<b>Foundation Model for Cancer Imaging Biomarkers </b>"
-</center>
-<div style="display: flex;"><img src="assets/Header.png"/></div>
-
-
-<i><font size="-1">Suraj Pai, Dennis Bontempi, Ibrahim Hadzic, Vasco Prudente, Mateo Sokač, Tafadzwa L. Chaunzwa, Simon Bernatz, Ahmed Hosny, Raymond H Mak, Nicolai J Birkbak, Hugo JWL Aerts</i></font>
+<div style="display: flex; flex-direction: column; align-items: center;">
+    <img src="assets/Header.png" style="width: 100%;"/>
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <img src="assets/Mhub_image.png" style="width: 50%;"/>
+        <img src="assets/Mhub_image2.png" style="width: 50%;"/>
+    </div>
+</div>
 
 
 ## Documentation Walkthrough
@@ -20,11 +19,11 @@ This is the the official documentation for the paper: "<b>Foundation Model for C
 !!! note
     [We also provide quickstart examples that run in a free-cloud based environment](./getting-started/cloud-quick-start.md) (through Google Colab) so you can get familiar with our workflows, without having to download anything on your local machine!!
 
-[Replication Guide](./user-guide/data.md)<br> If you would like to pre-train a foundation model on your own unannotated data or would like to replicate the training and evaluation from our study, see here. 
+[Replication Guide](./replication-guide/data.md)<br> If you would like to pre-train a foundation model on your own unannotated data or would like to replicate the training and evaluation from our study, see here. 
 
 [Tutorials](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/tree/master/tutorials)<br> We provide comprehensive tutorials that use the foundation model for cancer imaging biomarkers and compare against other popularly used methods. If you would like to build your own study using our foundation model, these set of tutorials are highly recommended as the starting point. 
 
-[API Docs](./api_docs/fmcib/index.html) <br> This is for the more advanced user who would like to deep-dive into different methods and classes provided by our package. 
+[API Docs](./reference/run) <br> This is for the more advanced user who would like to deep-dive into different methods and classes provided by our package. 
 
  
 ## License

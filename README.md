@@ -1,14 +1,21 @@
 
 <center>
-This is the the official repository for the paper: "<b>Foundation Model for Cancer Imaging Biomarkers </b>"
+This is the the official repository for the paper
+
+<br/>
+
 </center>
-<div style="display: flex; justify-content: center"><img src="docs/assets/Header.png"/>
+<div style="display: flex; flex-direction: column; align-items: center;">
+    <img src="./docs/assets/Header.png" style="width: 100%;"/>
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <img src="./docs/assets/Mhub_image.png" style="width: 50%;"/>
+        <img src="./docs/assets/Mhub_image2.png" style="width: 50%;"/>
+    </div>
+    <a href="https://www.nature.com/articles/s42256-024-00807-9"><img src="./docs/assets/readpaper_logo.png" style="width: 100%;"></a>
 </div>
+
 <br/><br/>
 <div align="center">
-
-<i><font size="-1">Suraj Pai, Dennis Bontempi, Ibrahim Hadzic, Vasco Prudente, Mateo Sokač, Tafadzwa L. Chaunzwa, Simon Bernatz, Ahmed Hosny, Raymond H Mak, Nicolai J Birkbak, Hugo JWL Aerts</i></font>
-
 
 [![Build Status](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/actions/workflows/build.yml/badge.svg)](https://github.com/AIM-Harvard/foundation-cancer-image-biomarker/actions/workflows/build.yml)
 [![Python Version](https://img.shields.io/pypi/pyversions/foundation-cancer-image-biomarker.svg)](https://pypi.org/project/foundation-cancer-image-biomarker/)
@@ -23,7 +30,7 @@ This is the the official repository for the paper: "<b>Foundation Model for Canc
 </div>
 
 ---
-**NOTE: **
+**NOTE:**
  For detailed documentation check our [website](https://aim-harvard.github.io/foundation-cancer-image-biomarker/) 
 
 ---
