@@ -25,6 +25,26 @@ system:
             feed_forward: False
         weights_path: "./model_weights.torch" # Note: Change path to the model weights file.
 
+        #### Note: Use the below config for Med3D
+        # trunk:
+        #   _target_: monai.networks.nets.resnet50
+        #   widen_factor: 1
+        #   bias_downsample: False
+        #   n_input_channels: 1
+        #   conv1_t_stride: 1
+        #   feed_forward: False
+        #   pretrained: False
+        # weights_path: "./models/pretrained/med3d/resnet_50.pth"
+
+
+        #### Note: Use the below config for Models Genesis
+        # trunk:
+        #   _target_: fmcib.models.ModelsGenesisUNet3D
+        #   decoder: False
+        # weights_path: ./models/pretrained/models_genesis/Genesis_Chest_CT.pt
+
+
+
     criterion: null
     optimizer: null
     scheduler: null
@@ -36,7 +56,7 @@ system:
             _target_: fmcib.datasets.SSLRadiomicsDataset
             path: "./data/preprocessing/deeplesion/annotations/task1_test.csv" # Note: Change path to the CSV file to extract features from.
             label: "Coarse_lesion_type" # Note: Change the label to "malignancy" for task 2 and "survival" for task 3
-            radius: 25
+            radius: 25 # Note: Change to 24 for Models Genesis
             orient: True # Note: Set orient to False for task 2 and task 3
             resample_spacing: [1, 1, 1]
             enable_negatives: False
@@ -51,3 +71,29 @@ system:
                       divisor: 3072
                     - _target_: monai.transforms.SpatialPad
                       spatial_size: [50, 50, 50]
+
+            # transforms: #### Note: Uncomment this `transforms` and comment the above `transforms` for Med3D
+            #     - _target_: monai.transforms.ScaleIntensityRange
+            #       a_min: -1000
+            #       a_max: 1000
+            #       b_min: 0.0
+            #       b_max: 1.0
+            #       clip: True
+            #     - _target_: monai.transforms.ToTensor
+            #     - _target_: monai.transforms.AddChannel
+            #     - _target_: monai.transforms.SpatialPad
+            #       spatial_size: [50, 50, 50]
+
+            # transforms: #### Note: Uncomment this `transforms` and comment the above `transforms` for Models Genesis
+            #     - _target_: monai.transforms.Transpose ## Only for Models Genesis
+            #       indices: [2, 1, 0]
+            #     - _target_: monai.transforms.ToTensor
+            #     - _target_: monai.transforms.AddChannel
+            #     - _target_: monai.transforms.SpatialPad
+            #       spatial_size: [48, 48, 48]
+            #     - _target_: monai.transforms.ScaleIntensityRange
+            #       a_min: -1000
+            #       a_max: 1000
+            #       b_min: 0.0
+            #       b_max: 1.0
+            #       clip: True                                                           

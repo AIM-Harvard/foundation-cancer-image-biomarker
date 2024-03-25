@@ -6,7 +6,7 @@ The FM was adapted by either fine-tuning all its weights or by freezing its weig
 
 We provide the YAML configuration for this at `experiments/adaptation/fmcib_finetune.yaml`.
 
-By default, we configure this for Task 1. You can adapt this for Task 2 and Task 3 by searching for 'Note: ' comments in the YAML that outline what must be changed. Make sure you download the weights for the pre-trained foundation model before attempting to reproduce this training. 
+By default, we configure this for Task 1. You can adapt this for Task 2 and Task 3 by searching for `Note: ` comments in the YAML that outline what must be changed. Make sure you download the weights for the pre-trained foundation model before attempting to reproduce this training. 
 
 
 You can start training by running this in the root code folder,
