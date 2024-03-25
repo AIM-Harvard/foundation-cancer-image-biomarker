@@ -43,37 +43,45 @@ system:
         weights_path: "./models/supervised/task1_supervised.torch" 
         heads: [4096, 2048, 1]   # Note: Change to [4096, 2048, 512, 256, 1] for Task 3
 
-    post_criterion_activation: "$torch.sigmoid" 
-    cast_target_dtype_to: "$torch.float32"
+    postprocessing:
+      metrics:
+        pred:
+          - "$lambda x: torch.softmax(x, 1)" # Note: Change to $lambda x: torch.sigmoid(x) for Task 2 and Task 3    
+      criterion:
+        target: # Note: Uncomment for Task 2 and Task 3
+          - "$lambda x: x.float()"
+
+
     criterion:
         _target_: torch.nn.BCEWithLogitsLoss 
 
-    optimizers:
-        _target_: torch.optim.SGD
+    optimizer:
+        _target_: torch.optim.Adam
         params: "$@system#model.parameters()"
-        lr: "$((@system#batch_size * @trainer#devices)/256) * 0.1" # Compute LR dynamically for different batch sizes
-        weight_decay: 0.0
-        momentum: 0.9
+        # lr: "$((@system#batch_size * @trainer#devices)/256) * 0.1" # Compute LR dynamically for different batch sizes
+        # weight_decay: 0.0
+        # momentum: 0.9
 
-    schedulers:
-      scheduler:
-        _target_: torch.optim.lr_scheduler.StepLR
-        optimizer: "@system#optimizers"
-        step_size: 30
-      strict: True
+    scheduler:
+      _target_: torch.optim.lr_scheduler.StepLR
+      optimizer: "@system#optimizer"
+      step_size: 30
 
-    train_metrics: 
+    metrics:
+      train: 
         - _target_: torchmetrics.AveragePrecision
-          task: binary
-
+          task: multiclass # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
+          num_classes: 8 
         - _target_: torchmetrics.AUROC
-          task: binary 
+          task: multiclass # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
+          num_classes: 8
+
+      val: "%#train"
+      test: "%#train"
 
 
-    val_metrics: "%system#train_metrics"
-    test_metrics: "%system#train_metrics"
-
-    train_dataset:
+    datasets:
+      train:
         _target_: fmcib.datasets.SSLRadiomicsDataset
         path: "./data/preprocessing/luna16/annotations/task2_train.csv"  # Note: Change path
         label: "malignancy" # Note: Change to appropriate label column, e.g.  "survival" for Task 3
@@ -101,7 +109,7 @@ system:
                   subtrahend: -1024
                   divisor: 3072
 
-    val_dataset:
+      val:
         _target_: fmcib.datasets.SSLRadiomicsDataset
         path: "./data/preprocessing/luna16/annotations/task2_val.csv"  # Note: Change path
         label: "@system#train_dataset#label"
@@ -120,40 +128,5 @@ system:
                   subtrahend: -1024
                   divisor: 3072
                   
-    test_dataset:
-        _target_: fmcib.datasets.SSLRadiomicsDataset
-        path: "./data/preprocessing/luna16/annotations/task2_test.csv"  # Note: Change path
-        label: "@system#train_dataset#label"
-        radius: "@system#train_dataset#radius"
-        orient: "@system#train_dataset#orient"
-        resample_spacing: "@system#train_dataset#resample_spacing"
-        enable_negatives: "@system#train_dataset#enable_negatives"
-        transform:
-            _target_: monai.transforms.Compose
-            transforms:
-                - _target_: monai.transforms.ToTensor
-                - _target_: monai.transforms.AddChannel
-                - _target_: monai.transforms.SpatialPad
-                  spatial_size: [50, 50, 50]
-                - _target_: monai.transforms.NormalizeIntensity
-                  subtrahend: -1024
-                  divisor: 3072        
-    
-    predict_dataset:
-        _target_: fmcib.datasets.SSLRadiomicsDataset
-        path: "./data/preprocessing/luna16/annotations/task2_test.csv"  # Note: Change path
-        label: "@system#train_dataset#label"
-        radius: "@system#train_dataset#radius"
-        orient: "@system#train_dataset#orient"
-        resample_spacing: "@system#train_dataset#resample_spacing"
-        enable_negatives: "@system#train_dataset#enable_negatives"
-        transform:
-            _target_: monai.transforms.Compose
-            transforms:
-                - _target_: monai.transforms.ToTensor
-                - _target_: monai.transforms.AddChannel
-                - _target_: monai.transforms.SpatialPad
-                  spatial_size: [50, 50, 50]
-                - _target_: monai.transforms.NormalizeIntensity
-                  subtrahend: -1024
-                  divisor: 3072      
+      test: null
+        

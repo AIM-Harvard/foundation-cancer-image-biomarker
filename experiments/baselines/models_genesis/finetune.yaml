@@ -12,7 +12,7 @@ trainer:
 
   callbacks:
     - _target_: pytorch_lightning.callbacks.ModelCheckpoint
-      dirpath:  /mnt/data1/RadiomicsFoundationModel/checkpoints/med3d_task3_finetune # Note: Change as appropriate
+      dirpath:  ./checkpoints/modelsgen_task3_finetune # Note: Change as appropriate
       verbose: True
       save_last: True
       every_n_epochs: 1
@@ -31,21 +31,16 @@ system:
     _target_: lighter.LighterSystem
     batch_size: 32
     pin_memory: True
-    drop_last_batch: False 
+    drop_last_batch: True 
     num_workers: 3
     model:
         _target_: fmcib.models.LoadModel
         trunk:
-          _target_: monai.networks.nets.resnet50
-          widen_factor: 1
-          bias_downsample: False
-          n_input_channels: 1
-          conv1_t_stride: 1
-          feed_forward: False
-          pretrained: False
-        weights_path: "/home/suraj/Repositories/foundation-cancer-image-biomarker/models/pretrained/med3d/resnet_50.pth"
-        heads: [2048, 1024, 512, 256, 1] # Note: Change to [4096, 2048, 1] for Task 2 and [4096, 2048, 512, 256, 1] Task 3
-
+          _target_: fmcib.models.ModelsGenesisUNet3D
+          decoder: False
+        weights_path: ./models/pretrained/models_genesis/Genesis_Chest_CT.pt
+        heads: [4096, 2048, 512, 256, 8] # Note: Change to [4096, 2048, 1] for Task 2 and  [4096, 2048, 512, 256, 1] Task 3
+    
     postprocessing:
       metrics:
         pred:
@@ -57,54 +52,48 @@ system:
     criterion:
         _target_: torch.nn.CrossEntropyLoss # Note: Change to torch.nn.BCEWithLogitsLoss for Task 2 and Task 3
 
-    optimizers:
+    optimizer:
         _target_: torch.optim.Adam
         params: "$@system#model.parameters()"
-        # lr: 0.001 # Compute L  R dynamically for different batch sizes
+        # lr: "$((@system#batch_size * @trainer#devices)/256) * 0.1" # Compute LR dynamically for different batch sizes
         # weight_decay: 0.0
         # momentum: 0.9
 
-    schedulers:
-      scheduler:
-        _target_: torch.optim.lr_scheduler.StepLR
-        optimizer: "@system#optimizers"
-        step_size: 30
-      strict: True
+    scheduler:
+      _target_: torch.optim.lr_scheduler.StepLR
+      optimizer: "@system#optimizers"
+      step_size: 30
 
-    train_metrics: 
+    metrics:
+      train: 
         - _target_: torchmetrics.AveragePrecision
-          task: binary # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
+          task: binary # Note: Change to `multiclass` for Task 2 and Task 3 and remove num_classes below
           # num_classes: 8 
 
         - _target_: torchmetrics.AUROC
           task: binary # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
           # num_classes: 8 
+      val: "%#train"
+      test: "%#train"
 
-
-    val_metrics: "%system#train_metrics"
-    test_metrics: "%system#train_metrics"
-
-    train_dataset:
+    datasets:
+      train:
         _target_: fmcib.datasets.SSLRadiomicsDataset
         path: null # Note: Change path
         label: "survival" # Note: Change to "malignancy" for Task 2 and "survival" for Task 3
-        radius: 25
+        radius: 24
         orient: False # Note: Set orient to False for task 2 and task 3
         resample_spacing: [1, 1, 1]
         enable_negatives: False
         transform:
             _target_: monai.transforms.Compose
             transforms:
-                - _target_: monai.transforms.ScaleIntensityRange
-                  a_min: -1000
-                  a_max: 1000
-                  b_min: 0.0
-                  b_max: 1.0
-                  clip: True   
+                - _target_: monai.transforms.Transpose ## Only for Models Genesis
+                  indices: [2, 1, 0]
                 - _target_: monai.transforms.ToTensor
                 - _target_: monai.transforms.AddChannel
                 - _target_: monai.transforms.SpatialPad
-                  spatial_size: [50, 50, 50]
+                  spatial_size: [48, 48, 48]
                 - _target_: monai.transforms.RandGaussianSmooth
                   prob: 0.5
                 - _target_: monai.transforms.RandAffine
@@ -114,11 +103,14 @@ system:
                   prob: 0.5
                 - _target_: monai.transforms.RandRotate90
                   prob: 0.5
-                # - _target_: monai.transforms.NormalizeIntensity
-                #   subtrahend: -1024
-                #   divisor: 3072
+                - _target_: monai.transforms.ScaleIntensityRange
+                  a_min: -1000
+                  a_max: 1000
+                  b_min: 0.0
+                  b_max: 1.0
+                  clip: True
 
-    val_dataset:
+      val:
         _target_: fmcib.datasets.SSLRadiomicsDataset
         path: null # Note: Change path
         label: "@system#train_dataset#label"
@@ -128,19 +120,18 @@ system:
         enable_negatives: "@system#train_dataset#enable_negatives"
         transform:
             _target_: monai.transforms.Compose
-            transforms:               
-                # - _target_: fmcib.transforms.IntensityNormalizeOneVolume ## Only for Med3D, MR only?
+            transforms:
+                - _target_: monai.transforms.Transpose ## Only for Models Genesis
+                  indices: [2, 1, 0]
+                - _target_: monai.transforms.ToTensor
+                - _target_: monai.transforms.AddChannel
+                - _target_: monai.transforms.SpatialPad
+                  spatial_size: [48, 48, 48]
                 - _target_: monai.transforms.ScaleIntensityRange
                   a_min: -1000
                   a_max: 1000
                   b_min: 0.0
                   b_max: 1.0
                   clip: True
-                - _target_: monai.transforms.ToTensor
-                - _target_: monai.transforms.AddChannel
-                - _target_: monai.transforms.SpatialPad
-                  spatial_size: [50, 50, 50]
-
-
-    test_dataset: null
-    predict_dataset: null
+                  
+      test: null
