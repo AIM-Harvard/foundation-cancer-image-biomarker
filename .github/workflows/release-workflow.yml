@@ -1,0 +1,52 @@
+# This is a basic workflow that is manually triggered
+
+name: PyPI Release
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      version:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Release type'
+        # Default value if no value is explicitly provided
+        default: 'major'
+        # Input has to be provided for the workflow to run
+        required: true
+        # The data type of the input
+        type: string
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v2
+        - name: Set up Python
+          uses: actions/setup-python@v2.2.2
+          with:
+            python-version: 3.9
+
+        - name: Install poetry
+          run: make setup
+
+        - name: Bump version
+          run: |
+            poetry version ${{ inputs.version }}
+    
+        - name: Commit & push changes
+          run: |
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git commit -m "Bump version" || echo "No changes to commit"
+            git push 
+   
+        - name: Build and publish to pypi
+          uses: JRubics/poetry-publish@v1.16
+          with:
+            python_version: 3.9
+            pypi_token: ${{ secrets.PYPI_TOKEN }}
+            allow_poetry_pre_release: "yes"
+            ignore_dev_requirements: "yes"
