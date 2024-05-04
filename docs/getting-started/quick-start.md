@@ -4,9 +4,11 @@
 ## Extracting Features from the Foundation Model (Recommended)
 
 <u>Step 1:</u> Install all our dependencies:
+
 ```bash
-pip install foundation-cancer-image-biomarker --pre
+pip install foundation-cancer-image-biomarker
 ```
+
 
 Fore more info: [See detailed Install instructions](./installation.md)
 
@@ -31,8 +33,10 @@ This will preprocess your data, download our pre-trained model and execute infer
     If you want to download the weights separately, you can run download it from [here](https://zenodo.org/records/10528450/files/model_weights.torch?download=1) and place it in the current working directory.
 
 You can test to check if the global coordinates are where you expect by using our provided `visualize_seed_point` function. 
+We expect the coordinates in the LPS coordinate system (like ITK) but if you have it in RAS, you can negate the X and Y coordinates and that should work with our system. See [here](https://discourse.slicer.org/t/converting-fiducial-coordinates-from-ras-to-lps/9707)
+
 ```python
-from fmcib.visualize import visualize_seed_point
+from fmcib.visualization.verify_io import visualize_seed_point
 import pandas as pd
 
 feature_df = pd.read_csv("csv_path_here")

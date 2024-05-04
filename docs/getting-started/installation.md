@@ -2,9 +2,16 @@
 
 Our package is offered through a very simple pip install, you can run:
 ```bash
+pip install foundation-cancer-image-biomarker
+```
+The package provides simple ways to interact with the foundation model through the means of several utility scripts and functions. 
+
+If you would like to install the bleeding edge version, please add 
+```bash
 pip install foundation-cancer-image-biomarker --pre
 ```
-The package provides simple ways to interact with the foundation model through the means of several utility scripts and functions. Once you have installed the package, you can move to our [Quick Start](./quick-start.md) guide.
+
+Once you have installed the package, you can move to our [Quick Start](./quick-start.md) guide.
 
 
 ## Notes
