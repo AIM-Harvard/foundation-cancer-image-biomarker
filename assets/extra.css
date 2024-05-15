@@ -1,0 +1,21 @@
+[data-md-color-scheme="slate"] {
+    --md-primary-fg-color:        #4D4D4D;
+    --md-default-bg-color:        #3D3D3D;
+    color: white;
+
+  }
+
+@media only screen and (min-width: 75.25em) {
+  .md-main__inner {
+    max-width: 1000em;
+  }
+  .md-sidebar--primary {
+    left: 0;
+  }
+  .md-sidebar--secondary {
+    right: 0;
+    margin-left: 10em;
+    -webkit-transform: none;
+    transform: none;   
+  }
+}
