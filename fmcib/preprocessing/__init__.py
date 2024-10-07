@@ -10,6 +10,8 @@ def preprocess(image, spatial_size=(50, 50, 50)):
     T = get_transforms(spatial_size=spatial_size)
     return T(image)
 
+def image_as_tensor(x):
+    return x["image_path"].as_tensor()
 
 def get_transforms(spatial_size=(50, 50, 50), precropped=False):
     if precropped:
@@ -20,7 +22,7 @@ def get_transforms(spatial_size=(50, 50, 50), precropped=False):
                 monai_transforms.NormalizeIntensityd(keys=["image_path"], subtrahend=-1024, divisor=3072),
                 monai_transforms.SelectItemsd(keys=["image_path"]),
                 monai_transforms.SpatialPadd(keys=["image_path"], spatial_size=spatial_size),
-                torchvision.transforms.Lambda(lambda x: x["image_path"].as_tensor()),
+                torchvision.transforms.Lambda(image_as_tensor),
             ]
         )
     else:
@@ -39,7 +41,7 @@ def get_transforms(spatial_size=(50, 50, 50), precropped=False):
                 monai_transforms.SelectItemsd(keys=["image_path"]),
                 monai_transforms.Transposed(keys=["image_path"], indices=(0, 3, 2, 1)),
                 monai_transforms.SpatialPadd(keys=["image_path"], spatial_size=spatial_size),
-                torchvision.transforms.Lambda(lambda x: x["image_path"].as_tensor()),
+                torchvision.transforms.Lambda(image_as_tensor),
             ]
         )
 
