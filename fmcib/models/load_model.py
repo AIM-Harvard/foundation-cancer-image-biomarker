@@ -96,7 +96,7 @@ class LoadModel(nn.Module):
 
         Raises the appropriate warnings and logs informational messages.
         """
-        pretrained_model = torch.load(weights, map_location=self.device)
+        pretrained_model = torch.load(weights, map_location=self.device, weights_only=True)
 
         if "trunk_state_dict" in pretrained_model:  # Loading ViSSL pretrained model
             trained_trunk = pretrained_model["trunk_state_dict"]
