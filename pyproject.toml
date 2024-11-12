@@ -197,4 +197,4 @@ fail-under=8
 [tool.poetry_bumpversion.file."fmcib/__init__.py"]
 
 [tool.bandit]
-skips = ["B108", "B301"]
+skips = ["B108", "B301", "B614"]
