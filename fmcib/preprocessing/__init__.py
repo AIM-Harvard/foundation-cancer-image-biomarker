@@ -9,9 +9,11 @@ from .seed_based_crop import SeedBasedPatchCropd
 def preprocess(image, spatial_size=(50, 50, 50)):
     T = get_transforms(spatial_size=spatial_size)
     return T(image)
+    
 
 def image_as_tensor(x):
     return x["image_path"].as_tensor()
+    
 
 def get_transforms(spatial_size=(50, 50, 50), precropped=False):
     if precropped:
