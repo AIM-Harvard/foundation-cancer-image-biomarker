@@ -215,14 +215,14 @@ def process_series_dir(series_dir: Path):
 
     elif len(seg_files) != 0:
         dcmseg2nii(str(seg_files[0]), str(series_dir), tag="GTV-")
-        
+
         # Build the main image NIfTI
         try:
             series_id = str(list(series_dir.glob("CT*.dcm"))[0]).split("_")[-2]
         except IndexError:
             logger.warning(f"No 'CT*.dcm' file found under {series_dir}. Skipping.")
             return None
-        
+
         dicom_image = DcmInputAdapter().ingest(str(series_dir), series_id=series_id)
         nii_output_adapter = NiiOutputAdapter()
         nii_output_adapter.write(dicom_image, f"{series_dir}/image", gzip=True)
@@ -231,7 +231,7 @@ def process_series_dir(series_dir: Path):
         logger.warning(f"No RTSTRUCT or SEG file found in {series_dir}. Skipping.")
         return None
 
-    # Read the image (generated above) 
+    # Read the image (generated above)
     image_path = series_dir / "image.nii.gz"
     if not image_path.exists():
         logger.warning(f"No image file found at {image_path}. Skipping.")
