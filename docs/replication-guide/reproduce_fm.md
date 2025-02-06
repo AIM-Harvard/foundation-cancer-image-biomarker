@@ -51,5 +51,5 @@ Now you can start training by running this in the root code folder,
 
 
 ```bash
-lighter fit --config_file ./experiments/pretraining/fmcib_pretrain.yaml
+lighter fit --config_file=./experiments/pretraining/fmcib_pretrain.yaml
 ```

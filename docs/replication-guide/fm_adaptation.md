@@ -11,7 +11,7 @@ By default, we configure this for Task 1. You can adapt this for Task 2 and Task
 
 You can start training by running this in the root code folder,
 ```bash
-lighter fit --config_file ./experiments/adaptation/fmcib_finetune.yaml
+lighter fit --config_file=./experiments/adaptation/fmcib_finetune.yaml
 ```
 
 ## Adaptation through linear evaluation
