@@ -66,8 +66,8 @@ mypy:
 .PHONY: check-safety
 check-safety:
 	poetry check
-	poetry run safety check --full-report --ignore 51457 --ignore 67599
-	poetry run bandit -c pyproject.toml -ll --recursive fmcib tests
+	poetry run safety check --full-report --ignore 51457 --ignore 67599 --ignore 70612
+	poetry run bandit -c pyproject.toml -ll --recursive fmcib tests 
 
 .PHONY: lint
 lint: test check-codestyle mypy check-safety

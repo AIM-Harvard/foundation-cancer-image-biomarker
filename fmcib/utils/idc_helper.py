@@ -190,7 +190,7 @@ def download_RADIO(path, samples=None):
     download_from_manifest(df, save_dir, samples)
 
 
-def process_series_dir(series_dir):
+def process_series_dir(series_dir: Path):
     """
     Process the series directory and extract relevant information.
 
@@ -198,45 +198,82 @@ def process_series_dir(series_dir):
         series_dir (Path): The path to the series directory.
 
     Returns:
-        dict: A dictionary containing the extracted information, including the image path, patient ID, and coordinates.
+        dict: A dictionary containing the extracted information, including the
+              image path, patient ID, and centroid coordinates.
+        None: If there's no RTSTRUCT or SEG file, or any step fails.
 
     Raises:
         None
     """
     # Check if RTSTRUCT file exists
-    rtstuct_files = list(series_dir.glob("*RTSTRUCT*"))
+    rt_struct_files = list(series_dir.glob("*RTSTRUCT*"))
     seg_files = list(series_dir.glob("*SEG*"))
 
-    if len(rtstuct_files) != 0:
-        dcmrtstruct2nii(str(rtstuct_files[0]), str(series_dir), str(series_dir))
+    # Convert DICOM to NIfTI based on whether it's RTSTRUCT or SEG
+    if len(rt_struct_files) != 0:
+        dcmrtstruct2nii(str(rt_struct_files[0]), str(series_dir), str(series_dir))
 
     elif len(seg_files) != 0:
         dcmseg2nii(str(seg_files[0]), str(series_dir), tag="GTV-")
-
-        series_id = str(list(series_dir.glob("CT*.dcm"))[0]).split("_")[-2]
+        
+        # Build the main image NIfTI
+        try:
+            series_id = str(list(series_dir.glob("CT*.dcm"))[0]).split("_")[-2]
+        except IndexError:
+            logger.warning(f"No 'CT*.dcm' file found under {series_dir}. Skipping.")
+            return None
+        
         dicom_image = DcmInputAdapter().ingest(str(series_dir), series_id=series_id)
         nii_output_adapter = NiiOutputAdapter()
         nii_output_adapter.write(dicom_image, f"{series_dir}/image", gzip=True)
+
     else:
-        logger.warning("Skipped file without any RTSTRUCT or SEG file")
+        logger.warning(f"No RTSTRUCT or SEG file found in {series_dir}. Skipping.")
         return None
 
-    image = sitk.ReadImage(str(series_dir / "image.nii.gz"))
-    mask = sitk.ReadImage(str(list(series_dir.glob("*GTV-1*"))[0]))
+    # Read the image (generated above) 
+    image_path = series_dir / "image.nii.gz"
+    if not image_path.exists():
+        logger.warning(f"No image file found at {image_path}. Skipping.")
+        return None
 
-    # Get centroid from label shape filter
+    try:
+        image = sitk.ReadImage(str(image_path))
+    except Exception as e:
+        logger.error(f"Failed to read image {image_path}: {e}")
+        return None
+
+    # Find the GTV-1 mask files
+    gtv1_masks = list(series_dir.glob("*GTV-1*.nii.gz"))
+    if not gtv1_masks:
+        logger.warning(f"No GTV-1 mask found in {series_dir}. Skipping.")
+        return None
+
+    mask_path = gtv1_masks[0]
+    try:
+        mask = sitk.ReadImage(str(mask_path))
+    except Exception as e:
+        logger.error(f"Failed to read mask {mask_path}: {e}")
+        return None
+
+    # Extract centroid from the mask
     label_shape_filter = sitk.LabelShapeStatisticsImageFilter()
     label_shape_filter.Execute(mask)
 
+    # Some masks label is 1, others are 255; try 255 first, else 1
     try:
         centroid = label_shape_filter.GetCentroid(255)
     except:
-        centroid = label_shape_filter.GetCentroid(1)
+        try:
+            centroid = label_shape_filter.GetCentroid(1)
+        except Exception as e:
+            logger.warning(f"Could not extract centroid from mask {mask_path}: {e}")
+            return None
 
     x, y, z = centroid
 
     row = {
-        "image_path": str(series_dir / "image.nii.gz"),
+        "image_path": str(image_path),
         "PatientID": series_dir.parent.name,
         "coordX": x,
         "coordY": y,

@@ -42,13 +42,17 @@ system:
     postprocessing:
       metrics:
         pred:
-          - "$lambda x: torch.softmax(x, 1)" # Note: Change to $lambda x: torch.sigmoid(x) for Task 2 and Task 3    
-      # criterion:
-      #   target: # Note: Uncomment for Task 2 and Task 3
-      #     - "$lambda x: x.float()" 
+          - "$lambda x: torch.softmax(x, 1)" # Note: Change to $lambda x: torch.sigmoid(x) for Task 2 and Task 3
+        # target:  # Note: Uncomment for Task 2 and Task 3
+        #   - "$lambda x: x.long()"
+      # criterion: # Note: Uncomment for Task 2 and Task 3
+      #   pred:
+      #     - "$lambda x: x.squeeze(1)"
+      #   target: 
+      #     - "$lambda x: x.float()"
 
     criterion:
-        _target_: torch.nn.CrossEntropyLoss # Note: Change to torch.nn.BCEWithLogitsLoss for Task 2 and Task 3
+      _target_: torch.nn.CrossEntropyLoss # Note: Change to torch.nn.BCEWithLogitsLoss for Task 2 and Task 3
 
     optimizer:
         _target_: torch.optim.Adam
@@ -66,7 +70,7 @@ system:
       train: 
         - _target_: torchmetrics.AveragePrecision
           task: multiclass # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
-          num_classes: 8 
+          num_classes: 8
         - _target_: torchmetrics.AUROC
           task: multiclass # Note: Change to `binary` for Task 2 and Task 3 and remove num_classes below
           num_classes: 8
