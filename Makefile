@@ -1,6 +1,7 @@
 #* Variables
 SHELL := /usr/bin/env bash
-PYTHON := python
+PYTHON := python3
+python := python3
 PYTHONPATH := `pwd`
 
 #* Docker variables
