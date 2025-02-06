@@ -36,7 +36,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          docstring_style: google
+          # docstring_style: google
           options:
             # Removed the default filter that excludes private members (that is, members whose names start with a single underscore).
             filters: null     
