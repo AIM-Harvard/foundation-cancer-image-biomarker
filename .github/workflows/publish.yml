@@ -8,36 +8,33 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v2
-        - name: Set up Python
-          uses: actions/setup-python@v2.2.2
-          with:
-            python-version: 3.9
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: 3.9
 
-        - name: Install poetry
-          run: make setup
+      - name: Install poetry
+        run: make setup
           
-        - name: Install poeblix for version freezing
-          run: poetry self add poeblix@latest
-          
-        - name: Bump version
-          run: |
-            poetry version prerelease
+      - name: Bump version
+        run: |
+          poetry version prerelease
 
-        - name: Commit changes
-          run: |
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git add .
-            git commit -m "Bump version" || echo "No changes to commit"
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Bump version" || echo "No changes to commit"
 
-        - name: Push changes
-          run: git push
+      - name: Push changes
+        run: git push
 
-        - name: Build with lockfile versions
-          run: poetry blixbuild --only-lock
-          
-        - name: Publish distribution 📦 to PyPI
-          uses: pypa/gh-action-pypi-publish@release/v1
-          with:
-            password: ${{ secrets.PYPI_TOKEN }}
+      - name: Build and publish to pypi
+        uses: JRubics/poetry-publish@v1.16
+        with:
+          python_version: 3.9
+          pypi_token: ${{ secrets.PYPI_TOKEN }}
+          allow_poetry_pre_release: "yes"
+          ignore_dev_requirements: "yes"
