@@ -6,7 +6,7 @@ In this section, we detail how features (from the FM and pre-trained models) and
 
 In order to extract features from our models, you can use the following, (at root folder location)
 ```bash
-lighter predict --config_file ./experiments/inference/extract_features.yaml
+lighter predict --config_file=./experiments/inference/extract_features.yaml
 ```
 
 !!! note
@@ -33,7 +33,7 @@ This will pull all the models from hugging face. Following this you can use any 
 These can be run using (at root folder location)
 
 ```bash
-lighter predict --config_file ./experiments/inference/get_predictions.yaml
+lighter predict --config_file=./experiments/inference/get_predictions.yaml
 ```
 As with the previous YAMLS, please follow the 'Note:' tags to place appropriate data paths and change relevant parameters. This YAML is to be used if you want to get target predictions from the models.
 

@@ -10,7 +10,7 @@ By default, we configure this for Task 1. You can adapt this for Task 2 and Task
 
 You can start training by running this in the root code folder,
 ```bash
-lighter fit --config_file ./experiments/baselines/supervised_training/supervised_random_init.yaml
+lighter fit --config_file=./experiments/baselines/supervised_training/supervised_random_init.yaml
 ```
  
 ## Transfer learning
@@ -20,7 +20,7 @@ This baseline is only used for Task 2 and Task 3 as we use the random init basel
 
 You can start training by running this in the root code folder,
 ```bash
-lighter fit --config_file ./experiments/baselines/supervised_training/supervised_finetune.yaml
+lighter fit --config_file=./experiments/baselines/supervised_training/supervised_finetune.yaml
 ```
 
 ## Med3D / MedicalNet
@@ -31,7 +31,7 @@ We have provided re-implementations of Med3D to fit into our YAML workflows at `
 
 You can start training by running this in the root code folder,
 ```bash
-lighter fit --config_file ./experiments/baselines/med3d/finetune.yaml
+lighter fit --config_file=./experiments/baselines/med3d/finetune.yaml
 ```
 
 ## Models Genesis
@@ -42,5 +42,5 @@ We have provided re-implementations of Models Genesis to fit into our YAML workf
 
 You can start training by running this in the root code folder,
 ```bash
-lighter fit --config_file ./experiments/baselines/models_genesis/finetune.yaml
+lighter fit --config_file=./experiments/baselines/models_genesis/finetune.yaml
 ```
