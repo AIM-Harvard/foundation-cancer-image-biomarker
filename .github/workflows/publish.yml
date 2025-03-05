@@ -32,7 +32,7 @@ jobs:
         run: git push
 
       - name: Build and publish to pypi
-        uses: JRubics/poetry-publish@v1.16
+        uses: JRubics/poetry-publish@v2.1
         with:
           python_version: 3.9
           pypi_token: ${{ secrets.PYPI_TOKEN }}
