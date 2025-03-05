@@ -101,20 +101,7 @@ class LoadModel(nn.Module):
         if "trunk_state_dict" in pretrained_model:  # Loading ViSSL pretrained model
             trained_trunk = pretrained_model["trunk_state_dict"]
             msg = self.trunk.load_state_dict(trained_trunk, strict=False)
-            logger.warning(f"Missing keys: {msg[0]} and unexpected keys: {msg[1]}")
-
-        if "state_dict" in pretrained_model:  # Loading Med3D pretrained model
-            trained_model = pretrained_model["state_dict"]
-
-            # match the keys (https://github.com/Project-MONAI/MONAI/issues/6811)
-            weights = {key.replace("module.", ""): value for key, value in trained_model.items()}
-            weights = {key.replace("model.trunk.", ""): value for key, value in trained_model.items()}
-            msg = self.trunk.load_state_dict(weights, strict=False)
-            logger.warning(f"Missing keys: {msg[0]} and unexpected keys: {msg[1]}")
-
-            weights = {key.replace("model.heads.", ""): value for key, value in trained_model.items()}
-            msg = self.heads.load_state_dict(weights, strict=False)
-            logger.warning(f"Missing keys: {msg[0]} and unexpected keys: {msg[1]}")
+            logger.warning(f"Model Trunk - Missing keys: {msg[0]} and unexpected keys: {msg[1]}")
 
         # Load trained heads
         if "head_state_dict" in pretrained_model:
@@ -124,6 +111,22 @@ class LoadModel(nn.Module):
                 msg = self.heads.load_state_dict(trained_heads, strict=False)
             except Exception as e:
                 logger.error(f"Failed to load trained heads with error {e}. This is expected if the models do not match!")
-            logger.warning(f"Missing keys: {msg[0]} and unexpected keys: {msg[1]}")
+            logger.warning(f"Model Head - Missing keys: {msg[0]} and unexpected keys: {msg[1]}")
+
+        # Loading Lighter and other pretrained model
+        if "state_dict" in pretrained_model:
+            trained_model = pretrained_model["state_dict"]
+
+            # match the keys (https://github.com/Project-MONAI/MONAI/issues/6811)
+            weights = {key.replace("module.", ""): value for key, value in trained_model.items()}
+            weights = {key.replace("model.trunk.", ""): value for key, value in trained_model.items()}
+            msg = self.trunk.load_state_dict(weights, strict=False)
+            logger.warning(f"Model Trunk - Missing keys: {msg[0]} and unexpected keys: {msg[1]}")
+
+            weights = {
+                key.replace("model.heads.", ""): value for key, value in trained_model.items() if key.startswith("model.heads")
+            }
+            msg = self.heads.load_state_dict(weights, strict=False)
+            logger.warning(f"Model Head - Missing keys: {msg[0]} and unexpected keys: {msg[1]}")
 
         logger.info(f"Loaded pretrained model weights \n")
